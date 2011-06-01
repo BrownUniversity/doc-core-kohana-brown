@@ -1,0 +1,162 @@
+<?php
+/** 
+ * @package Kohana 3.x Modules
+ * @module Impersonation
+ * @version 1.0
+ * @author Christopher Keith <Christopher_Keith@brown.edu>
+ */
+defined('SYSPATH') OR die('No direct access allowed.');
+ 
+/**
+ * Impersonation Helper class
+ */
+class DOC_Helper_Impersonate {
+    
+    /**
+     * Assume a user's identity
+     *
+     * @param string $id
+     */
+    public static function assume($id)
+    {
+        $session = self::session();
+        $session->set(Kohana::config('impersonate.session_key'), $id);
+    }
+    
+    /**
+     * Generate a link for canceling impersonation if a user is being impersonated.
+     *
+     * @param string $message
+     */
+    public static function cancel_link($message = 'Cancel Impersonation')
+    {
+    	$session = self::session();
+    	$active = $session->get(Kohana::config('impersonate.session_key'));
+    	if ($active === NULL) {
+    		return NULL;
+    	} else {
+    		return html::anchor('impersonate/clear', $message);
+    	}
+    }
+    
+    /**
+     * Determine if access to impersonation should be allowed
+     */
+	public static function check_permissions()
+	{
+		if (self::is_impersonating()) {
+			return TRUE;
+		}
+		
+		$method = Kohana::config('impersonate.logged_in_method');
+		$model = Kohana::config('impersonate.user_model');
+		$attribute = Kohana::config('impersonate.permissions_property');
+		$values = Kohana::config('impersonate.permissions_values');
+		$user = eval("return Model_{$model}::{$method}();");
+		if (array_search($user->$attribute, $values) !== FALSE) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+	
+    /**
+     * Remove impersonation from the session instance.
+     */
+    public static function clear()
+    {
+        $session = self::session();
+        $session->delete(Kohana::config('impersonate.session_key'));
+        $session->delete(Kohana::config('impersonate.return_link_key'));
+    }
+    
+    /**
+     * Get the results of a user impersonation search
+     */
+    public static function get_search_results()
+    {
+        $session = self::session();
+        return $session->get(Kohana::config('impersonate.results_key'));
+    }
+    
+    /**
+     * Get the return link
+     * 
+     * @return string
+     */
+    public static function get_return_link()
+    {
+        $session = self::session();
+        return $session->get(Kohana::config('impersonate.return_link_key'));
+    }
+    
+    /**
+     * Get the current user or impersonated user
+     */
+    public static function get_user()
+    {
+        $session = self::session();
+        $id = $session->get(Kohana::config('impersonate.session_key'));
+        
+        $logged_in_method = Kohana::config('impersonate.logged_in_method');
+        $alternate_method = Kohana::config('impersonate.alternate_method');
+        $model = Kohana::config('impersonate.user_model');
+        $command = NULL;
+        if ($id !== NULL) {
+            $command = "return Model_{$model}::{$alternate_method}('{$id}');";
+        } else {
+        	$command = "return Model_{$model}::{$logged_in_method}();";
+        }
+        return eval($command);
+    }
+    
+    /**
+     * Check if an impersonation session is underway
+     *
+     * return boolean
+     */
+    public static function is_impersonating()
+    {
+    	$session = self::session();
+    	$id = $session->get(Kohana::config('impersonate.session_key'));
+    	return ($id === NULL) ? FALSE : TRUE;
+    }
+    
+    /**
+     * Return an instance of a Session
+     * 
+     * @return Session Instance
+     */
+    public static function session()
+    {
+        return Session::instance(Kohana::config('impersonate.session_type'));
+    }
+    
+    /**
+     * Store the entry referrer in the session
+     * 
+     * @param string $link 
+     */
+    public static function set_return_link($link = NULL)
+    {
+        $session = self::session();
+        
+        if ($session->get(Kohana::config('impersonate.return_link_key')) === NULL) {
+            if ($link === NULL) $link = url::base();
+            $session->set(Kohana::config('impersonate.return_link_key'), $link);
+        }
+    }
+    
+    /**
+     * Store the impersonation search results array
+     * 
+     * @param array $results
+     */
+    public static function set_search_results($results)
+    {
+        $session = self::session();
+        
+        $session->set(Kohana::config('impersonate.results_key'), $results);
+    }
+    
+} // End Impersonation Helper
