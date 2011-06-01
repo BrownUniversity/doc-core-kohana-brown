@@ -1,0 +1,216 @@
+/*
+	This file contains a combination of CSS directives required for the Kohana table module and
+	the jquery tablesorter plugin. The latter is at the tail end of the file. It may be desirable
+	to separate these at some point, but the overall structure is simple enough and the tablesorter
+	code small enough that I figured rather than add to the number of CSS files, we would just
+	put the table code all together.
+
+*/
+
+/*
+------------------------------------------------------------------------------------------------
+-- STRUCTURE
+------------------------------------------------------------------------------------------------
+*/
+
+/*
+------------------------------------------------------------------------------------------------
+-- FORMATTING
+------------------------------------------------------------------------------------------------
+*/
+
+	#datatable table{
+		border-collapse:collapse;
+		width:100%;
+	}
+
+	#datatable thead th{
+		color:#FFF;
+		background-color:#a88d8d;
+		white-space:nowrap;
+	}
+
+	#datatable tbody th
+	{
+		padding-left:30px;
+		background-color:#eee;
+		font-weight:bold;
+		vertical-align:top;
+	}
+	
+	#datatable tr{
+		border-top:1px dotted #CCC;
+		}
+		
+	#datatable tr:first-child{
+		border-top:none;
+		}
+		
+	#datatable td, #datatable th{
+		padding:3px 10px 3px 6px;
+		}
+		
+	#datatable th{
+		text-align:left;
+		}
+		
+	#datatable tfoot td{
+		padding-top:15px;
+		border:none !important;
+		text-align:center;
+		}
+		
+	#datatable caption{
+		font-size:14px;
+		font-weight:bold;
+		border-bottom:1px solid #AAA;
+		padding:3px;
+		}
+		
+/*
+------------------------------------------------------------------------------------------------
+-- SPECIAL
+------------------------------------------------------------------------------------------------
+*/
+
+	/* titles */
+
+		#datatable tr.row-group {
+			border-top:none !important;
+		}
+
+		#datatable .row-group td {
+			text-align:left;
+			border-bottom: 1px solid #000;
+			font-weight:bold;
+			font-variant:small-caps;
+			height:50px; 
+			vertical-align:bottom;
+			color:#C03;
+		}
+		
+	/* zebra striping */
+
+		#datatable .zebra th
+		{
+			padding-left:30px;
+			background-color:#ddd !important;
+		}
+		
+		#datatable .zebra td{
+			background-color:#EEEEEE;
+		}
+		
+	/* formatting */
+
+		#datatable .red{
+			color:red !important;
+			}
+			
+		#datatable .green{
+			color:green;
+			}
+			
+		#datatable .blue{
+			color:blue;
+			}
+			
+		#datatable .joined{
+			border-left:1px solid #000;
+			border-right:1px solid #000;
+			background:#EEE;
+		}
+		
+	/* form elements */
+		
+		#datatable table input, table select{
+			width:100%;
+			}
+			
+/*
+------------------------------------------------------------------------------------------------
+-- tablesorter (jquery plugin)
+------------------------------------------------------------------------------------------------
+*/
+
+/* sorting arrows. */
+
+table.tablesorter thead tr .header {
+	background-image: url(../img/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+	padding-right: 24px !important;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(../img/asc.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(../img/desc.gif);
+}
+table.tablesorter tbody tr.odd td {
+	background-color:#F0F0F6;
+}
+
+/* The wysiwyg editor throws in paragraph tags-- this is to prevent them from padding the height of the cells. */
+
+table.tablesorter tbody tr td p:first-child {
+	margin-top: 0px ;
+	padding-top: 0px ;
+}
+
+table.tablesorter tbody tr td p:last-child {
+	margin-bottom: 0px ;
+	padding-bottom: 0px ;
+}
+
+/*
+------------------------------------------------------------------------------------------------
+-- tablesorter paging 
+------------------------------------------------------------------------------------------------
+*/
+
+#pager, 
+.pager 
+{
+	border-top: 2px solid #a88d8d ;
+	margin-top: 4px ;
+}
+
+#pager form a, 
+.pager form a 
+{
+	margin: 0px 2px ;
+	font-weight: bold ;
+	cursor: pointer ;
+}
+
+#pager form .pagedisplay, 
+.pager form .pagedisplay 
+{
+	width: 64px ;
+	text-align: center ;
+	margin:0px 12px ;
+}
+
+#pager form .pagesize, 
+.pager form .pagesize 
+{}
+
+/*
+------------------------------------------------------------------------------------------------
+-- table filter
+------------------------------------------------------------------------------------------------
+*/
+
+form#filter {
+	margin: 4px 0px ;
+}
+
+form#filter select[name="filter_column"] {
+	margin-left: 12px ;
+}
+
+form#filter .filter_submit {
+	margin-left: 12px ;
+}

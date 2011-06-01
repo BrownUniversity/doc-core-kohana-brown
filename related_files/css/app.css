@@ -1,0 +1,48 @@
+#newObjectLink {
+	margin: 4px 0px ;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 4px;
+    padding-top: 0px;
+}
+
+#newObjectLink a {
+	border: 1px solid blue ;
+	padding: 4px ;
+	margin: 2px 0px ;
+}
+
+/* related items (from 1:n or n:n data relations) */
+
+h3.relatedHeader {
+	clear: both ;
+	border-bottom: 1px solid black ;
+}
+
+div.related-item {
+	margin:2px 0px ;
+	clear:both ;
+}
+
+div.related-item span.related-item-label {
+	margin-right: 8px ;
+}
+
+div.related-item span.related-item-link {
+	float: right ;
+}
+
+.deleted {
+    text-decoration: line-through;
+}
+
+/* Miscellaneous styles */
+ul.bulletless {
+	margin: 0px ;
+	padding: 0px ;
+
+}
+
+ul.bulletless li {
+	list-style-type: none ;
+}
