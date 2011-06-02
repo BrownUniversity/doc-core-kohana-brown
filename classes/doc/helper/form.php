@@ -13,6 +13,7 @@ class DOC_Helper_Form {
 	const DATEPICKER_CLASS = 'datepicker' ;
 	const MERIDIAN_FORMAT = 'A' ;
 	const DATETIME_FORMAT = 'Y-m-d H:i:s' ;
+	const DATETIME_FORMAT_USA = 'm/d/Y h:i A' ;
 	const DATE_FORMAT_USA = 'm/d/Y' ;
 	const DATE_FORMAT_DB = 'Y-m-d' ;
 	const KEEP_NULL = 'keep-null' ;
@@ -150,12 +151,22 @@ class DOC_Helper_Form {
 	 * @param array $selected
 	 * @return array 
 	 */
-	public static function checkbox_group( $checkbox_name, $checkbox_array, $selected ) {
+	public static function checkbox_group( $checkbox_name, $checkbox_array, $selected, $mode = self::MODE_EDITABLE ) {
 		$_output = array() ;
 		$checkbox_group_name = $checkbox_name . '[]' ;
 		foreach( $checkbox_array as $key => $value ) {
 			$unique_id = "{$checkbox_name}_{$key}" ;
-			$cb = Form::checkbox($checkbox_group_name, $key, in_array($key, $selected), array('id' => $unique_id)) ;
+			if( $mode == self::MODE_EDITABLE ) {
+				$cb = Form::checkbox($checkbox_group_name, $key, in_array($key, $selected), array('id' => $unique_id)) ;
+			} else {
+				if( in_array( $key, $selected )) {
+					$cb = "<span id='{$unique_id}' class='checkmark-checked'>&nbsp;</span>" ;
+				} else {
+					$cb = "<span id='{$unique_id}' class='checkmark-unchecked'>&nbsp;</span>" ;
+				}
+				
+			}
+			
 			$cb .= "<label for='{$unique_id}'>{$value}</label>" ;
 			$_output[$key] = $cb ;
 		}
@@ -163,6 +174,12 @@ class DOC_Helper_Form {
 		return $_output ;
 	}
 	
-	
+	public static function input( $name, $value, $attributes = NULL, $mode = self::MODE_EDITABLE ) {
+		if( $mode == self::MODE_EDITABLE ) {
+			return Form::input($name, $value, $attributes) ;
+		}
+		return $value ;
+	}
+
 }
 ?>

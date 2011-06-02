@@ -29,7 +29,6 @@ class DOC_Util_Table extends Table {
 	 * @param array $data
 	 */
 	public function __construct($data, $attributes = NULL) {
-		
 		if( !empty( $attributes )) {
 			$this->set_attributes( $attributes ) ;
 		}
@@ -205,7 +204,11 @@ class DOC_Util_Table extends Table {
 	 * @return Td 
 	 */
 	static function format_dollars_callback($value, $index, $key, $body_data, $user_data, $row_data, $column_data, $table) {
-		return new Td( '$' . number_format( self::static_generate_content($body_data[$index], $key), 2), 'dollars') ;
+		$cell_value = self::static_generate_content($body_data[$index], $key) ;
+		if( $cell_value != NULL && $cell_value != '' ) {
+			$cell_value = '$' . number_format($cell_value, 2) ;
+		}
+		return new Td( $cell_value, 'dollars') ;
 	}
 
 	/**
@@ -222,7 +225,11 @@ class DOC_Util_Table extends Table {
 	 * @return Td 
 	 */
 	static function format_xls_dollars_callback($value, $index, $key, $body_data, $user_data, $row_data, $column_data, $table) {
-		return new Td( number_format(self::static_generate_content($body_data[$index], $key), 2), 'dollars' ) ;
+		$cell_value = self::static_generate_content($body_data[$index], $key) ;
+		if( $cell_value != NULL && $cell_value != '' ) {
+			$cell_value = number_format($cell_value, 2) ;
+		}
+		return new Td( $cell_value, 'dollars' ) ;
 	}
 
 	/**
