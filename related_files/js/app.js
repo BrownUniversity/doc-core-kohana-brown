@@ -93,11 +93,15 @@ $(document).ready(function() {
 
 	/*
 	 * Handle the "Check All" checkbox...this assumes only one on a given page.
+	 * 
+	 * Note the use of $(selector).prop() instead of $(selector).attr() below.
+	 * This is for jQuery 1.6 and above. Versions of jQuery earlier than that will
+	 * need to use $(selector).attr() instead.
 	 */
 
 	 $('#check_all').bind('click', function(){
 		 var checkbox_name = $(this).attr('name').replace(/^_/,'') + '[]' ;
-		 $('input[name="' + checkbox_name + '"]').attr('checked', $(this).attr('checked')) ;
+		 $('input[name="' + checkbox_name + '"]').prop('checked', $(this).prop('checked')) ;
 	 }) ;
 
 
