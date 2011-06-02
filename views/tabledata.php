@@ -40,6 +40,10 @@ if( count( $table_data ) > 0 ) {
 			$table->set_column_filter( $column_filter ) ;
 		}
 
+		if( isset( $column_header_classes )) {
+			$table->set_header_classes( $column_header_classes ) ;
+		}
+		
 		if( isset( $format_specs )) {
 			$table->set_formats($format_specs) ;
 		}
@@ -62,6 +66,8 @@ if( count( $table_data ) > 0 ) {
 		</div>
 <?php
 	print("</div>") ;
+} else {
+	print("<div class='nodata'>No results found.</div>") ;
 }
 
 ?>
