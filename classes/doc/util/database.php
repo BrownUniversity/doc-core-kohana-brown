@@ -28,11 +28,16 @@ class DOC_Util_Database {
 		$new_ids = array() ;
 
 		foreach( $current_collection as $current_obj) {
-			if( !in_array( $current_obj->$field_name, $posted_ids)) {
-				$current_obj->delete() ;
+			if( is_array( $posted_ids )) {
+				if( !in_array( $current_obj->$field_name, $posted_ids)) {
+					$current_obj->delete() ;
+				} else {
+					$current_ids[] = $current_obj->$field_name ;
+				}
 			} else {
-				$current_ids[] = $current_obj->$field_name ;
+				$current_obj->delete() ;
 			}
+				
 		}
 		if( is_array( $posted_ids )) {
 			$new_ids = array_diff( $posted_ids, $current_ids ) ;
