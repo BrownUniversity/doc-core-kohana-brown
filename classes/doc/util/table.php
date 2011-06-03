@@ -158,20 +158,31 @@ class DOC_Util_Table extends Table {
 
 		$actions_array = array() ;
 		foreach( $table->callbackData['actions'] as $action_spec ) {
+			$test_result = TRUE ;
+			$add_action = TRUE ;
+
 			$action_str = "<a href='".Kohana::$base_url . $action_spec['url_fragment'] . $id . "'" ;
 			if( isset( $action_spec[ 'class' ]) && !empty( $action_spec[ 'class' ])) {
 				$action_str .= " class='{$action_spec['class']}'" ;
 			}
 			$action_str .= ">{$action_spec['name']}</a>" ;
 			
+			
 			if( isset( $action_spec[ 'conditional' ])) {
 				$test = "return " . self::parse_string( $action_spec[ 'conditional' ], $body_data[ $index ]) . ';' ;
-				if( eval( $test ) == FALSE ) {
+				$test_result = eval( $test ) ;
+				if( $test_result == FALSE ) {
 					$action_str = strip_tags($action_str) ;
 				}
 			}
 			
-			$actions_array[] = $action_str ;
+			if( !$test_result && (isset( $action_spec[ 'onfail' ]) && $action_spec[ 'onfail' ] == 'hide' )) {
+				$add_action = FALSE ;
+			}
+
+			if( $add_action ) {
+				$actions_array[] = $action_str ;
+			}
 		}
 
 		return new Td( implode( '&nbsp;|&nbsp;', $actions_array ), self::ACTION_COL) ;
