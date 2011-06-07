@@ -216,8 +216,8 @@ class DOC_Util_Table extends Table {
 				$content[] = $item->$property_name ;
 			}
 		} else {
-			if( isset( $table->callbackData['listSpecs'][$key]['ifEmpty'])) {
-				$content[] = '<em>'.$table->callbackData['listSpecs'][$key]['ifEmpty'].'</em>' ;
+			if( isset( $table->callbackData['listSpecs'][$key]['if_empty'])) {
+				$content[] = '<em>'.$table->callbackData['listSpecs'][$key]['if_empty'].'</em>' ;
 			}
 			
 		}
