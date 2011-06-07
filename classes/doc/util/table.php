@@ -69,7 +69,7 @@ class DOC_Util_Table extends Table {
 	 */
 	public function add_actions_column( $action_specs ) {
 		$this->add_column( self::ACTION_COL ) ;
-		$this->set_callback('Util_Table::actions_callback', 'column', self::ACTION_COL ) ;
+		$this->set_callback(__CLASS__.'::actions_callback', 'column', self::ACTION_COL ) ;
 
 		if( !array_key_exists( self::ACTION_COL, $this->headerClasses )) {
 			$this->headerClasses[ self::ACTION_COL ] = '{sorter: false}' ;
@@ -88,41 +88,46 @@ class DOC_Util_Table extends Table {
 		foreach( $format_specs as $spec ) {
 			switch ($spec['format']) {
 				case 'dollar':
-					$this->set_callback( 'Util_Table::format_dollars_callback', 'column', $spec['key']) ;
+					$this->set_callback( __CLASS__.'::format_dollars_callback', 'column', $spec['key']) ;
 					break;
 
 				case 'xls_dollar':
-					$this->set_callback( 'Util_Table::format_xls_dollars_callback', 'column', $spec['key']) ;
+					$this->set_callback( __CLASS__.'::format_xls_dollars_callback', 'column', $spec['key']) ;
 					break;
 				
 				case 'datetime':
-					$this->set_callback( 'Util_Table::format_datetime_callback', 'column', $spec['key']) ;
+					$this->set_callback( __CLASS__.'::format_datetime_callback', 'column', $spec['key']) ;
 					break ;
 
 				case 'xls_datetime':
-					$this->set_callback( 'Util_Table::format_xls_datetime_callback', 'column', $spec['key']) ;
+					$this->set_callback( __CLASS__.'::format_xls_datetime_callback', 'column', $spec['key']) ;
 					break ;	
 					
 				case 'date':
-					$this->set_callback( 'Util_Table::format_date_callback', 'column', $spec['key']) ;
+					$this->set_callback( __CLASS__.'::format_date_callback', 'column', $spec['key']) ;
 					break ;
 					
 				case 'lookup':
-					$this->set_callback( 'Util_Table::format_lookup_callback', 'column', $spec['key']) ;
+					$this->set_callback( __CLASS__.'::format_lookup_callback', 'column', $spec['key']) ;
 					$this->callbackData['valueLookup'][ $spec[ 'key' ]] = $spec[ 'lookup' ] ;
 					break ;
 				
+				case 'list':
+					$this->set_callback( __CLASS__.'::list_callback', 'column', $spec['key']) ;
+					$this->callbackData['listSpecs'][ $spec[ 'key' ]] = $spec[ 'listSpecs' ] ;
+					break ;
+					
 				case 'truncate':
-					$this->set_callback( 'Util_Table::format_truncate_callback', 'column', $spec[ 'key' ]) ;
+					$this->set_callback( __CLASS__.'::format_truncate_callback', 'column', $spec[ 'key' ]) ;
 					break ;
 					
 				case 'link':
-					$this->set_callback( 'Util_Table::format_link_callback', 'column', $spec[ 'key' ]) ;
+					$this->set_callback( __CLASS__.'::format_link_callback', 'column', $spec[ 'key' ]) ;
 					$this->callbackData['linkLookup'][ $spec[ 'key' ]] = $spec[ 'link' ] ;
 					break ;
 					
 				case 'custom':
-					$this->set_callback( 'Util_Table::custom_output_callback', 'column', $spec['key']) ;
+					$this->set_callback( __CLASS__.'::custom_output_callback', 'column', $spec['key']) ;
 					$this->callbackData['customColumns'][ $spec[ 'key' ]] = $spec[ 'output' ] ;
 					break ;
 				
@@ -189,6 +194,42 @@ class DOC_Util_Table extends Table {
 
 	}
 
+	static function list_callback($value, $index, $key, $body_data, $user_data, $row_data, $column_data, $table) {
+		$content = array() ;
+		$root_key = $key ;
+		if( isset( $table->callbackData['listSpecs'][$key]['root'] )) {
+			$root_key = $table->callbackData['listSpecs'][$key]['root'] ;
+		} 	
+		
+		if( empty( $root_key )) {
+			$root = $body_data[$index] ;
+		} else {
+			$root = self::static_generate_content($body_data[$index], $root_key) ;
+		}	
+		
+		$relation_name = $table->callbackData['listSpecs'][ $key ][ 'relation_name' ] ;
+		$property_name = $table->callbackData['listSpecs'][ $key ][ 'property_name' ] ;
+		
+		$data = $root->$relation_name->find_all() ;
+		if( $data->count() > 0 ) {
+			foreach( $data as $item ) {
+				$content[] = $item->$property_name ;
+			}
+		} else {
+			if( isset( $table->callbackData['listSpecs'][$key]['ifEmpty'])) {
+				$content[] = '<em>'.$table->callbackData['listSpecs'][$key]['ifEmpty'].'</em>' ;
+			}
+			
+		}
+		
+		$separator = '<br />' ;
+		if( isset( $table->callbackData['listSpecs'][ $key ][ 'separator' ])) {
+			$separator = $table->callbackData['listSpecs'][ $key ][ 'separator' ] ;
+		}
+		
+		return implode( $separator, $content ) ;
+	}
+	
 	static function format_link_callback($value, $index, $key, $body_data, $user_data, $row_data, $column_data, $table) {
 		$content = '' ;
 		$url = self::parse_string($table->callbackData['linkLookup'][ $key ][ 'url' ], $body_data[ $index ]) ;
