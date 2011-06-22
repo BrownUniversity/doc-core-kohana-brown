@@ -76,7 +76,7 @@ class DOC_Valid extends Kohana_Valid {
 			$value = strip_tags( $value ) ;
 			return !empty( $value ) ;
 		}
-		return false ;
+		return FALSE ;
 		
 	}
 }
