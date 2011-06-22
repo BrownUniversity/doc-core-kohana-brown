@@ -472,9 +472,11 @@ class DOC_Controller_REST extends Controller {
 	 */
 	final private function validate_ip()
 	{
-		$source_ip = $_SERVER['REMOTE_ADDR'];
-		if (array_search($source_ip, $this->valid_ips) === FALSE) {
-			$this->send_response(401);
+		if( count( $this->valid_ips ) > 0 ) {
+			$source_ip = $_SERVER['REMOTE_ADDR'];
+			if (array_search($source_ip, $this->valid_ips) === FALSE) {
+				$this->send_response(401);
+			}			
 		}
 	}
 } // End Rest Controller
