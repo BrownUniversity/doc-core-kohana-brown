@@ -174,11 +174,25 @@ class DOC_Helper_Form {
 		return $_output ;
 	}
 	
-	public static function input( $name, $value, $attributes = NULL, $mode = self::MODE_EDITABLE ) {
+	public static function input( $name, $value = NULL, $attributes = NULL, $mode = self::MODE_EDITABLE ) {
 		if( $mode == self::MODE_EDITABLE ) {
 			return Form::input($name, $value, $attributes) ;
 		}
 		return $value ;
+	}
+	
+	public static function select( $name, $options = NULL, $selected = NULL, $attributes = NULL, $mode = self::MODE_EDITABLE ) {
+		if( $mode == self::MODE_EDITABLE ) {
+			return Form::select($name, $options, $selected, $attributes) ;
+		}
+		return $options[ $selected ] ;
+	}
+	
+	public static function textarea($name, $body = '', $attributes = NULL, $double_encode = TRUE, $mode = self::MODE_EDITABLE) {
+		if( $mode == self::MODE_EDITABLE ) {
+			return Form::textarea($name, $body, $attributes, $double_encode) ;
+		}
+		return $body ;
 	}
 
 }
