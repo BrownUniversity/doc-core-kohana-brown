@@ -142,7 +142,9 @@ class DOC_Helper_Impersonate {
         $session = self::session();
         
         if ($session->get(Kohana::config('impersonate.return_link_key')) === NULL) {
-            if ($link === NULL) $link = url::base();
+            if ($link === NULL) {
+				$link = url::base();
+			}
             $session->set(Kohana::config('impersonate.return_link_key'), $link);
         }
     }

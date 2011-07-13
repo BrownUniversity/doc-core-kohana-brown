@@ -50,15 +50,15 @@ class DOC_ORM extends Kohana_ORM {
 		return $_output ;
 	}
 	
+
 	/**
 	 * Makes up for what appears to be a shortcoming in Kohana where you cannot
 	 * clear out a set of related data unless it is a "has many through" relation.
 	 * 
-	 * @param ORM $obj
-	 * @param string $relation 
-	 */
-	static function remove_all( $obj, $relation ) {
-		$related_data = $obj->$relation->find_all() ;
+	 * @param string $relation
+	 */	
+	public function remove_all( $relation ) {
+		$related_data = $this->$relation->find_all() ;
 		foreach( $related_data as $item ) {
 			$item->delete() ;
 		}

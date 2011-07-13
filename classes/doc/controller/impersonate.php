@@ -45,7 +45,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
             $person = $results[$array_key];
             DOC_Helper_Impersonate::assume(
                 $person[Kohana::config('impersonate.ldap_key')]
-            );
+            );			
             $this->request->redirect(DOC_Helper_Impersonate::get_return_link());
         }
     }
