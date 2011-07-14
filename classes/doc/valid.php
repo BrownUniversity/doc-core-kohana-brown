@@ -76,8 +76,17 @@ class DOC_Valid extends Kohana_Valid {
 			$value = strip_tags( $value ) ;
 			return !empty( $value ) ;
 		}
-		return FALSE ;
-		
+		return FALSE ;	
+	}
+	
+	/**
+	 * Verify that the value is a properly formatted UUID.
+	 * 
+	 * @param type $value 
+	 * @return boolean
+	 */
+	public static function uuid( $value ) {
+		return preg_match( '/^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$/', $value ) ;
 	}
 }
 
