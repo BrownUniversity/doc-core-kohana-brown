@@ -126,6 +126,10 @@ class DOC_Util_Table extends Table {
 					$this->callbackData['linkLookup'][ $spec[ 'key' ]] = $spec[ 'link' ] ;
 					break ;
 					
+				case 'phone':
+					$this->set_callback( __CLASS__.'::format_phone_callback', 'column', $spec[ 'key' ]) ;
+					break ;
+					
 				case 'custom':
 					$this->set_callback( __CLASS__.'::custom_output_callback', 'column', $spec['key']) ;
 					$this->callbackData['customColumns'][ $spec[ 'key' ]] = $spec[ 'output' ] ;
@@ -241,6 +245,62 @@ class DOC_Util_Table extends Table {
 		
 		return new Td( $content ) ;
 	}
+
+	/**
+	 * Apply US telephone formatting.
+	 * 
+	 * @param type $value
+	 * @param type $index
+	 * @param type $key
+	 * @param type $body_data
+	 * @param type $user_data
+	 * @param type $row_data
+	 * @param type $column_data
+	 * @param type $table
+	 * @return Td 
+	 */
+	static function format_phone_callback($value, $index, $key, $body_data, $user_data, $row_data, $column_data, $table) {
+		// TODO: this duplicates code I've put in a "Util_Massage" class in the SOURCE app. I'm putting the same code
+		// here to avoid unnecessary dependencies, but it may be desirable to pull that code into the main DOC library at some point.
+		$cell_value = self::static_generate_content($body_data[$index], $key) ;
+		if( $cell_value != NULL && $cell_value != '' ) {
+			$pattern = '' ;
+			$replacement = '' ;
+			switch (strlen($cell_value)) {
+				case 5:
+					$pattern = '/(\d{1})(\d{4})/' ;
+					$replacement = '$1-$2' ;
+					break;
+
+				case 7:
+					$pattern = '/(\d{3})(\d{4})/' ;
+					$replacement = '$1-$2' ;
+					break;
+
+				case 10:
+					$pattern = '/(\d{3})(\d{3})(\d{4})/' ;
+					$replacement = '($1) $2-$3' ;
+					break;
+
+				case 11:
+					$pattern = '/(\d{1})(\d{3})(\d{3})(\d{4})/' ;
+					$replacement = '$1 ($2) $3-$4' ;
+					break;
+
+				default:
+					break;
+			}
+
+			if( !empty( $pattern )) {
+				$cell_value = preg_replace($pattern, $replacement, $cell_value) ;
+			}
+
+		}
+		return new Td( $cell_value ) ;
+	}
+
+
+	
 	
 	/**
 	 * Apply US dollar formatting.
