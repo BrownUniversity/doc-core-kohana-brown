@@ -10,7 +10,7 @@
  * @author jorrill
  */
 class DOC_Util_Arraytoul {
-    public static function create($var, $include_outer = TRUE) {
+    public static function create($var, $include_outer = TRUE, $suppress_duplicates = FALSE) {
 		$_output = '' ;
 		if( !is_array( $var )) {
 			$var = array($var) ;
@@ -20,6 +20,10 @@ class DOC_Util_Arraytoul {
 			$_output .= '<ul>' ;
 		}
 
+		if( $suppress_duplicates ) {
+			$var = array_unique( $var ) ;
+		}
+		
 		foreach( $var as $v) {
 			if( is_array( $v )) {
 				$_output .= self::create($v, FALSE) ;
