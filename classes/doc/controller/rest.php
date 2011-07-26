@@ -397,7 +397,7 @@ class DOC_Controller_REST extends Controller {
 		);
 	}
 	
-	protected function get_payload( $data ) {
+	protected function get_payload( $data, $options = array() ) {
 		$view_root = 'rest/' ;
 		$mime_path = $this->definitions[ $this->accept_type ] ;
 		
@@ -415,6 +415,7 @@ class DOC_Controller_REST extends Controller {
 
 		$view = View::factory( $view_file ) ;
 		$view->data = $data ;
+		$view->options = $options ;
 		return $view->render() ;
 		
 	}
