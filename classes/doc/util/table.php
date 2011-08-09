@@ -134,6 +134,11 @@ class DOC_Util_Table extends Table {
 					$this->set_callback( __CLASS__.'::custom_output_callback', 'column', $spec['key']) ;
 					$this->callbackData['customColumns'][ $spec[ 'key' ]] = $spec[ 'output' ] ;
 					break ;
+					
+				case 'conditional':
+					$this->set_callback( __CLASS__.'::conditional_output_callback', 'column', $spec['key']) ;
+					$this->callbackData['conditionalSpecs'][ $spec[ 'key' ]] = $spec[ 'conditionalSpecs' ] ;
+					break ;
 				
 				default:
 					break;
@@ -473,6 +478,30 @@ class DOC_Util_Table extends Table {
 	 */
 	static function custom_output_callback($value, $index, $key, $body_data, $user_data, $row_data, $column_data, $table) {
 		return new Td( self::parse_string($table->callbackData['customColumns'][ $key ], $body_data[ $index ])) ;
+	}
+	
+	/**
+	 * A callback to implement conditional content. Relies on the conditionalSpecs having an evaluatable
+	 * test, and a true/false pair for output.
+	 * 
+	 * @param type $value
+	 * @param type $index
+	 * @param type $key
+	 * @param type $body_data
+	 * @param type $user_data
+	 * @param type $row_data
+	 * @param type $column_data
+	 * @param type $table
+	 * @return Td 
+	 */
+	static function conditional_output_callback($value, $index, $key, $body_data, $user_data, $row_data, $column_data, $table) {
+		$_output = $table->callbackData[ 'conditionalSpecs' ][ $key ][ 'true' ] ;
+		$test = "return " . self::parse_string( $table->callbackData[ 'conditionalSpecs' ][ $key ][ 'test' ], $body_data[ $index ]) . ';' ;
+		$test_result = eval( $test ) ;
+		if( $test_result == FALSE ) {
+			$_output = $table->callbackData[ 'conditionalSpecs' ][ $key ][ 'false' ] ;
+		}
+		return new Td( $_output ) ;
 	}
 	
 	static function parse_string( $source_string, $row_data ) {
