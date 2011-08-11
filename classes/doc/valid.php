@@ -88,6 +88,29 @@ class DOC_Valid extends Kohana_Valid {
 	public static function uuid( $value ) {
 		return preg_match( '/^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$/', $value ) ;
 	}
+	
+	/**
+	 * Test an array to verify that we have at least one non-zero element. This
+	 * is intended primarily for use with relations where we are processing
+	 * incoming arrays to be added to an object via the ORM add() method.
+	 * 
+	 * @param array $val
+	 * @return boolean 
+	 */
+	static function at_least_one( $val ) {
+		$_output = FALSE ;
+		
+		if( !empty( $val ) && is_array( $val ) && count( $val ) > 0 ) {
+			foreach( $val as $item ) {
+				if( !empty( $item )) {
+					$_output = TRUE ;
+					break ;
+				}
+			}
+		}
+		
+		return $_output ;
+	}
 }
 
 ?>
