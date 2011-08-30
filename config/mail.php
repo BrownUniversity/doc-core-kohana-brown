@@ -22,5 +22,6 @@
 //	'reply-to' => 'email@example.edu'
 //) ;
 
+return array() ;
 
 ?>
