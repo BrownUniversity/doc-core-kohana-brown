@@ -108,7 +108,7 @@ class DOC_Valid extends Kohana_Valid {
 				}
 			}
 		}
-		
+
 		return $_output ;
 	}
 }

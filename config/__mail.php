@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.') ;
 
 /*
- * This should be implemented locally. Code below is for reference only.
+ * This should be implemented locally as "mail.php". Code below is for reference only.
  */
 
 
