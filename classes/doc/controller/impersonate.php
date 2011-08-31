@@ -44,7 +44,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
             $results = DOC_Helper_Impersonate::get_search_results();
             $person = $results[$array_key];
             DOC_Helper_Impersonate::assume(
-                $person[Kohana::config('impersonate.ldap_key')]
+                $person[Kohana::$config->load('impersonate.ldap_key')]
             );			
             $this->request->redirect(DOC_Helper_Impersonate::get_return_link());
         }
@@ -78,7 +78,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
                 $ldap = new Util_Ldap();
                 $results = $ldap->search_people(
                 	$this->request->post('search_string'),
-      				Kohana::config('impersonate.search_limit'),          	
+      				Kohana::$config->load('impersonate.search_limit'),          	
                 	$affiliation
                 );
                 

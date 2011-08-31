@@ -94,7 +94,7 @@ class DOC_Util_Filter {
 		$filter_key = self::get_filter_key() ;
 		$filter_specs = NULL ;
 		$session = Session::instance( 'database' ) ;
-		$search_filters = Kohana::config('searchfilters') ;
+		$search_filters = Kohana::$config->load('searchfilters') ;
 
 		// check for a reset...
 		if( isset( $_POST[ 'setFilter' ]) && $_POST[ 'setFilter' ] == 'Clear' ) {

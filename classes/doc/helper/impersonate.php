@@ -20,7 +20,7 @@ class DOC_Helper_Impersonate {
     public static function assume($id)
     {
         $session = self::session();
-        $session->set(Kohana::config('impersonate.session_key'), $id);
+        $session->set(Kohana::$config->load('impersonate.session_key'), $id);
     }
     
     /**
@@ -31,7 +31,7 @@ class DOC_Helper_Impersonate {
     public static function cancel_link($message = 'Cancel Impersonation')
     {
     	$session = self::session();
-    	$active = $session->get(Kohana::config('impersonate.session_key'));
+    	$active = $session->get(Kohana::$config->load('impersonate.session_key'));
     	if ($active === NULL) {
     		return NULL;
     	} else {
@@ -48,10 +48,10 @@ class DOC_Helper_Impersonate {
 			return TRUE;
 		}
 		
-		$method = Kohana::config('impersonate.logged_in_method');
-		$model = Kohana::config('impersonate.user_model');
-		$attribute = Kohana::config('impersonate.permissions_property');
-		$values = Kohana::config('impersonate.permissions_values');
+		$method = Kohana::$config->load('impersonate.logged_in_method');
+		$model = Kohana::$config->load('impersonate.user_model');
+		$attribute = Kohana::$config->load('impersonate.permissions_property');
+		$values = Kohana::$config->load('impersonate.permissions_values');
 		$user = eval("return Model_{$model}::{$method}();");
 		if (array_search($user->$attribute, $values) !== FALSE) {
 			return TRUE;
@@ -66,8 +66,8 @@ class DOC_Helper_Impersonate {
     public static function clear()
     {
         $session = self::session();
-        $session->delete(Kohana::config('impersonate.session_key'));
-        $session->delete(Kohana::config('impersonate.return_link_key'));
+        $session->delete(Kohana::$config->load('impersonate.session_key'));
+        $session->delete(Kohana::$config->load('impersonate.return_link_key'));
     }
     
     /**
@@ -76,7 +76,7 @@ class DOC_Helper_Impersonate {
     public static function get_search_results()
     {
         $session = self::session();
-        return $session->get(Kohana::config('impersonate.results_key'));
+        return $session->get(Kohana::$config->load('impersonate.results_key'));
     }
     
     /**
@@ -87,7 +87,7 @@ class DOC_Helper_Impersonate {
     public static function get_return_link()
     {
         $session = self::session();
-        return $session->get(Kohana::config('impersonate.return_link_key'));
+        return $session->get(Kohana::$config->load('impersonate.return_link_key'));
     }
     
     /**
@@ -96,11 +96,11 @@ class DOC_Helper_Impersonate {
     public static function get_user()
     {
         $session = self::session();
-        $id = $session->get(Kohana::config('impersonate.session_key'));
+        $id = $session->get(Kohana::$config->load('impersonate.session_key'));
         
-        $logged_in_method = Kohana::config('impersonate.logged_in_method');
-        $alternate_method = Kohana::config('impersonate.alternate_method');
-        $model = Kohana::config('impersonate.user_model');
+        $logged_in_method = Kohana::$config->load('impersonate.logged_in_method');
+        $alternate_method = Kohana::$config->load('impersonate.alternate_method');
+        $model = Kohana::$config->load('impersonate.user_model');
         $command = NULL;
         if ($id !== NULL) {
             $command = "return Model_{$model}::{$alternate_method}('{$id}');";
@@ -118,7 +118,7 @@ class DOC_Helper_Impersonate {
     public static function is_impersonating()
     {
     	$session = self::session();
-    	$id = $session->get(Kohana::config('impersonate.session_key'));
+    	$id = $session->get(Kohana::$config->load('impersonate.session_key'));
     	return ($id === NULL) ? FALSE : TRUE;
     }
     
@@ -129,7 +129,7 @@ class DOC_Helper_Impersonate {
      */
     public static function session()
     {
-        return Session::instance(Kohana::config('impersonate.session_type'));
+        return Session::instance(Kohana::$config->load('impersonate.session_type'));
     }
     
     /**
@@ -141,11 +141,11 @@ class DOC_Helper_Impersonate {
     {
         $session = self::session();
         
-        if ($session->get(Kohana::config('impersonate.return_link_key')) === NULL) {
+        if ($session->get(Kohana::$config->load('impersonate.return_link_key')) === NULL) {
             if ($link === NULL) {
 				$link = url::base();
 			}
-            $session->set(Kohana::config('impersonate.return_link_key'), $link);
+            $session->set(Kohana::$config->load('impersonate.return_link_key'), $link);
         }
     }
     
@@ -158,7 +158,7 @@ class DOC_Helper_Impersonate {
     {
         $session = self::session();
         
-        $session->set(Kohana::config('impersonate.results_key'), $results);
+        $session->set(Kohana::$config->load('impersonate.results_key'), $results);
     }
     
 } // End Impersonation Helper

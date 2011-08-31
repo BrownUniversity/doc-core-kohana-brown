@@ -25,7 +25,7 @@ class DOC_Util_Mail {
 	public static function send( $subject, $body, $recipients, $cc = NULL ) {
 		$_output = FALSE ;
 		
-		$mail_config = Kohana::config('mail') ;
+		$mail_config = Kohana::$config->load('mail') ;
 		$transport = Swift_MailTransport::newInstance() ;
 		$mailer = Swift_Mailer::newInstance($transport) ;
 
@@ -61,7 +61,7 @@ class DOC_Util_Mail {
 	 */
 //	public static function merge( $message_key, $object ) {
 //		$_output = array('subject' => '', 'body' => '') ;
-//		$mail_config = Kohana::config('mail') ;
+//		$mail_config = Kohana::$config->load('mail') ;
 //		
 //		$_output[ 'subject' ] = $mail_config[ 'templates' ][ $message_key ][ 'subject' ] ;
 //		$_output[ 'body' ] = $mail_config[ 'templates' ][ $message_key ][ 'body' ] ;
