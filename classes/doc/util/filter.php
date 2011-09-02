@@ -254,7 +254,7 @@ class DOC_Util_Filter {
 	public static function get_query_column( $orm_object, $column ) {
 		$columns = $orm_object->list_columns() ;
 		if( isset( $columns[ $column ])) {
-			return $orm_object->table_name() . '.' . $column ;
+			return $orm_object->object_name() . '.' . $column ;
 //			return $column ;
 		}
 		
