@@ -101,7 +101,7 @@ class DOC_ORM extends Kohana_ORM {
 				->from($this->_table_name)
 				->where($this->_primary_key, '!=', $this->pk())
 				->where($property,'=',$value)
-				->execute()
+				->execute($this->_db_group)
 				->get('total') ;
 	}
 	
@@ -129,7 +129,7 @@ class DOC_ORM extends Kohana_ORM {
 					->from($this->_table_name)
 					->where($uniq_prop, '!=', $uniq_prop_val)
 					->where($slug_column, '=', $slug)
-					->execute()
+					->execute($this->_db_group)
 					->get('total') ;
 			
 			$slug_found = $row_count == 0 ;
