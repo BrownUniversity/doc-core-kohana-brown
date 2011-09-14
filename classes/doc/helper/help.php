@@ -10,7 +10,7 @@
  *
  * @author jorrill
  */
-class Helper_Help {
+class DOC_Helper_Help {
 	
 	public static function help() {
 		$request = Request::current() ;
