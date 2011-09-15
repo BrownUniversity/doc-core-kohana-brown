@@ -191,7 +191,7 @@ class DOC_Util_Ldap
         foreach ($ss as $s)
         {
             //Probably overkill.  It *should* be ok to just search displayname.
-            $filters[] = "(|(displayname=*$s*)(brownsisid=$s*))";
+            $filters[] = "(|(displayname=*$s*)(brownsisid=$s*)(brownshortid=$s*)(brownnetid=$s*))";
         }
         
         if ( !is_null($paffil) )
@@ -219,7 +219,7 @@ class DOC_Util_Ldap
             $result['status']['message'] = $e->getMessage();
         }
         
-        //print_r($search_result);
+//        print_r($search_result);
 
         $result['count'] = array_shift($search_result);
         
