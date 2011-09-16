@@ -266,7 +266,8 @@ class DOC_Util_Filter {
 		
 		if( isset( $property_columns[ $column ])) {
 			$child_orm = $orm_object->$property ;
-			return $column ;
+			//return $column ;
+			return "{$property}.{$column}" ;
 		} 
 
 		return 'unknown' ;
