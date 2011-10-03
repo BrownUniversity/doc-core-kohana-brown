@@ -24,3 +24,10 @@
     <?php echo form::submit('btn_submit', 'Cancel') ?>
 </p>
 <?php echo form::close() ?>
+<div id="alert">
+	<div>
+		This will attempt to take you back to the page you were on before
+		accessing the impersonate function. Be sure that the user you want
+		to impersonate has access to that page, or errors may result.
+	</div>
+</div>

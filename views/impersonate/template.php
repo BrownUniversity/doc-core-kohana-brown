@@ -29,7 +29,20 @@ a {
 	-moz-border-radius : 10px;
 	-webkit-border-radius : 10px;
 }
-
+#alert {
+	text-align: center ;
+}
+#alert div {
+	color: red;
+	font-weight: bold;
+	border: 2px solid red;
+	padding: 10px;
+	margin: 20px auto 10px auto;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	width: 240px;
+}
 table {
 	width : 100%;
 }
