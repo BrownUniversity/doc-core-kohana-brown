@@ -36,16 +36,18 @@ class DOC_Controller_Impersonate extends Controller_Template {
      * 
      * @param int $array_key
      */
-    public function action_assume($array_key = NULL)
+    public function action_assume()
     {    
-        if ($array_key === NULL) {
+    	$id = $this->request->param('id') ;
+        if ($id === NULL) {
             $this->request->redirect('impersonate');
         } else {
             $results = DOC_Helper_Impersonate::get_search_results();
-            $person = $results[$array_key];
+            $person = $results[$id];
             DOC_Helper_Impersonate::assume(
                 $person[Kohana::$config->load('impersonate.ldap_key')]
-            );			
+            );
+
             $this->request->redirect(DOC_Helper_Impersonate::get_return_link());
         }
     }
@@ -75,7 +77,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
             	}
             	$affiliation = $this->request->post('affiliation');
             	if ($affiliation == 'any') $affiliation = NULL;
-                $ldap = new Util_Ldap();
+                $ldap = new DOC_Util_Ldap();
                 $results = $ldap->search_people(
                 	$this->request->post('search_string'),
       				Kohana::$config->load('impersonate.search_limit'),          	

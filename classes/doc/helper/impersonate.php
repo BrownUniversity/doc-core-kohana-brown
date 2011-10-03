@@ -20,6 +20,16 @@ class DOC_Helper_Impersonate {
     public static function assume($id)
     {
         $session = self::session();
+        
+        if( $session->get( Kohana::$config->load('impersonate.session_original_user_id')) == NULL ) {
+			$method = Kohana::$config->load('impersonate.logged_in_method');
+			$model = Kohana::$config->load('impersonate.user_model');
+			$attribute = Kohana::$config->load('impersonate.permissions_property');
+			$values = Kohana::$config->load('impersonate.permissions_values');
+			$user = eval("return Model_{$model}::{$method}();");
+        	$session->set(Kohana::$config->load('impersonate.session_original_user_id'),$user->$attribute) ;
+        }        
+        
         $session->set(Kohana::$config->load('impersonate.session_key'), $id);
     }
     
@@ -47,12 +57,13 @@ class DOC_Helper_Impersonate {
 		if (self::is_impersonating()) {
 			return TRUE;
 		}
-		
+
 		$method = Kohana::$config->load('impersonate.logged_in_method');
 		$model = Kohana::$config->load('impersonate.user_model');
 		$attribute = Kohana::$config->load('impersonate.permissions_property');
 		$values = Kohana::$config->load('impersonate.permissions_values');
 		$user = eval("return Model_{$model}::{$method}();");
+		
 		if (array_search($user->$attribute, $values) !== FALSE) {
 			return TRUE;
 		} else {
@@ -61,13 +72,16 @@ class DOC_Helper_Impersonate {
 	}
 	
     /**
-     * Remove impersonation from the session instance.
+     * Remove impersonation from the session instance and restore the original user.
      */
     public static function clear()
     {
         $session = self::session();
         $session->delete(Kohana::$config->load('impersonate.session_key'));
         $session->delete(Kohana::$config->load('impersonate.return_link_key'));
+        $session->set( Kohana::$config->load('impersonate.session_key'),
+        		$session->get( Kohana::$config->load('impersonate.session_original_user_id'))
+        ) ;
     }
     
     /**
@@ -117,9 +131,16 @@ class DOC_Helper_Impersonate {
      */
     public static function is_impersonating()
     {
+    	$_output = FALSE ;
     	$session = self::session();
-    	$id = $session->get(Kohana::$config->load('impersonate.session_key'));
-    	return ($id === NULL) ? FALSE : TRUE;
+    	$current_id = $session->get(Kohana::$config->load('impersonate.session_key'));
+    	$original_id = $session->get(Kohana::$config->load('impersonate.session_original_user_id'));
+    	
+    	if( $current_id != NULL && $original_id != NULL && $current_id != $original_id ) {
+    		$_output = TRUE ;
+		}
+    	
+    	return $_output ;
     }
     
     /**

@@ -219,7 +219,13 @@ class DOC_Util_Table extends Table {
 		$relation_name = $table->callbackData['listSpecs'][ $key ][ 'relation_name' ] ;
 		$property_name = $table->callbackData['listSpecs'][ $key ][ 'property_name' ] ;
 		
-		$data = $root->$relation_name->order_by($property_name)->find_all() ;
+		$order_by = $property_name ;
+		if( isset( $table->callbackData['listSpecs'][$key]['order_by'] )) {
+			$order_by = $table->callbackData['listSpecs'][$key]['order_by'] ;
+		}
+		
+		
+		$data = $root->$relation_name->order_by($order_by)->find_all() ;
 
 		if( $data->count() > 0 ) {
 			foreach( $data as $item ) {
