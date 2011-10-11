@@ -168,13 +168,18 @@ class DOC_Util_Table extends Table {
 	 * @return Td
 	 */
 	static function actions_callback( $value, $index, $key, $body_data, $user_data, $row_data, $column_data, $table ) {
-		$id = $body_data[$index]->id ;
+		$default_id = $body_data[$index]->id ;
 
 		$actions_array = array() ;
 		foreach( $table->callbackData['actions'] as $action_spec ) {
 			$test_result = TRUE ;
 			$add_action = TRUE ;
 
+			$id = $default_id ;
+			if( isset( $action_spec[ 'id_key' ]) && !empty( $action_spec[ 'id_key' ])) {
+				$id = self::static_generate_content($body_data[$index], $action_spec[ 'id_key' ]) ;
+			}
+			
 			$action_str = "<a href='".Kohana::$base_url . $action_spec['url_fragment'] . $id . "'" ;
 			if( isset( $action_spec[ 'class' ]) && !empty( $action_spec[ 'class' ])) {
 				$action_str .= " class='{$action_spec['class']}'" ;

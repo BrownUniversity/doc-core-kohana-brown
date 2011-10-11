@@ -2,6 +2,7 @@
 	<?php
 		$debug_array = array(
 			'Debug' => $debug,
+			'Kohana Request' => Request::current(),
 			'GET' => $_GET,
 			'POST' => $_POST,
 			'COOKIE' => $_COOKIE,
@@ -12,7 +13,7 @@
 			print('<div class="debug-section">') ;
 			print("<div class='debug-section-head'>{$key}</div>") ;
 			print("<div class='debug-section-data'>") ;
-			Util_Debug::dump( $val, FALSE ) ;
+			DOC_Util_Debug::dump( $val, FALSE ) ;
 			print("</div>") ;
 			print("</div>") ;
 		}
