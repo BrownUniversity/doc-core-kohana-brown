@@ -51,6 +51,31 @@ class DOC_Util_Mail {
 	}
 	
 	/**
+	 * Validates a list of email addresses and converts them to an array. If any
+	 * address fail validation, throws an exception.
+	 * 
+	 * @param mixed $address_list String or array containing email addresses
+	 * @return array An array of email addresses.
+	 */
+	public static function validate_addresses( $address_list ) {
+		
+		if( $address_list != NULL ) {
+			if( !is_array( $address_list)) {
+				$address_list = explode( ',', $address_list ) ;
+			}
+
+			foreach( $address_list as $key => $address ) {
+				$address_list[ $key ] = trim( $address ) ;
+				if( !Valid::email($address_list[ $key ])) {
+					// throw an exception
+					throw new Kohana_Exception("There appears to be a problem with the address(es) in the CC field. Be sure if you have multiple addresses that they are separated with a comma, and that each address is correct.") ;
+				}
+			}
+		}
+		return $address_list ;
+	}
+	
+	/**
 	 * Mail merge-- this is highly dependent the individual app's data structure,
 	 * so not actually implemented here. The code is commented out as a reference
 	 * for local implementation.
