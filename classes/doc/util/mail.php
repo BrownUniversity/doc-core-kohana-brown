@@ -58,21 +58,26 @@ class DOC_Util_Mail {
 	 * @return array An array of email addresses.
 	 */
 	public static function validate_addresses( $address_list ) {
-		
-		if( $address_list != NULL ) {
+		$_output = array() ;
+		if( $address_list != NULL && $address_list != '') {
 			if( !is_array( $address_list)) {
 				$address_list = explode( ',', $address_list ) ;
 			}
 
 			foreach( $address_list as $key => $address ) {
-				$address_list[ $key ] = trim( $address ) ;
-				if( !Valid::email($address_list[ $key ])) {
-					// throw an exception
-					throw new Kohana_Exception("There appears to be a problem with the address(es) in the CC field. Be sure if you have multiple addresses that they are separated with a comma, and that each address is correct.") ;
+				$address = trim( $address ) ;
+				if( !empty( $address )) {
+					if( Valid::email( $address )) {
+						$_output[ $key ] = $address ;
+					} else {
+						// throw an exception
+						throw new Kohana_Exception("There appears to be a problem with the address(es) in the CC field. Be sure if you have multiple addresses that they are separated with a comma, and that each address is correct.") ;						
+					}					
 				}
 			}
 		}
-		return $address_list ;
+		
+		return $_output ;
 	}
 	
 	/**
