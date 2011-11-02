@@ -22,7 +22,7 @@ class DOC_Util_Mail {
 	 * @param string $cc
 	 * @return int 
 	 */
-	public static function send( $subject, $body, $recipients, $cc = NULL ) {
+	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL ) {
 		$_output = FALSE ;
 		
 		$mail_config = Kohana::$config->load('mail') ;
@@ -33,17 +33,24 @@ class DOC_Util_Mail {
 			$body .= "\n\nTEST MODE: This message would normally have gone to: " . implode( ', ', $recipients ) ;
 			$recipients = unserialize( $mail_config[ 'test_mode_recipients' ] ) ;
 		}
+		if( $from == NULL ) {
+			$from = $mail_config[ 'from' ] ;
+		}
+		if( $reply_to == NULL ) {
+			$reply_to = $mail_config[ 'reply-to' ] ;
+		}
+		
 		
 		$message = Swift_Message::newInstance($subject, $body) ;
 		$message->setContentType('text/html') ;
 		$message->setTo( $recipients ) ;
-		$message->setFrom( $mail_config[ 'from' ] ) ;
-		$message->setReplyTo( $mail_config[ 'reply-to' ]) ;
+		$message->setFrom( $from ) ;
+		$message->setReplyTo( $reply_to ) ;
 		
 		if( !empty( $cc )) {
 			$message->setCc($cc) ;
 		}
-		
+
 		$_output = $mailer->send($message) ;
 		
 		return $_output ;
