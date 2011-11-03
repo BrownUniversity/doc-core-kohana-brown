@@ -102,7 +102,12 @@ class DOC_Helper_Form {
 	public static function format_date($date_str, $date_format, $null_behavior = self::KEEP_NULL) {
 		$_output = NULL ;
 		if( !empty( $date_str ) || $null_behavior == self::NULL_TO_DEFAULT ) {
-			$_output = Date::formatted_time($date_str, $date_format) ;
+			try {
+				$_output = Date::formatted_time($date_str, $date_format) ;
+			} catch( ErrorException $e ) {
+				$_output = $date_str ;
+				Kohana::$log->add(Log::WARNING, 'Invalid date string: ' . $_output ) ;
+			}
 		}
 		
 		return $_output ;
