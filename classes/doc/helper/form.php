@@ -35,14 +35,14 @@ class DOC_Helper_Form {
 	 * @param string $name_prefix
 	 * @return string 
 	 */
-	public static function datetime_input_fields( $datetime, $name_prefix ) {
+	public static function datetime_input_fields( $datetime, $name_prefix, $minute_increment = self::MINUTE_INCREMENT ) {
 		$hours = array() ;
 		for( $i = 1; $i <= 12; $i++ ) {
 			$hours[ $i ] = sprintf( '%02d', $i ) ;
 		}
 
 		$minutes = array() ;
-		for( $i = 0; $i < 60; $i += self::MINUTE_INCREMENT) {
+		for( $i = 0; $i < 60; $i += $minute_increment) {
 			$minute_formatted = sprintf( '%02d', $i ) ;
 			$minutes[ $minute_formatted ] = $minute_formatted ;
 		}
@@ -59,7 +59,7 @@ class DOC_Helper_Form {
 
 		$_output .= Form::select($name_prefix.self::SUFFIX_HOUR, $hours, Date::formatted_time( $datetime, self::HOUR_FORMAT)) ;
 		$_output .= ':' ;
-		$_output .= Form::select($name_prefix.self::SUFFIX_MINUTE, $minutes, Date::formatted_time( $datetime, self::MINUTE_FORMAT)) ;
+		$_output .= Form::select($name_prefix.self::SUFFIX_MINUTE, $minutes, floor( Date::formatted_time( $datetime, self::MINUTE_FORMAT)/$minute_increment) * $minute_increment ) ;
 		$_output .= Form::select($name_prefix.self::SUFFIX_MERIDIAN, $meridian, Date::formatted_time( $datetime, self::MERIDIAN_FORMAT)) ;
 
 		return $_output ;
