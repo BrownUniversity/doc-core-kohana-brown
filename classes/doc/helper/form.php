@@ -159,6 +159,9 @@ class DOC_Helper_Form {
 	public static function checkbox_group( $checkbox_name, $checkbox_array, $selected, $mode = self::MODE_EDITABLE ) {
 		$_output = array() ;
 		$checkbox_group_name = $checkbox_name . '[]' ;
+		if( !is_array( $selected )) {
+			$selected = array( $selected ) ;
+		}
 		foreach( $checkbox_array as $key => $value ) {
 			$unique_id = "{$checkbox_name}_{$key}" ;
 			if( $mode == self::MODE_EDITABLE ) {
