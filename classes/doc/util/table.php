@@ -140,6 +140,11 @@ class DOC_Util_Table extends Table {
 					$this->callbackData['conditionalSpecs'][ $spec[ 'key' ]] = $spec[ 'conditionalSpecs' ] ;
 					break ;
 				
+				case 'arrayval':
+					$this->set_callback( __CLASS__.'::arrayval_callback', 'column', $spec['key']) ;
+					$this->callbackData['arrayvalSpecs'][ $spec[ 'key' ]] = $spec[ 'arrayvalSpecs' ] ;
+					break ;
+					
 				default:
 					break;
 			}
@@ -513,6 +518,20 @@ class DOC_Util_Table extends Table {
 			$_output = $table->callbackData[ 'conditionalSpecs' ][ $key ][ 'false' ] ;
 		}
 		return new Td( $_output ) ;
+	}
+	
+	static function arrayval_callback($value, $index, $key, $body_data, $user_data, $row_data, $column_data, $table) {
+		$my_array = $table->callbackData[ 'arrayvalSpecs' ][ $key ][ 'array' ] ;
+		$my_key = self::static_generate_content($body_data[$index], $table->callbackData[ 'arrayvalSpecs' ][ $key ][ 'key' ]) ;
+		$value = $my_array[ $my_key ] ;
+		if( isset( $table->callbackData[ 'arrayvalSpecs' ][ $key ][ 'prop' ])) {
+			if( $value != NULL ) {
+				$value = $value[ $table->callbackData[ 'arrayvalSpecs' ][ $key ][ 'prop' ] ] ;
+			}
+		}
+		return new Td( $value ) ;
+				
+				
 	}
 	
 	static function parse_string( $source_string, $row_data ) {
