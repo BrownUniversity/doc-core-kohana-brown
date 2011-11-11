@@ -35,177 +35,184 @@ class DOC_Helper_Table {
 	public function render() {
 		$_output = array() ;
 
-		$_output[] = "<table " . HTML::attributes($this->table_attrs) . ">" ;
+		if( count( $this->data ) > 0 ) {
+			$_output[] = "<table " . HTML::attributes($this->table_attrs) . ">" ;
 
-		/*
-		 * Table Header
-		 */
-
-
-		$_output[] = "<thead>" ;
-		$_output[] = "<tr>" ;
-
-		foreach( $this->column_specs as $col_spec ) {
-			$header_attributes = array() ;
-			if( isset( $col_spec[ 'attributes' ] ) && is_array( $col_spec[ 'attributes' ] )) {
-				$header_attributes = $col_spec[ 'attributes' ] ;
-			}
-
-			if( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
-				$header_attributes['class'] = '{sorter: false}' ;
-			}
-			$_output[] = "<th " . HTML::attributes( $header_attributes ) . ">{$col_spec[ 'heading' ]}</th>" ;
-		}
-
-		$_output[] = "</tr>" ;
-		$_output[] = "</thead>" ;
-
-		/*
-		 * Table Body
-		 */
+			/*
+			 * Table Header
+			 */
 
 
-		$_output[] = "<tbody>" ;
-
-		foreach( $this->data as $object ) {
+			$_output[] = "<thead>" ;
 			$_output[] = "<tr>" ;
+
 			foreach( $this->column_specs as $col_spec ) {
-				$td_attrs = array() ;
-				if( $col_spec[ 'type' ] == self::TYPE_DATA ) {
-					$value = $this->generate_content($object, $col_spec[ 'property' ]) ;
-
-					if( isset( $col_spec[ 'format' ]) && is_array( $col_spec[ 'format' ]) && count( $col_spec[ 'format' ]) > 0 ) {
-						switch ( $col_spec[ 'format' ][ 'type' ]) {
-							case 'date':
-								$value = $this->format_datetime( $value, 'm/j/Y' ) ;
-								$td_attrs[ 'class' ] = 'date' ;
-								break;
-
-							case 'lookup':
-								$value = $this->format_lookup( $value, $col_spec[ 'format' ][ 'lookup' ]) ;
-								break ;
-
-							case 'list':
-
-								$root_key = '' ;
-								if( isset( $col_spec[ 'format' ][ 'root' ])) {
-									$root_key = $col_spec[ 'format' ][ 'root' ] ;
-								}
-								$order_by = '' ;
-								if( isset( $col_spec[ 'format' ][ 'order_by' ])) {
-									$order_by = $col_spec[ 'format' ][ 'order_by' ] ;
-								}
-								$empty_content = '--' ;
-								if( isset( $col_spec[ 'format' ][ 'empty_content' ])) {
-									$order_by = $col_spec[ 'format' ][ 'empty_content' ] ;
-								}
-								$separator = '<br />' ;
-								if( isset( $col_spec[ 'format' ][ 'separator' ])) {
-									$order_by = $col_spec[ 'format' ][ 'separator' ] ;
-								}
-
-								$value = $this->format_list($object, $root_key, $col_spec[ 'format' ][ 'relation_name' ], $col_spec[ 'format' ][ 'property_name' ], $order_by, $empty_content, $separator) ;
-								break ;
-
-							case 'link':
-								$value = $this->format_link( $object, $col_spec[ 'format' ][ 'text' ], $col_spec[ 'format' ][ 'url' ] ) ;
-								break ;
-
-							case 'phone':
-								$value = $this->format_phone( $value ) ;
-								break ;
-
-							case 'dollars':
-								$value = $this->format_dollars($value, TRUE) ;
-								$td_attrs[ 'class' ] = 'dollars' ;
-								break ;
-
-							case 'xls_dollars':
-								$value = $this->format_dollars($value, FALSE) ;
-								$td_attrs[ 'class' ] = 'dollars' ;
-								break ;
-
-							case 'datetime':
-								$value = $this->format_datetime( $value, 'M j, Y g:i A' ) ;
-								$td_attrs[ 'class' ] = 'datetime' ;
-								break ;
-
-							case 'xlsdatetime':
-								$value = $this->format_datetime( $value, 'Y-m-d H:i' ) ;
-								$td_attrs[ 'class' ] = 'datetime' ;
-								break ;
-
-							case 'truncate':
-								$chars = 80 ;
-								if( isset( $col_spec[ 'format' ][ 'chars' ])) {
-									$chars = $col_spec[ 'format' ][ 'chars' ] ;
-								}
-								$value = $this->format_truncate($value, $chars) ;
-								break ;
-
-							case 'custom':
-								$value = $this->parse_string( $object, $col_spec[ 'format' ][ 'output' ] ) ;
-								break ;
-
-
-
-							default:
-								break;
-						}
-					}
-				} elseif ( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
-					$default_id = $object->pk() ;
-
-					$actions = array() ;
-					foreach( $col_spec[ 'actions' ] as $action ) {
-						$test_result = TRUE ;
-						$add_action = TRUE ;
-
-						$id = $default_id ;
-						if( isset( $action[ 'id_key' ]) && !empty( $action[ 'id_key' ])) {
-							$id = $this->generate_content($object, $action[ 'id_key' ]) ;
-						}
-
-						$action_class = '' ;
-						if( isset( $action[ 'class' ]) && !empty( $action[ 'class' ])) {
-							$action_class = $action[ 'class' ] ;
-						}
-						$action_str = "<a href='".Kohana::$base_url."{$action[ 'url_fragment' ]}{$id}' class='{$action_class}'>{$action[ 'name' ]}</a>" ;
-
-						if( isset( $action[ 'conditional' ])) {
-							$test = "return " . $this->parse_string($object, $action[ 'conditional' ]) . ';' ;
-							$test_result = eval( $test ) ;
-
-							if( $test_result == FALSE ) {
-								$action_str = strip_tags($action_str) ;
-							}
-						}
-
-						if( $test_result == FALSE && ( isset( $action[ 'onfail' ]) && $action[ 'onfail' ] == 'hide' )) {
-							$add_action = FALSE ;
-						}
-
-						if( $add_action ) {
-							$actions[] = $action_str ;
-						}
-
-
-
-					}
-					$value = implode( '&nbsp;|&nbsp;', $actions ) ;
-					$td_attrs[ 'class' ] = 'actions' ;
+				$header_attributes = array() ;
+				if( isset( $col_spec[ 'attributes' ] ) && is_array( $col_spec[ 'attributes' ] )) {
+					$header_attributes = $col_spec[ 'attributes' ] ;
 				}
 
-
-
-				$_output[] = "<td ".HTML::attributes( $td_attrs ).">{$value}</td>" ;
+				if( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
+					$header_attributes['class'] = '{sorter: false}' ;
+				}
+				$_output[] = "<th " . HTML::attributes( $header_attributes ) . ">{$col_spec[ 'heading' ]}</th>" ;
 			}
+
 			$_output[] = "</tr>" ;
+			$_output[] = "</thead>" ;
+
+			/*
+			 * Table Body
+			 */
+
+
+			$_output[] = "<tbody>" ;
+
+			foreach( $this->data as $object ) {
+				$_output[] = "<tr>" ;
+				foreach( $this->column_specs as $col_spec ) {
+					$td_attrs = array() ;
+					if( $col_spec[ 'type' ] == self::TYPE_DATA ) {
+						$value = $this->generate_content($object, $col_spec[ 'property' ]) ;
+
+						if( isset( $col_spec[ 'format' ]) && is_array( $col_spec[ 'format' ]) && count( $col_spec[ 'format' ]) > 0 ) {
+							switch ( $col_spec[ 'format' ][ 'type' ]) {
+								case 'date':
+									$value = $this->format_datetime( $value, 'm/j/Y' ) ;
+									$td_attrs[ 'class' ] = 'date' ;
+									break;
+
+								case 'lookup':
+									$value = $this->format_lookup( $value, $col_spec[ 'format' ][ 'lookup' ]) ;
+									break ;
+
+								case 'list':
+
+									$root_key = '' ;
+									if( isset( $col_spec[ 'format' ][ 'root' ])) {
+										$root_key = $col_spec[ 'format' ][ 'root' ] ;
+									}
+									$order_by = '' ;
+									if( isset( $col_spec[ 'format' ][ 'order_by' ])) {
+										$order_by = $col_spec[ 'format' ][ 'order_by' ] ;
+									}
+									$empty_content = '--' ;
+									if( isset( $col_spec[ 'format' ][ 'empty_content' ])) {
+										$order_by = $col_spec[ 'format' ][ 'empty_content' ] ;
+									}
+									$separator = '<br />' ;
+									if( isset( $col_spec[ 'format' ][ 'separator' ])) {
+										$order_by = $col_spec[ 'format' ][ 'separator' ] ;
+									}
+
+									$value = $this->format_list($object, $root_key, $col_spec[ 'format' ][ 'relation_name' ], $col_spec[ 'format' ][ 'property_name' ], $order_by, $empty_content, $separator) ;
+									break ;
+
+								case 'link':
+									$value = $this->format_link( $object, $col_spec[ 'format' ][ 'text' ], $col_spec[ 'format' ][ 'url' ] ) ;
+									break ;
+
+								case 'phone':
+									$value = $this->format_phone( $value ) ;
+									break ;
+
+								case 'dollars':
+									$value = $this->format_dollars($value, TRUE) ;
+									$td_attrs[ 'class' ] = 'dollars' ;
+									break ;
+
+								case 'xls_dollars':
+									$value = $this->format_dollars($value, FALSE) ;
+									$td_attrs[ 'class' ] = 'dollars' ;
+									break ;
+
+								case 'datetime':
+									$value = $this->format_datetime( $value, 'M j, Y g:i A' ) ;
+									$td_attrs[ 'class' ] = 'datetime' ;
+									break ;
+
+								case 'xlsdatetime':
+									$value = $this->format_datetime( $value, 'Y-m-d H:i' ) ;
+									$td_attrs[ 'class' ] = 'datetime' ;
+									break ;
+
+								case 'truncate':
+									$chars = 80 ;
+									if( isset( $col_spec[ 'format' ][ 'chars' ])) {
+										$chars = $col_spec[ 'format' ][ 'chars' ] ;
+									}
+									$value = $this->format_truncate($value, $chars) ;
+									break ;
+
+								case 'custom':
+									$value = $this->parse_string( $object, $col_spec[ 'format' ][ 'output' ] ) ;
+									break ;
+
+
+
+								default:
+									break;
+							}
+						}
+					} elseif ( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
+						$default_id = $object->pk() ;
+
+						$actions = array() ;
+						foreach( $col_spec[ 'actions' ] as $action ) {
+							$test_result = TRUE ;
+							$add_action = TRUE ;
+
+							$id = $default_id ;
+							if( isset( $action[ 'id_key' ]) && !empty( $action[ 'id_key' ])) {
+								$id = $this->generate_content($object, $action[ 'id_key' ]) ;
+							}
+
+							$action_class = '' ;
+							if( isset( $action[ 'class' ]) && !empty( $action[ 'class' ])) {
+								$action_class = $action[ 'class' ] ;
+							}
+							$action_str = "<a href='".Kohana::$base_url."{$action[ 'url_fragment' ]}{$id}' class='{$action_class}'>{$action[ 'name' ]}</a>" ;
+
+							if( isset( $action[ 'conditional' ])) {
+								$test = "return " . $this->parse_string($object, $action[ 'conditional' ]) . ';' ;
+								$test_result = eval( $test ) ;
+
+								if( $test_result == FALSE ) {
+									$action_str = strip_tags($action_str) ;
+								}
+							}
+
+							if( $test_result == FALSE && ( isset( $action[ 'onfail' ]) && $action[ 'onfail' ] == 'hide' )) {
+								$add_action = FALSE ;
+							}
+
+							if( $add_action ) {
+								$actions[] = $action_str ;
+							}
+
+
+
+						}
+						$value = implode( '&nbsp;|&nbsp;', $actions ) ;
+						$td_attrs[ 'class' ] = 'actions' ;
+					}
+
+
+
+					$_output[] = "<td ".HTML::attributes( $td_attrs ).">{$value}</td>" ;
+				}
+				$_output[] = "</tr>" ;
+			}
+
+			$_output[] = "</tbody>" ;
+
+			$_output[] = "</table>" ;
+
+		} else {
+			$_output[] = '<div class="no-data">Nothing to display</div>' ;
 		}
 
-		$_output[] = "</tbody>" ;
 
-		$_output[] = "</table>" ;
 
 		return implode("\n", $_output) ;
 	}
