@@ -47,6 +47,17 @@ class DOC_Helper_Table {
 			$_output[] = "<tr>" ;
 
 			foreach( $this->column_specs as $col_spec ) {
+
+				$property = '' ;
+				if( isset( $col_spec[ 'property' ] )) {
+					$property = $col_spec[ 'property' ] ;
+				}
+
+				$heading = ucwords( $property ) ;
+				if( isset( $col_spec[ 'heading' ])) {
+					$heading = $col_spec[ 'heading' ] ;
+				}
+
 				$header_attributes = array() ;
 				if( isset( $col_spec[ 'attributes' ] ) && is_array( $col_spec[ 'attributes' ] )) {
 					$header_attributes = $col_spec[ 'attributes' ] ;
@@ -55,7 +66,13 @@ class DOC_Helper_Table {
 				if( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
 					$header_attributes['class'] = '{sorter: false}' ;
 				}
-				$_output[] = "<th " . HTML::attributes( $header_attributes ) . ">{$col_spec[ 'heading' ]}</th>" ;
+
+				if( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
+					$heading = "<input type='checkbox' name='_id' id='check_all' />" ;
+					$header_attributes[ 'class' ] = '{sorter: false}' ;
+				}
+
+				$_output[] = "<th " . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
 			}
 
 			$_output[] = "</tr>" ;
@@ -195,6 +212,12 @@ class DOC_Helper_Table {
 						}
 						$value = implode( '&nbsp;|&nbsp;', $actions ) ;
 						$td_attrs[ 'class' ] = 'actions' ;
+					} elseif( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
+						$checkbox = "<input type='checkbox' name='id[]' value='{id}' />" ;
+						if( isset( $col_spec[ 'checkbox' ] )) {
+							$checkbox = $col_spec[ 'checkbox' ] ;
+						}
+						$value = $this->parse_string( $object, $checkbox ) ;
 					}
 
 
