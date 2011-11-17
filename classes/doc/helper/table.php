@@ -269,8 +269,9 @@ class DOC_Helper_Table {
 
 	protected function format_link( $object, $link_text, $link_url ) {
 		$_output = '' ;
-		$url = $this->parse_string($link_url, $object) ;
-		$text = $this->parse_string($link_text, $object) ;
+		$url = $this->parse_string($object, $link_url) ;
+		$text = $this->parse_string($object, $link_text) ;
+		
 		if( !empty( $url )) {
 			$_output = "<a href='{$url}' target='_blank'>{$text}</a>" ;
 		} else {
@@ -281,11 +282,10 @@ class DOC_Helper_Table {
 
 
 	protected function parse_string( $object, $parseable_string ) {
-		$_output = '' ;
+		$_output = $parseable_string ;
 		preg_match_all('/\{(.+?)\}/', $parseable_string, $matches) ;
 
 		if( count( $matches ) > 0 ) {
-			$_output = $parseable_string ;
 			foreach( $matches[1] as $match ) {
 				$_output = str_replace('{'.$match.'}', $this->generate_content($object, $match), $_output) ;
 			}
@@ -301,9 +301,9 @@ class DOC_Helper_Table {
 		return $_output ; ;
 	}
 
-	protected function format_datetime( $value, $format ) {
+	protected function format_datetime( $value, $format = 'm/j/Y') {
 		if( !empty( $value )) {
-			$value = date('m/j/Y', strtotime( $value )) ;
+			$value = date($format, strtotime( $value )) ;
 		}
 		return $value ;
 	}
