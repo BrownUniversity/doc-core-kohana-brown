@@ -182,6 +182,46 @@ class DOC_Helper_Form {
 		return $_output ;
 	}
 	
+	/**
+	 * Create a set of radio buttons from an array.
+	 * 
+	 * @param string $radio_name
+	 * @param array $radio_array
+	 * @param string $selected
+	 * @param string $mode
+	 * @return array 
+	 */
+	public static function radio_group( $radio_name, $radio_array, $selected, $mode = self::MODE_EDITABLE ) {
+		$_output = array() ;
+		foreach( $radio_array as $key => $value ) {
+			$unique_id = "{$radio_name}_{$key}" ;
+			if( $mode == self::MODE_EDITABLE ) {
+				$radio = Form::radio($radio_name, $key, $selected == $key, array('id' => $unique_id )) ;
+			} else {
+				if( $selected == $key ) {
+					$radio = "<span id='{$unique_id}' class='checkmark-checked'>&nbsp;</span>" ;
+				} else {
+					$radio = "<span id='{$unique_id}' class='checkmark-unchecked'>&nbsp;</span>" ;
+				}
+			}
+			$radio .= "<label for='{$unique_id}'>{$value}</label>" ;
+			$_output[ $key ] = $radio ;
+		}
+		
+		return $_output ;
+	}
+	
+	
+	/**
+	 * Depending on the value of $mode, either generates an input text field via
+	 * Form::input or simply returns the current value as passed.
+	 * 
+	 * @param string $name
+	 * @param string $value
+	 * @param array $attributes
+	 * @param string $mode Use one of the class constants.
+	 * @return string
+	 */
 	public static function input( $name, $value = NULL, $attributes = NULL, $mode = self::MODE_EDITABLE ) {
 		if( $mode == self::MODE_EDITABLE ) {
 			return Form::input($name, $value, $attributes) ;
@@ -189,6 +229,17 @@ class DOC_Helper_Form {
 		return $value ;
 	}
 	
+	/**
+	 * Depending on the value of $mode, either generates a select menu via
+	 * Form::select or simply returns the display for the current selection.
+	 * 
+	 * @param string $name
+	 * @param string $value
+	 * @param array $attributes
+	 * @param string $mode Use one of the class constants.
+	 * @return string
+	 * @todo Make this smart enough to handle an array for $selected.
+	 */
 	public static function select( $name, $options = NULL, $selected = NULL, $attributes = NULL, $mode = self::MODE_EDITABLE ) {
 		if( $mode == self::MODE_EDITABLE ) {
 			return Form::select($name, $options, $selected, $attributes) ;
@@ -196,6 +247,16 @@ class DOC_Helper_Form {
 		return $options[ $selected ] ;
 	}
 	
+	/**
+	 * Depending on the value of $mode, either generates a textarea via
+	 * Form::textarea or simply returns the current value as passed.
+	 * 
+	 * @param string $name
+	 * @param string $value
+	 * @param array $attributes
+	 * @param string $mode Use one of the class constants.
+	 * @return string
+	 */
 	public static function textarea($name, $body = '', $attributes = NULL, $double_encode = TRUE, $mode = self::MODE_EDITABLE) {
 		if( $mode == self::MODE_EDITABLE ) {
 			return Form::textarea($name, $body, $attributes, $double_encode) ;
