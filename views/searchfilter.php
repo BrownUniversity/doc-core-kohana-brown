@@ -9,6 +9,14 @@
 
 
 		print("<form id='filter' method='POST' action='{$form_action}'>") ;
+		
+		if( isset( $filter_extras )) {
+			if( !is_array( $filter_extras )) {
+				$filter_extras = array( $filter_extras ) ;
+			}
+			print( '<div>' . implode('<br />',$filter_extras) . '</div>' ) ;
+		}
+		
 		print("Filter: ") ;
 		print("<select name='filter_column'>") ;
 		foreach( $filter_fields as $filter_col => $filter_specs ) {
