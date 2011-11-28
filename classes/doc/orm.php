@@ -96,6 +96,9 @@ class DOC_ORM extends Kohana_ORM {
 		}
 	}
 	
+	/**
+	 * @todo Deprecate this. Functionality is duplicated and improved on in the "properties_are_unique" method below.
+	 */
 	public function property_is_unique( $value, $property ) {
 		return ! (bool) DB::select( array( DB::expr('COUNT(id)'), 'total'))
 				->from($this->_table_name)
@@ -104,6 +107,19 @@ class DOC_ORM extends Kohana_ORM {
 				->execute($this->_db_group)
 				->get('total') ;
 	}
+	
+	public function properties_are_unique( $propval_array ) {
+		$select = DB::select( array( DB::expr('COUNT(id)'), 'total' ))
+				->from($this->_table_name)
+				->where($this->_primary_key, '!=', $this->pk()) ;
+		
+		foreach( $propval_array as $prop => $val ) {
+			$select->where($prop, '=', $val ) ;
+		}
+		
+		return ! (bool) $select->execute($this->_db_group)->get('total') ;
+	}
+	
 	
 	/**
 	 * Modifies a string to remove non-ASCII characters and spaces.
