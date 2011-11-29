@@ -263,6 +263,14 @@ class DOC_Helper_Form {
 		}
 		return $body ;
 	}
+	
+	public static function checkbox_value( $checkbox_name, $default_value = 0 ) {
+		$_output = $default_value ;
+		if( Request::$current->post( $checkbox_name ) != NULL ) {
+			$_output = Request::$current->post( $checkbox_name ) ;
+		}
+		return $_output ;
+	}
 
 }
 ?>
