@@ -371,10 +371,9 @@ class DOC_Helper_Table {
 	 *
 	 * @param object $data_root
 	 * @param string $key
-	 * @param boolean $treat_as_object
 	 * @return string
 	 */
-	protected function generate_content( $data_root, $key, $treat_as_object = FALSE ) {
+	protected function generate_content( $data_root, $key ) {
 		$key_array = explode('->', $key) ;
 
         if( $data_root->supports_property( $key_array[0] )) {
@@ -387,7 +386,7 @@ class DOC_Helper_Table {
 
 		if( count( $key_array ) > 1 ) {
 			$key = preg_replace("/^{$key_array[0]}->/", '', $key) ;
-			return $this->generate_content( $_output, $key, TRUE ) ;
+			return $this->generate_content( $_output, $key ) ;
 		}
 
 		return $_output ;
