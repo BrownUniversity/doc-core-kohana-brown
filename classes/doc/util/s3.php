@@ -8,6 +8,7 @@ defined('SYSPATH') or die('No direct script access.');
 
 /**
  * Utility functions for Amazon S3 functionality
+ * @deprecated Use DOC_Util_File_S3 instead.
  */
 class DOC_Util_S3 {
 
