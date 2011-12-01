@@ -72,7 +72,7 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 	}
 
 	public function get_root_dir($root_key = NULL, $dir_key = NULL) {
-		
+		return $this->aws_config['bucket'] ;
 	}
 
 	public function save($root_dir, $filename, $source_path, $attributes = NULL) {
