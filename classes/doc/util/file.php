@@ -50,7 +50,7 @@ abstract class DOC_Util_File {
 	 * @param string $root_dir The directory location of the file.
 	 * @param string $filename The name of the file to be displayed.
 	 */
-	abstract public function display( $root_dir, $filename ) ;
+	abstract public function display( $root_dir, $filename, $new_filename = NULL ) ;
 
 	/**
 	 * Delete the specified file from the filesystem.
@@ -156,6 +156,7 @@ abstract class DOC_Util_File {
 	}
 
 	protected function send_headers( $content_type, $filename, $content_length, $send_as = self::SEND_AS_DOWNLOAD ) {
+
 		// required for IE, otherwise Content-disposition is ignored
 		if(ini_get('zlib.output_compression')) {
 			ini_set('zlib.output_compression', 'Off');
