@@ -29,6 +29,16 @@
 
 			<? } ?>
 			;
+	/*
+	 * Handle the "Check All" checkbox.
+	 */
+
+		 $('#<?php print( $table_id ) ; ?> .check_all').on('click', function() {
+			 var container = $(this).closest('table') ;
+			 var checkbox_name = $(this).attr('name').replace(/^_/,'') + '[]' ;
+			 container.find('input[name="' + checkbox_name + '"]').prop('checked', $(this).prop('checked')) ;
+		 }) ;
+
 	}) ;
 
 
