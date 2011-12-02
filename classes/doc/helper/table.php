@@ -68,7 +68,7 @@ class DOC_Helper_Table {
 				}
 
 				if( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
-					$heading = "<input type='checkbox' name='_id' id='check_all' />" ;
+					$heading = "<input type='checkbox' name='_id' class='check_all' />" ;
 					$header_attributes[ 'class' ] = '{sorter: false}' ;
 				}
 
@@ -271,7 +271,7 @@ class DOC_Helper_Table {
 		$_output = '' ;
 		$url = $this->parse_string($object, $link_url) ;
 		$text = $this->parse_string($object, $link_text) ;
-		
+
 		if( !empty( $url )) {
 			$_output = "<a href='{$url}' target='_blank'>{$text}</a>" ;
 		} else {
