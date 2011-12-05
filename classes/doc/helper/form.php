@@ -18,7 +18,7 @@ class DOC_Helper_Form {
 	const DATE_FORMAT_DB = 'Y-m-d' ;
 	const KEEP_NULL = 'keep-null' ;
 	const NULL_TO_DEFAULT = 'null-to-default' ;
-	
+
 	const SUFFIX_DATE = '_date' ;
 	const SUFFIX_HOUR = '_hour' ;
 	const SUFFIX_MINUTE = '_minute' ;
@@ -29,11 +29,11 @@ class DOC_Helper_Form {
 
 	/**
 	 * Given a standard datetime string (such as that returned from MySQL), create
-	 * a set of form fields to edit the data. 
-	 * 
+	 * a set of form fields to edit the data.
+	 *
 	 * @param string $datetime
 	 * @param string $name_prefix
-	 * @return string 
+	 * @return string
 	 */
 	public static function datetime_input_fields( $datetime, $name_prefix, $minute_increment = self::MINUTE_INCREMENT ) {
 		$hours = array() ;
@@ -93,11 +93,11 @@ class DOC_Helper_Form {
 	/**
 	 * Format an incoming date, with the option to either allow NULL values to
 	 * stay NULL or to allow the Date::formatted_time() method to do its thing.
-	 * 
+	 *
 	 * @param string $date_str
 	 * @param string $date_format
 	 * @param string $null_behavior Use one of the class constants.
-	 * @return type 
+	 * @return type
 	 */
 	public static function format_date($date_str, $date_format, $null_behavior = self::KEEP_NULL) {
 		$_output = NULL ;
@@ -109,20 +109,20 @@ class DOC_Helper_Form {
 				Kohana::$log->add(Log::WARNING, 'Invalid date string: ' . $_output ) ;
 			}
 		}
-		
+
 		return $_output ;
 	}
-	
+
 	/**
 	 * This creates the HTML structure used to define a set of objects related
 	 * to whatever the main form is set up to edit. It can optionally be read-only.
-	 * 
+	 *
 	 * @param array $data An array of objects or arrays containing the related items.
 	 * @param string $label_key
 	 * @param string $value_key
 	 * @param string $field_name
 	 * @param string $mode Use one of the MODE_* class constants
-	 * @return string 
+	 * @return string
 	 */
 	public static function related_items( $data, $label_key, $value_key, $field_name, $mode = self::MODE_EDITABLE ) {
 		$_output = '' ;
@@ -150,11 +150,11 @@ class DOC_Helper_Form {
 	/**
 	 * Create a set of checkboxes using the "[]" suffix to automatically create
 	 * a PHP array. (Why is this not already in Kohana?)
-	 * 
+	 *
 	 * @param string $checkbox_name
 	 * @param array $checkbox_array
 	 * @param array $selected
-	 * @return array 
+	 * @return array
 	 */
 	public static function checkbox_group( $checkbox_name, $checkbox_array, $selected, $mode = self::MODE_EDITABLE ) {
 		$_output = array() ;
@@ -172,24 +172,24 @@ class DOC_Helper_Form {
 				} else {
 					$cb = "<span id='{$unique_id}' class='checkmark-unchecked'>&nbsp;</span>" ;
 				}
-				
+
 			}
-			
+
 			$cb .= "<label for='{$unique_id}'>{$value}</label>" ;
 			$_output[$key] = $cb ;
 		}
-		
+
 		return $_output ;
 	}
-	
+
 	/**
 	 * Create a set of radio buttons from an array.
-	 * 
+	 *
 	 * @param string $radio_name
 	 * @param array $radio_array
 	 * @param string $selected
 	 * @param string $mode
-	 * @return array 
+	 * @return array
 	 */
 	public static function radio_group( $radio_name, $radio_array, $selected, $mode = self::MODE_EDITABLE ) {
 		$_output = array() ;
@@ -207,15 +207,15 @@ class DOC_Helper_Form {
 			$radio .= "<label for='{$unique_id}'>{$value}</label>" ;
 			$_output[ $key ] = $radio ;
 		}
-		
+
 		return $_output ;
 	}
-	
-	
+
+
 	/**
 	 * Depending on the value of $mode, either generates an input text field via
 	 * Form::input or simply returns the current value as passed.
-	 * 
+	 *
 	 * @param string $name
 	 * @param string $value
 	 * @param array $attributes
@@ -228,11 +228,11 @@ class DOC_Helper_Form {
 		}
 		return $value ;
 	}
-	
+
 	/**
 	 * Depending on the value of $mode, either generates a select menu via
 	 * Form::select or simply returns the display for the current selection.
-	 * 
+	 *
 	 * @param string $name
 	 * @param string $value
 	 * @param array $attributes
@@ -246,11 +246,11 @@ class DOC_Helper_Form {
 		}
 		return $options[ $selected ] ;
 	}
-	
+
 	/**
 	 * Depending on the value of $mode, either generates a textarea via
 	 * Form::textarea or simply returns the current value as passed.
-	 * 
+	 *
 	 * @param string $name
 	 * @param string $value
 	 * @param array $attributes
@@ -263,11 +263,16 @@ class DOC_Helper_Form {
 		}
 		return $body ;
 	}
-	
+
 	public static function checkbox_value( $checkbox_name, $default_value = 0 ) {
 		$_output = $default_value ;
 		if( Request::$current->post( $checkbox_name ) != NULL ) {
 			$_output = Request::$current->post( $checkbox_name ) ;
+
+			if( is_array( $_output )) {
+				$_output = array_pop( $_output ) ;
+			}
+
 		}
 		return $_output ;
 	}
