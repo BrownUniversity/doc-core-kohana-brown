@@ -213,7 +213,12 @@ class DOC_Helper_Table {
 						$value = implode( '&nbsp;|&nbsp;', $actions ) ;
 						$td_attrs[ 'class' ] = 'actions' ;
 					} elseif( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
-						$checkbox = "<input type='checkbox' name='id[]' value='{id}' />" ;
+						$default_id = $object->pk() ;
+						$id = $default_id ;
+						if( isset( $col_spec[ 'id_key' ]) && !empty( $col_spec[ 'id_key' ])) {
+							$id = $this->generate_content( $object, $col_spec[ 'id_key']) ;
+						}
+						$checkbox = "<input type='checkbox' name='id[]' value='{$id}' />" ;
 						if( isset( $col_spec[ 'checkbox' ] )) {
 							$checkbox = $col_spec[ 'checkbox' ] ;
 						}

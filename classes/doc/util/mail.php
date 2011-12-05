@@ -30,7 +30,10 @@ class DOC_Util_Mail {
 		$mailer = Swift_Mailer::newInstance($transport) ;
 
 		if( $mail_config[ 'test_mode' ] == TRUE ) {
-			$body .= "\n\nTEST MODE: This message would normally have gone to: " . implode( ', ', $recipients ) ;
+			$body .= "<br /><br />TEST MODE: This message would normally have gone to: " . implode( ', ', $recipients ) ;
+			if( !empty( $cc )) {
+				$body .= "<br />CC recipients: " . implode( ', ', $cc ) ;
+			}
 			$recipients = unserialize( $mail_config[ 'test_mode_recipients' ] ) ;
 		}
 		if( $from == NULL ) {
@@ -48,7 +51,9 @@ class DOC_Util_Mail {
 		$message->setReplyTo( $reply_to ) ;
 		
 		if( !empty( $cc )) {
-			$message->setCc($cc) ;
+			if( $mail_config[ 'test_mode' ] != TRUE ) {
+				$message->setCc($cc) ;
+			}
 		}
 
 		$_output = $mailer->send($message) ;
