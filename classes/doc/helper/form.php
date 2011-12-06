@@ -27,6 +27,8 @@ class DOC_Helper_Form {
 	const MODE_READ_ONLY = 'read-only' ;
 	const MODE_EDITABLE = 'editable' ;
 
+	const UNCHECKED_BLANK = 'unchecked-blank' ;
+	const UNCHECKED_EXPLICIT = 'unchecked-explicit' ;
 	/**
 	 * Given a standard datetime string (such as that returned from MySQL), create
 	 * a set of form fields to edit the data.
@@ -156,8 +158,12 @@ class DOC_Helper_Form {
 	 * @param array $selected
 	 * @return array
 	 */
-	public static function checkbox_group( $checkbox_name, $checkbox_array, $selected, $mode = self::MODE_EDITABLE ) {
+	public static function checkbox_group( $checkbox_name, $checkbox_array, $selected, $mode = self::MODE_EDITABLE, $unchecked = self::UNCHECKED_BLANK ) {
 		$_output = array() ;
+		$unchecked_class = 'checkmark-unchecked' ;
+		if( $unchecked == self::UNCHECKED_EXPLICIT ) {
+			$unchecked_class = 'checkmark-unchecked-explicit' ;
+		}
 		$checkbox_group_name = $checkbox_name . '[]' ;
 		if( !is_array( $selected )) {
 			$selected = array( $selected ) ;
@@ -170,7 +176,7 @@ class DOC_Helper_Form {
 				if( in_array( $key, $selected )) {
 					$cb = "<span id='{$unique_id}' class='checkmark-checked'>&nbsp;</span>" ;
 				} else {
-					$cb = "<span id='{$unique_id}' class='checkmark-unchecked'>&nbsp;</span>" ;
+					$cb = "<span id='{$unique_id}' class='{$unchecked_class}'>&nbsp;</span>" ;
 				}
 
 			}
@@ -193,6 +199,7 @@ class DOC_Helper_Form {
 	 */
 	public static function radio_group( $radio_name, $radio_array, $selected, $mode = self::MODE_EDITABLE ) {
 		$_output = array() ;
+		
 		foreach( $radio_array as $key => $value ) {
 			$unique_id = "{$radio_name}_{$key}" ;
 			if( $mode == self::MODE_EDITABLE ) {
