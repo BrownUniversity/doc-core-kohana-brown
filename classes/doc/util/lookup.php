@@ -19,6 +19,7 @@ class DOC_Util_Lookup {
 	 * @param string $order The field to order the results by. Always ascending.
 	 * @param array $wheres An array of arrays, with each matching the arguments that are sent via the where() method.
 	 * @return array
+	 * @todo Look into replacing some of this functionality with Kohana's baked-in as_array() method
 	 */
 	static function get_lut( $model, $key, $mode = self::BY_VAL, $order = NULL, $wheres = NULL) {
 		$_output = array() ;

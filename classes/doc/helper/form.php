@@ -137,11 +137,11 @@ class DOC_Helper_Form {
 				$value = $item->$value_key ;
 			}
 
-			$_output .= "<div class='related-item'>" ;
-			$_output .= "<span class='related-item-label'>{$label}</span>" ;
+			$_output .= '<div class="related-item">' ;
+			$_output .= '<span class="related-item-label">'.$label.'</span>' ;
 			if( $mode == self::MODE_EDITABLE ) {
-				$_output .= "<span class='related-item-link'>(<a class='removal-link'>remove</a>)</span>" ;
-				$_output .= "<input type='hidden' name='{$field_name}[]' value='{$value}' />" ;
+				$_output .= '<span class="related-item-link">(<a class="removal-link">remove</a>)</span>' ;
+				$_output .= '<input type="hidden" name="'.$field_name.'[]" value="'.$value.'" />' ;
 			}
 			$_output .= "</div>" ;
 		}
