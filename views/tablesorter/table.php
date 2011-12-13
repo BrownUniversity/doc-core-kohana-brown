@@ -14,8 +14,14 @@
 	if( !isset( $no_pager )) {
 		$no_pager = FALSE ;
 	}
+	if( !isset( $context )) {
+		$context = DOC_Helper_Table::CONTEXT_WEB ;
+	}
+	if( !isset( $table_attributes )) {
+		$table_attributes = NULL ;
+	}
 
-	$table = new DOC_Helper_Table( $data, $column_specs, $table_attributes ) ;
+	$table = new DOC_Helper_Table( $data, $column_specs, $table_attributes, $context ) ;
 
 	print( "<div id='{$div_id}' class='{$div_class}'>" ) ;
 	print( $table->render() ) ;
