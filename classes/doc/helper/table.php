@@ -20,11 +20,22 @@ class DOC_Helper_Table {
 	const TYPE_DATA = 1 ;
 	const TYPE_CHECKBOX = 2 ;
 	const TYPE_ACTION = 3 ;
-	
+
 	const CONTEXT_WEB = 1 ;
 	const CONTEXT_SPREADSHEET = 2 ;
 	const CONTEXT_PDF = 3 ;
 
+	const FORMAT_DATE = 'date' ;
+	const FORMAT_LOOKUP = 'lookup' ;
+	const FORMAT_LIST = 'list' ;
+	const FORMAT_LINK = 'link' ;
+	const FORMAT_PHONE = 'phone' ;
+	const FORMAT_DOLLARS = 'dollars' ;
+	const FORMAT_XLS_DOLLARS = 'xls_dollars' ;
+	const FORMAT_DATETIME = 'datetime' ;
+	const FORMAT_XLS_DATETIME = 'xlsdatetime' ;
+	const FORMAT_TRUNCATE = 'truncate' ;
+	const FORMAT_CUSTOM = 'custom' ;
 
 	public function __construct( $data, $column_specs, $table_attrs = array(), $context = self::CONTEXT_WEB) {
 		$this->data = $data ;
@@ -79,7 +90,7 @@ class DOC_Helper_Table {
 						$header_attributes[ 'class' ] = '{sorter: false}' ;
 					}
 
-					$_output[] = "<th " . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;					
+					$_output[] = "<th " . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
 
 				}
 
@@ -105,16 +116,16 @@ class DOC_Helper_Table {
 
 							if( isset( $col_spec[ 'format' ]) && is_array( $col_spec[ 'format' ]) && count( $col_spec[ 'format' ]) > 0 ) {
 								switch ( $col_spec[ 'format' ][ 'type' ]) {
-									case 'date':
+									case self::FORMAT_DATE:
 										$value = $this->format_datetime( $value, 'm/j/Y' ) ;
 										$td_attrs[ 'class' ] = 'date' ;
 										break;
 
-									case 'lookup':
+									case self::FORMAT_LOOKUP:
 										$value = $this->format_lookup( $value, $col_spec[ 'format' ][ 'lookup' ]) ;
 										break ;
 
-									case 'list':
+									case self::FORMAT_LIST:
 
 										$root_key = '' ;
 										if( isset( $col_spec[ 'format' ][ 'root' ])) {
@@ -136,35 +147,35 @@ class DOC_Helper_Table {
 										$value = $this->format_list($object, $root_key, $col_spec[ 'format' ][ 'relation_name' ], $col_spec[ 'format' ][ 'property_name' ], $order_by, $empty_content, $separator) ;
 										break ;
 
-									case 'link':
+									case self::FORMAT_LINK:
 										$value = $this->format_link( $object, $col_spec[ 'format' ][ 'text' ], $col_spec[ 'format' ][ 'url' ] ) ;
 										break ;
 
-									case 'phone':
+									case self::FORMAT_PHONE:
 										$value = $this->format_phone( $value ) ;
 										break ;
 
-									case 'dollars':
+									case self::FORMAT_DOLLARS:
 										$value = $this->format_dollars($value, TRUE) ;
 										$td_attrs[ 'class' ] = 'dollars' ;
 										break ;
 
-									case 'xls_dollars':
+									case self::FORMAT_XLS_DOLLARS:
 										$value = $this->format_dollars($value, FALSE) ;
 										$td_attrs[ 'class' ] = 'dollars' ;
 										break ;
 
-									case 'datetime':
+									case self::FORMAT_DATETIME:
 										$value = $this->format_datetime( $value, 'M j, Y g:i A' ) ;
 										$td_attrs[ 'class' ] = 'datetime' ;
 										break ;
 
-									case 'xlsdatetime':
+									case self::FORMAT_XLS_DATETIME:
 										$value = $this->format_datetime( $value, 'Y-m-d H:i' ) ;
 										$td_attrs[ 'class' ] = 'datetime' ;
 										break ;
 
-									case 'truncate':
+									case self::FORMAT_TRUNCATE:
 										$chars = 80 ;
 										if( isset( $col_spec[ 'format' ][ 'chars' ])) {
 											$chars = $col_spec[ 'format' ][ 'chars' ] ;
@@ -172,7 +183,7 @@ class DOC_Helper_Table {
 										$value = $this->format_truncate($value, $chars) ;
 										break ;
 
-									case 'custom':
+									case self::FORMAT_CUSTOM:
 										$value = $this->parse_string( $object, $col_spec[ 'format' ][ 'output' ] ) ;
 										break ;
 
@@ -239,7 +250,7 @@ class DOC_Helper_Table {
 
 
 						$_output[] = "<td ".HTML::attributes( $td_attrs ).">{$value}</td>" ;
-						
+
 					}
 				}
 				$_output[] = "</tr>" ;
