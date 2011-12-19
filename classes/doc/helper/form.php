@@ -251,7 +251,11 @@ class DOC_Helper_Form {
 		if( $mode == self::MODE_EDITABLE ) {
 			return Form::select($name, $options, $selected, $attributes) ;
 		}
-		return $options[ $selected ] ;
+		$_output = NULL ;
+		if( isset( $options[ $selected ])) {
+			$_output = $options[ $selected ] ;
+		}
+		return $_output ;
 	}
 
 	/**
