@@ -136,6 +136,7 @@ class DOC_Util_Filter {
 				$sql = $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'sql' ] ;	
 
 				$sql = str_replace(	array( '{operator}' ), array( $operator ), $sql ) ;
+				
 				$query = DB::query( Database::SELECT, $sql ) ;
 
 				if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'date') {
@@ -168,9 +169,12 @@ class DOC_Util_Filter {
 				}
 //Util_Debug::dump((string) $query, false ) ;
 
-				
+				$db = NULL ;
+				if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) && !empty( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ])) {
+					$db = Database::instance($search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) ;
+				}
 
-				$result = $query->execute() ;
+				$result = $query->execute( $db ) ;
 				$ids = array() ;
 				$ids[] = -1 ;
 				foreach( $result as $row ) {
