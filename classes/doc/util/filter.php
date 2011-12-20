@@ -93,11 +93,12 @@ class DOC_Util_Filter {
 		$_output = $orm_base ;
 		$filter_key = self::get_filter_key() ;
 		$filter_specs = NULL ;
+		$request = Request::current() ;
 		$session = Session::instance( 'database' ) ;
 		$search_filters = Kohana::$config->load('searchfilters') ;
 
 		// check for a reset...
-		if( isset( $_POST[ 'setFilter' ]) && $_POST[ 'setFilter' ] == 'Clear' ) {
+		if( $request->post('setFilter') == 'Clear' ) {
 			$session->delete( $filter_key ) ;
 			return $_output ;
 		}
@@ -106,19 +107,13 @@ class DOC_Util_Filter {
 		$filter_specs = $session->get( $filter_key ) ;
 
 		// do we have a new filter request?
-		if( isset( $_POST[ 'setFilter' ]) && $_POST[ 'setFilter' ] == 'Search' ) {
+		if( $request->post('setFilter') == 'Search' ) {
 			$filter_specs = array(
-				'filter_column' => $_POST[ 'filter_column' ],
-				'search_val_0' => $_POST[ 'search_val_0' ],
-				'search_val_1' => NULL,
-				'search_operator' => NULL
+				'filter_column' => $request->post( 'filter_column' ),
+				'search_val_0' => $request->post( 'search_val_0' ),
+				'search_val_1' => $request->post('search_val_1'),
+				'search_operator' => $request->post('search_operator')
 			) ;
-			if( isset( $_POST[ 'search_val_1' ])) {
-				$filter_specs[ 'search_val_1' ] = $_POST[ 'search_val_1' ] ;
-			}
-			if( isset( $_POST[ 'search_operator' ])) {
-				$filter_specs[ 'search_operator' ] = $_POST[ 'search_operator' ] ;
-			}
 
 			$session->set( $filter_key, $filter_specs ) ;
 			$session->write() ;
