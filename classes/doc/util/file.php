@@ -179,6 +179,31 @@ abstract class DOC_Util_File {
 		header("Content-Length: {$content_length}");
 	}
 
+	/**
+	 * Given a file on the server, generate a file specs array the equivalent to
+	 * what we would have received in a file upload from the _FILES array. This
+	 * is required to enable us to generate files on the fly and have them
+	 * be treated as if they were a normal file upload.
+	 * 
+	 * @param string $file Full path and filename to the file for which we want specs generated
+	 * @param string $original_filename An original filename to insert into the array.
+	 * @return array
+	 */
+	public static function get_file_specs( $filename, $original_filename ) {
+		$_output = array() ;
+		$file_util = new DOC_Util_File_Local() ;
+		if( file_exists( $filename )) {
+			$_output[ 'name' ] = $original_filename ;
+			$_output[ 'type' ] = $file_util->get_mime_type( $filename );
+			$_output[ 'size' ] = filesize( $filename ) ;
+			$_output[ 'tmp_name' ] = $filename ;
+			$_output[ 'error' ] = UPLOAD_ERR_OK ;
+		} else {
+			// throw an exception...
+		}
+		
+		return $_output ;
+	}
 
 }
 
