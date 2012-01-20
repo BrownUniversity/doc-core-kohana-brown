@@ -16,6 +16,7 @@ class DOC_Util_Spreadsheet {
 
 	const FILETYPE_PDF = 'PDF' ;
 	const FILETYPE_EXCEL = 'Excel5' ;
+	const FILETYPE_EXCEL_2007 = 'Excel2007' ;
 	const FILETYPE_HTML = 'HTML' ;
 
 	/**
@@ -45,7 +46,6 @@ class DOC_Util_Spreadsheet {
 		$trs = $dom->getElementsByTagName('tbody')->item(0)->getElementsByTagName('tr') ;
 		foreach( $trs as $tr ) {
 			$row_index++ ;
-
 			$tds = $tr->getElementsByTagName('td') ;
 			for( $i = 0; $i < $tds->length; $i++ ) {
 				$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $tds->item($i)->nodeValue ) ;
@@ -53,11 +53,17 @@ class DOC_Util_Spreadsheet {
 
 					switch( $tds->item($i)->getAttribute('class')) {
 						case 'datetime':
-							$active_sheet->getStyleByColumnAndRow($i, $row_index)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_DATETIME) ;
+							$active_sheet
+									->getStyleByColumnAndRow($i, $row_index)
+									->getNumberFormat()
+									->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_DATETIME) ;
 							break ;
 
 						case 'dollars':
-							$active_sheet->getStyleByColumnAndRow($i, $row_index)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD) ;
+							$active_sheet
+									->getStyleByColumnAndRow($i, $row_index)
+									->getNumberFormat()
+									->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD) ;
 							break ;
 
 						default:
@@ -66,6 +72,7 @@ class DOC_Util_Spreadsheet {
 				}
 			}
 		}
+
 		return $obj_phpexcel ;
 
 	}
@@ -77,7 +84,7 @@ class DOC_Util_Spreadsheet {
 	 * @param PHPExcel $obj_phpexcel
 	 * @param string $filename
 	 */
-	public static function download( $obj_phpexcel, $filename = NULL, $file_type = 'Excel5' ) {
+	public static function download( $obj_phpexcel, $filename = NULL, $file_type = self::FILETYPE_EXCEL ) {
 		if( empty( $filename )) {
 			$filename = preg_replace('/\W/', '_', Request::detect_uri()) ;
 			$filename .= '_'. date('Y-m-d_H:i') ;
@@ -90,6 +97,12 @@ class DOC_Util_Spreadsheet {
 				header( 'Cache-Control: max-age=0' ) ;
 
 				break ;
+			case self::FILETYPE_EXCEL_2007:
+				header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+				header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"') ;
+				header('Cache-Control: max-age=0');
+				break ;
+
 			case self::FILETYPE_PDF:
 				header( 'Content-Type: application/pdf' ) ;
 				header( 'Content-Disposition: attachment;filename="'.$filename.'.pdf"' ) ;
@@ -108,9 +121,9 @@ class DOC_Util_Spreadsheet {
 		}
 
 		$phpexcel_writer = PHPExcel_IOFactory::createWriter($obj_phpexcel, $file_type) ;
+//		$phpexcel_writer->save('/www/vhosts/appscollege.cis-dev.brown.edu/phpexcel_out/'.$filename.'.xls');
 		$phpexcel_writer->save('php://output') ;
+		exit() ;
 	}
 
 }
-
-?>

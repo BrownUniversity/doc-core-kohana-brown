@@ -53,7 +53,7 @@ class DOC_Helper_Table {
 		$_output = array() ;
 
 		if( count( $this->data ) > 0 ) {
-			$_output[] = "<table " . HTML::attributes($this->table_attrs) . ">" ;
+			$_output[] = "<table" . HTML::attributes($this->table_attrs) . ">" ;
 
 			/*
 			 * Table Header
@@ -90,7 +90,9 @@ class DOC_Helper_Table {
 						$header_attributes[ 'class' ] = '{sorter: false}' ;
 					}
 
-					$_output[] = "<th " . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+					
+
+					$_output[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
 
 				}
 
@@ -249,7 +251,7 @@ class DOC_Helper_Table {
 
 
 
-						$_output[] = "<td ".HTML::attributes( $td_attrs ).">{$value}</td>" ;
+						$_output[] = "<td".HTML::attributes( $td_attrs ).">{$value}</td>" ;
 
 					}
 				}
@@ -266,7 +268,7 @@ class DOC_Helper_Table {
 
 
 
-		return implode("\n", $_output) ;
+		return trim(implode("", $_output)) ;
 	}
 
 
@@ -424,5 +426,3 @@ class DOC_Helper_Table {
 
 
 }
-
-?>
