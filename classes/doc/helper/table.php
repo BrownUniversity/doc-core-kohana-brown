@@ -36,6 +36,7 @@ class DOC_Helper_Table {
 	const FORMAT_XLS_DATETIME = 'xlsdatetime' ;
 	const FORMAT_TRUNCATE = 'truncate' ;
 	const FORMAT_CUSTOM = 'custom' ;
+	const FORMAT_DEFAULT = 'default' ;
 
 	public function __construct( $data, $column_specs, $table_attrs = array(), $context = self::CONTEXT_WEB) {
 		$this->data = $data ;
@@ -189,7 +190,10 @@ class DOC_Helper_Table {
 										$value = $this->parse_string( $object, $col_spec[ 'format' ][ 'output' ] ) ;
 										break ;
 
-
+									case self::FORMAT_DEFAULT:
+										if( is_null( $value ) || $value == '' ) {
+											$value = $col_spec[ 'format' ][ 'output' ] ;
+										}
 
 									default:
 										break;
