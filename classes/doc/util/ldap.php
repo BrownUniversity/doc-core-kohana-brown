@@ -3,27 +3,28 @@
  * Retrieve information from Brown's global address book via LDAP.
  *
  * Adapted from jcramton's LDAP functions...and then adapted from the Kohana code for CodeIgniter
- * 
+ *
  * @author Adam Bradley <atb@brown.edu>
  * @todo: Change search_people function to use parse_result_array
  */
 class DOC_Util_Ldap
 {
     private $ldap_host_url = "registry.brown.edu";
+//  	private $ldap_host_url = "localhost:5327" ;
     private $ldap_query_bind_rdn = null;
-    private $ldap_query_bind_password = null; 
-    
+    private $ldap_query_bind_password = null;
+
     /**
      * OLD CREDENTIALS
      *
      * username: ***REMOVED***
      * password: ***REMOVED***
      */
-     
+
      private $cn;
-     
+
      private $last_result_rc ;
-    
+
     /**
      * Attribute list used when retrieving information about people.
      */
@@ -35,7 +36,7 @@ class DOC_Util_Ldap
 		"auth_id"             => "brownshortid",
 		"uu_id"               => "brownuuid",
 		"bru_id"              => "brownbruid",
-		"banner_id"           => "brownsisid", 
+		"banner_id"           => "brownsisid",
 		"primary_affiliation" => "brownprimaryaffiliation",
 		"brown_title"         => "browntitle",
 		"title"               => "title",
@@ -49,7 +50,7 @@ class DOC_Util_Ldap
 		"country_code"        => 'brownsecuritycountrycode',
 		"local_address"       => 'brownlocaladdress',
 	);
-    
+
     /**
      * Attribute list used when retrieving basic course metadata.
      */
@@ -65,7 +66,7 @@ class DOC_Util_Ldap
     	'alt_course_assignments' => 'brownalternatecourseassignments',
     	'alt_course_description' => 'brownalternatecoursedescription',
     );
-    
+
     /**
      * Roles by which a person can be associated with a course
      */
@@ -84,7 +85,7 @@ class DOC_Util_Ldap
     	'Student',
     	'Vagabond',
     );
-    
+
     /**
      * Class constructor
      */
@@ -95,18 +96,18 @@ class DOC_Util_Ldap
                   $this->ldap_query_bind_rdn,
                   $this->ldap_query_bind_password);
     }
-    
+
     /**
      * Class destructor
      */
     public function __destruct()
     {
-//         if ($this->last_result_rc) { 
-//         	ldap_free_result($this->last_result_rc); 
+//         if ($this->last_result_rc) {
+//         	ldap_free_result($this->last_result_rc);
 //         }
         ldap_unbind($this->cn);
     }
-    
+
     /**
      * Comparison function for resulting person array
      *
@@ -125,7 +126,7 @@ class DOC_Util_Ldap
     		return $last;
     	}
     }
-    
+
     /**
      * Get a set of information about a user based on ID.
      *
@@ -138,7 +139,7 @@ class DOC_Util_Ldap
         // search the people objects
         $base = "ou=People,dc=brown,dc=edu";
         $filter = "(|(brownShortID=$id)(brownNetID=$id)(brownBruID=$id)(brownSISID=$id)(brownUUID=$id))";
-        
+
         try {
 			$search_result = $this->run_search($base, $filter, array_values($this->person_attributes));
 		}
@@ -147,7 +148,7 @@ class DOC_Util_Ldap
             $result['status']['ok'] = false;
             $result['status']['message'] = $e->getMessage();
         }
-        
+
         // check exactly one match
         $count = $search_result["count"];
         if ($count == 0) {
@@ -155,21 +156,21 @@ class DOC_Util_Ldap
             $result['status']['message'] = "$id not found in directory";
             return $result;
         }
-        
+
         if ($count > 1) {
             $result['status']['ok'] = false;
             $result['status']['message'] = "Multiple matches for $id in directory";
             return $result;
         }
-    
+
         // get the results
         //$result['info'] = $this->parse_person_array($search_result[0]);
         $result['info'] = $this->parse_result_array($this->person_attributes, $search_result[0]);
         $result['status']['ok'] = true;
-        
+
         return $result;
     }
-    
+
     /**
      * Search LDAP for people by name.
      *
@@ -181,35 +182,35 @@ class DOC_Util_Ldap
      */
     public function search_people($s, $limit = 20, $paffil = null) {
         $result = array();
-        
+
         // search the people objects
         $base = "ou=People,dc=brown,dc=edu";
         $ss = explode(' ', $s);
-        
+
         $filters = array();
-        
+
         foreach ($ss as $s)
         {
             //Probably overkill.  It *should* be ok to just search displayname.
             $filters[] = "(|(displayname=*$s*)(brownsisid=$s*)(brownshortid=$s*)(brownnetid=$s*))";
         }
-        
+
         if ( !is_null($paffil) )
         {
             $affiliations = is_array($paffil) ? $paffil : explode(',', $paffil);
             $afilters = array();
-            
+
             foreach ( $affiliations as $aff )
             {
                 $afilters[] = "(brownprimaryaffiliation=$aff)";
             }
-            
+
             $filters[] = '(|'.implode('', $afilters).')';
         }
-        
+
         $filters = implode($filters);
         $filter = "(&$filters)";
-        
+
         try {
 			$search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $limit);
 		}
@@ -218,11 +219,11 @@ class DOC_Util_Ldap
             $result['status']['ok'] = false;
             $result['status']['message'] = $e->getMessage();
         }
-        
+
 //        print_r($search_result);
 
         $result['count'] = array_shift($search_result);
-        
+
         // get the results
         $results = array();
         foreach ( $search_result as $sr )
@@ -230,13 +231,13 @@ class DOC_Util_Ldap
             $id = $sr['brownshortid'][0];
             $results[$id] = $this->parse_person_array($sr);
         }
-        
+
         $result['results'] = $results;
         $result['status']['ok'] = true;
-        
+
         return $result;
     }
-    
+
     /**
      * Lookup department codes from LDAP
      *
@@ -249,11 +250,11 @@ class DOC_Util_Ldap
     	$courseRDN = "departments";
     	$filter = "(&(brownCourseRDN={$courseRDN})(objectClass=brownCourseSelector))";
     	$attribute = "browncourseselectionlist";
-    	
+
     	// Execute Search
     	try {
     		$search_result = $this->run_search($base, $filter, array($attribute));
-	    } 
+	    }
 	    catch (Exception $e) {
 	    	return array(
 	    		'status' => array(
@@ -272,8 +273,8 @@ class DOC_Util_Ldap
 			'results' => $search_result[0][$attribute],
 		);
     }
-    
-    /** 
+
+    /**
      * Find courses associated with a user, specification, and role
      *
      * @author Christopher Keith <Christopher_Keith@brown.edu>
@@ -285,7 +286,7 @@ class DOC_Util_Ldap
     public function find_person_courses($id, $coursespec, $role)
     {
     	//@todo: implement regular expression matching
-    	
+
     	// Validate role parameter
     	if (array_search($role, $this->roles) === FALSE) {
     		return array(
@@ -295,12 +296,12 @@ class DOC_Util_Ldap
     			),
     		);
     	}
-    	
+
     	// Setup find
     	$base = "ou=People,dc=brown,dc=edu";
     	$filter = "(|(brownShortID=$id)(brownNetID=$id))";
     	$attribute = "ismemberof";
-    	
+
     	// Execute find
     	try {
     		$find_result = $this->run_search($base, $filter, array($attribute));
@@ -313,7 +314,7 @@ class DOC_Util_Ldap
     			),
     		);
     	}
-    	
+
     	// Check for no matches
     	if ($find_result['count'] == 0) {
     		return array(
@@ -323,7 +324,7 @@ class DOC_Util_Ldap
     			),
     		);
     	}
-    	
+
     	// Check for too many matches
     	if ($find_result['count'] > 1) {
     		return array(
@@ -333,7 +334,7 @@ class DOC_Util_Ldap
     			),
     		);
     	}
-    	
+
     	$role = strtolower($role);
     	$result['status']['ok'] = TRUE;
     	$result['courses'] = array();
@@ -355,7 +356,7 @@ class DOC_Util_Ldap
     	}
     	return $result;
 	}
-    
+
     /**
      * Get course membership for a particular course
      *
@@ -375,17 +376,17 @@ class DOC_Util_Ldap
     			),
     		);
     	}
-    	
+
     	$group = "COURSE:{$coursespec}:{$role}";
     	$base = "ou=Groups,dc=brown,dc=edu";
     	$filter = "(brownGroupRDN={$group})";
     	$attribute = "hasmember";
-    	
+
     	$attributes = array(
     		0 => $attribute,
     		1 => 'browngrouprdn',
     	);
-    	
+
     	// Execute Find
     	try {
     		$find_result = $this->run_search($base, $filter, $attributes);
@@ -398,7 +399,7 @@ class DOC_Util_Ldap
     			),
     		);
     	}
-    	
+
     	// check for at least one match
     	$count = array_shift($find_result);
     	$result['members'] = array();
@@ -419,7 +420,7 @@ class DOC_Util_Ldap
     			}
     		}
     	}
-    	
+
     	$result['status']['ok'] = TRUE;
     	if ($role == '*') {
     		$result['status']['allroles'] = TRUE;
@@ -434,10 +435,10 @@ class DOC_Util_Ldap
     	}
 
 		return $result;
-		
+
     }
-    
-    /** 
+
+    /**
      * Find courses associated with a learner in a given term
      *
      * @author Christopher Keith <Christopher_Keith@brown.edu>
@@ -449,20 +450,20 @@ class DOC_Util_Ldap
     {
     	$result['status']['ok'] = TRUE;
     	$result['courses'] = array();
-    	
+
     	if ($coursespec == NULL) {
     		$coursespec = "*:*:{$term}:*";
     	}
-    	
+
     	// Get the person's courses
     	$courses = $this->find_person_courses($id, $coursespec, 'Learner');
     	if ( ! $courses['status']['ok']) {
     		return $courses;
     	}
-    	
+
     	// Get the metadata foreach course
     	foreach ($courses['courses'] as $coursespec) {
-    		
+
     		$metadata = $this->get_course_metadata_basic($coursespec);
     		if ($metadata['status']['ok']) {
     			$result['courses'][$coursespec] = $metadata['info'];
@@ -480,10 +481,10 @@ class DOC_Util_Ldap
     			}
     		}
     	}
-    	
+
     	return $result;
     }
-    
+
     /**
      * Find courses in LDAP matching input string
      *
@@ -492,15 +493,15 @@ class DOC_Util_Ldap
      * @return array
      */
     public function find_matching_courses($coursespec) {
-    
+
     	// Check for well formed course specification
     	// @todo: implement regular expression matching
-    	
+
     	// Setup find
     	$base = "ou=Courses,dc=brown,dc=edu";
     	$filter = "(&(brownCourseRDN={$coursespec})(objectClass=brownSection))";
     	$attribute = "browncourserdn";
-    	
+
     	// Execute find
     	try {
     		$find_result = $this->run_search($base, $filter, array($attribute));
@@ -514,7 +515,7 @@ class DOC_Util_Ldap
 				)
     		);
     	}
-    	
+
     	// Extract resulting courses
     	$count = array_shift($find_result);
     	$courses = array();
@@ -529,7 +530,7 @@ class DOC_Util_Ldap
     		'courses' => $courses,
     	);
     }
-    
+
     /**
      * Get basic metadata for a course
      *
@@ -538,14 +539,14 @@ class DOC_Util_Ldap
      * @return array
      */
     public function get_course_metadata_basic($coursespec) {
-    
+
     	// Check fo well formed course specification
     	// @todo: implement regular expression matching
-    	
+
     	// Setup find
     	$base = "ou=Courses,dc=brown,dc=edu";
     	$filter = "(&(brownCourseRDN={$coursespec})(objectClass=brownSection))";
-    	
+
     	// Execute find
     	try {
     		$find_result = $this->run_search($base, $filter, array_values($this->course_attributes));
@@ -559,7 +560,7 @@ class DOC_Util_Ldap
     			)
     		);
     	}
-    	
+
     	return array(
     		'status' => array(
     			'ok' => true,
@@ -568,10 +569,10 @@ class DOC_Util_Ldap
     		'info' => $this->parse_result_array($this->course_attributes, $find_result[0]),
     	);
     }
-    
+
 	public function count_last() {
-		if ( !$this->last_result_rc ) { 
-			return false; 
+		if ( !$this->last_result_rc ) {
+			return false;
 		}
         return ldap_count_entries($this->cn, $this->last_result_rc);
     }
@@ -584,15 +585,15 @@ class DOC_Util_Ldap
         $base = "ou=People,dc=brown,dc=edu";
         $filter = "(|(brownShortID=$id)(brownNetID=$id)(brownBruID=$id)(brownSISID=$id))";
         $attributes = $this->person_attributes;
-        
+
         $search_ref = ldap_search($this->cn, $base, $filter);
-        
+
         if (!$search_ref) {
             $result['status']['ok'] = false;
             $result['status']['message'] = "LDAP error looking up info for $filter in $base";
             return $result;
         }
-    
+
         $search_result = ldap_get_entries($this->cn, $search_ref);
         if (!$search_result) {
             $result['status']['ok'] = false;
@@ -600,7 +601,7 @@ class DOC_Util_Ldap
             ldap_free_result($search_ref);
             return $result;
         }
-    
+
         // check exactly one match
         $count = $search_result["count"];
         if ($count == 0) {
@@ -609,19 +610,19 @@ class DOC_Util_Ldap
             ldap_free_result($search_ref);
             return $result;
         }
-        
+
         if ($count > 1) {
             $result['status']['ok'] = false;
             $result['status']['message'] = "Multiple matches for $id in directory";
             ldap_free_result($search_ref);
             return $result;
         }
-        
+
         ldap_free_result($search_ref);
-        
+
         return $search_result;
     }
-    
+
     /**
      * Utility method to run a search on LDAP and return the raw result as an array.
      *
@@ -634,21 +635,21 @@ class DOC_Util_Ldap
     {
         $search_ref = @ldap_search($this->cn, $base, $filter,
                                   $atts, 0, $limit);
-        
+
         $this->last_result_rc = $search_ref;
-        
+
         if (!$search_ref)
             { throw new Exception("LDAP error looking up info for $filter in $base"); }
-            
+
         $search_result = ldap_get_entries($this->cn, $search_ref);
         if (!$search_result)
             { throw new Exception("LDAP error retrieving info for $filter in $base"); }
-        
+
         ldap_free_result($search_ref);
         return $search_result;
     }
-    
-    /** 
+
+    /**
      * Parse the result of an LDAP query based off an inputted attribute map
      *
      * @author Christopher Keith <Christopher_Keith@brown.edu>
@@ -673,7 +674,7 @@ class DOC_Util_Ldap
     	}
     	return $outp;
     }
-    
+
     /**
      * Parse a single result from LDAP about a person.
      *
@@ -682,7 +683,7 @@ class DOC_Util_Ldap
     private function parse_person_array(Array $data)
     {
         $outp = array();
-        
+
         foreach ($this->person_attributes as $attribute => $ldapname) {
             if ( isset($data[$ldapname]['count']) ) {
                 //print_r($data[$ldapname]);
@@ -693,19 +694,19 @@ class DOC_Util_Ldap
                 } else {
                     $value = $data[$ldapname][0];
                 }
-                
+
                 $outp[$attribute] = $value;
             } else {
             	$outp[$attribute] = NULL;
             }
        }
-       
+
        return $outp;
     }
-    
+
     /**
      * Test is a string matches a pattern
-     * 
+     *
      * @param string pattern for matching
      * @param string string for testing
      * @return boolean
@@ -748,7 +749,7 @@ class DOC_Util_Ldap
     	}
     	return preg_match('/' . $npattern . '/i', $string);
     }
-    
+
     /**
      * Lookup a short id for a given uuid
      *
@@ -760,19 +761,19 @@ class DOC_Util_Ldap
     	// get the UUID part
     	$fields = explode(',', $uuid_dn);
     	$uuid = $fields[0];
-    	
+
     	// setup search
     	$base = "ou=People,dc=brown,dc=edu";
     	$filter = "($uuid)";
     	$attribute = 'brownshortid';
-    	
+
     	try {
     		$search_result = $this->run_search($base, $filter, array($attribute));
     	}
     	catch (Exception $e) {
     		return '';
     	}
-    	
+
     	$count = array_shift($search_result);
     	if ($count == 0) {
     		return '';
@@ -780,7 +781,7 @@ class DOC_Util_Ldap
     	if ($count > 1) {
     		return '';
     	}
-    	
+
     	return $search_result[0][$attribute][0];
     }
 }

@@ -18,10 +18,11 @@
 				sortList: [[0,0]],
 				widgets: ['zebra'],
 				debug: false
-			}).on('sortEnd', function(sorter) {
-				// capture the current sort order for the table
-				_APP.currentSort = sorter.target.config.sortList ;
 			})
+// 			.on('sortEnd', function(sorter) {
+// 				// capture the current sort order for the table
+// 				_APP.currentSort = sorter.target.config.sortList ;
+// 			})
 			<?php if( $no_pager == FALSE ) { ?>
 
 				.tablesorterPager({
