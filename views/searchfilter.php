@@ -1,7 +1,7 @@
 <style type="text/css">
 	form#filter {
 		width: 720px ;
-	}	
+	}
 	.search-group-manipulation {
 		float:right;
 	}
@@ -40,7 +40,7 @@
 		float: right ;
 		width: 10% ;
 	}
-	 
+
 </style>
 <?php
 	$operators = array(
@@ -49,7 +49,7 @@
 		'gt' => 'greater than',
 		'ne' => 'does not equal'
 	) ;
-	
+
 	if( isset( $filter_fields ) && isset( $filter_model )) {
 		$session = Session::instance('database') ;
 		$table_columns = $filter_model->list_columns() ;
@@ -62,7 +62,7 @@
 
 
 		print("<form id='filter' method='POST' action='{$form_action}'>") ;
-		
+
 		if( isset( $filter_extras )) {
 			if( !is_array( $filter_extras )) {
 				$filter_extras = array( $filter_extras ) ;
@@ -107,13 +107,13 @@
 					$option_class = 'filter_text' ;
 					if( isset( $filter_specs[ 'data_type' ] )) {
 						$option_class = 'filter_' . preg_replace( '/^(.+?) ?/', '$1', $filter_specs[ 'data_type' ] ) ;
-					} 
+					}
 
 				// defaults
 				} else {
 					if( isset( $table_columns[ $filter_col ])) {
 						if( $table_columns[ $filter_col ][ 'data_type' ] == 'enum' ) {
-							// the column spec doesn't give us exactly what we need, since it 
+							// the column spec doesn't give us exactly what we need, since it
 							// creates numeric keys. We'll make sure the keys are the same as the values.
 
 							$enum_menu = array() ;
@@ -137,7 +137,7 @@
 						$property_columns = $filter_model->$property->list_columns() ;
 
 						if( $property_columns[ $column ][ 'data_type' ] == 'enum' ) {
-							// the column spec doesn't give us exactly what we need, since it 
+							// the column spec doesn't give us exactly what we need, since it
 							// creates numeric keys. We'll make sure the keys are the same as the values.
 
 							$enum_menu = array() ;
@@ -176,9 +176,9 @@
 				if( $this_data_type == 'unknown' ) {
 					if( isset( $filter_fields[ $saved_filter_specs[ 'filter_column' ]][ 'data_type' ] )) {
 						$this_data_type = $filter_fields[ $saved_filter_specs[ 'filter_column' ]][ 'data_type' ] ;
-					}	
+					}
 				}
-	//Util_Debug::dump( $this_data_type, false ) ;			
+	//Util_Debug::dump( $this_data_type, false ) ;
 				if( Util_Filter::data_type_is_text( $this_data_type )) {
 					$text_default = isset( $saved_filter_specs[ 'search_val_0' ]) ? $saved_filter_specs[ 'search_val_0' ] : '' ;
 				}
@@ -192,15 +192,17 @@
 
 			}
 
-			print("<span class='filter_value filter_text'> 
-						like 
+			print("<span class='filter_value filter_text'>
+						like
 						<input type='hidden' name='search_operator[]' value='' />
-						<input type='text' value='{$text_default}' name='search_val_0[]' /></span>") ;
-			print("<span class='filter_value filter_date'> 
+						<input type='text' value='{$text_default}' name='search_val_0[]' />
+						<input type='hidden' value='' name='search_val_1[]' />
+						</span>") ;
+			print("<span class='filter_value filter_date'>
 						<input type='hidden' name='search_operator[]' value='' />
-						from 
-						<input type='text' value='{$date_default_0}' name='search_val_0[]' class='datepicker' /> 
-						to 
+						from
+						<input type='text' value='{$date_default_0}' name='search_val_0[]' class='datepicker' />
+						to
 						<input type='text' value='{$date_default_1}' name='search_val_1[]' class='datepicker' />
 					</span>") ;
 
@@ -221,7 +223,7 @@
 		print(Form::select('boolean_connector', array('AND' => 'AND','OR' => 'OR'), $boolean_connector)) ;
 		print('</div>') ;
 		print('</div>') ;
-		
+
 		print("<div class='submits'>") ;
 		if( isset( $alternate_submits ) && count( $alternate_submits ) > 0 ) {
 			print("<div class='submits-alternate'>") ;
@@ -238,6 +240,6 @@
 		print("<div style='clear:right;'></div>") ;
 		print("</div>") ;
 
-		print("</form>") ;		
+		print("</form>") ;
 	}
 ?>
