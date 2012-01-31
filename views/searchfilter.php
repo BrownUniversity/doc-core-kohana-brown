@@ -95,13 +95,13 @@
 				if( isset( $filter_specs[ 'relation_name' ])) {
 					$option_class = $filter_specs[ 'relation_name' ] ;
 					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
-					$relation_menus[] = "<span class='filter_value {$filter_specs[ 'relation_name' ]}'> is {$column_menu}</span>" ;
+					$relation_menus[] = "<span class='filter_value {$filter_specs[ 'relation_name' ]}'> is {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
 
 				// in case we have a special array for the menu but not a special label (likely for enum fields)
 				} elseif( isset( $filter_specs[ 'relation_options' ])) {
 					$option_class = $filter_col ;
 					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
-					$relation_menus[] = "<span class='filter_value {$option_class}'> is {$column_menu}</span>" ;
+					$relation_menus[] = "<span class='filter_value {$option_class}'> is {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
 
 				} elseif( isset( $filter_specs[ 'custom_query' ]) && $filter_specs[ 'custom_query'] == TRUE ) {
 					$option_class = 'filter_text' ;
@@ -206,7 +206,7 @@
 						<input type='text' value='{$date_default_1}' name='search_val_1[]' class='datepicker' />
 					</span>") ;
 
-			print("<span class='filter_value filter_numeric'>".Form::select("search_operator[]", $operators, $search_operator)."<input type='text' value='{$numeric_default}' name='search_val_0[]' /></span>") ;
+			print("<span class='filter_value filter_numeric'>".Form::select("search_operator[]", $operators, $search_operator)."<input type='text' value='{$numeric_default}' name='search_val_0[]' /><input type='hidden' value='' name='search_val_1[]' /></span>") ;
 
 
 			foreach( $relation_menus as $relation_menu ) {
