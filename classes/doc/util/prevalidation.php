@@ -14,7 +14,11 @@
  */
 class DOC_Util_Prevalidation {
 	
-	
+	/**
+	 * Compares arrays to be sure that their keys all match.
+	 * 
+	 * @return boolean 
+	 */
 	public static function array_keys_match() {
 		$arrays = func_get_args() ;
 		
@@ -30,6 +34,12 @@ class DOC_Util_Prevalidation {
 		return TRUE ;
 	}
 	
+	/**
+	 * Accepts any number of arrays as arguments, and will check that each one
+	 * is a non-empty array.
+	 * 
+	 * @return boolean 
+	 */
 	public static function arrays_non_empty() {
 		$arrays = func_get_args() ;
 		

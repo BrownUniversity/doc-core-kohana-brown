@@ -8,6 +8,7 @@
  * Description of table
  *
  * @author jorrill
+ * @deprecated Use DOC_Helper_Table instead.
  */
 class DOC_Util_Table extends Table {
 

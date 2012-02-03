@@ -11,16 +11,33 @@
  * @author jorrill
  */
 class DOC_Valid extends Kohana_Valid {
+	
+	/**
+	 * Checks whether the given $number is less than the $max.
+	 * 
+	 * @param float $number
+	 * @param float $max
+	 * @return boolean 
+	 */
 	public static function less_than( $number, $max ) {
 		return $number <= $max ;
 	}
 	
+	/**
+	 * Checks whether the given $number is greater than the $min.
+	 * 
+	 * @param float $number
+	 * @param float $min
+	 * @return boolean 
+	 */
 	public static function greater_than( $number, $min ) {
 		return $number >= $min ;
 	}
 
 	/**
-	 * Not sure if this works...
+	 * Not sure if this works...It _should_ execute the given comparison and 
+	 * return a boolean response, giving us a single generic way to test multiple
+	 * conditions.
 	 * 
 	 * @param type $a
 	 * @param type $b
@@ -50,6 +67,13 @@ class DOC_Valid extends Kohana_Valid {
 		return strtotime( $date_1 ) <= strtotime( $date_2 ) ;
 	}
 	
+	/**
+	 * Checks that the given $value is a member of $enum_array.
+	 * 
+	 * @param mixed $value
+	 * @param array $enum_array
+	 * @return boolean 
+	 */
 	public static function enum($value, $enum_array) {
 		return in_array($value, $enum_array) ;
 	}

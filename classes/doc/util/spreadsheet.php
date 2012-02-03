@@ -79,10 +79,12 @@ class DOC_Util_Spreadsheet {
 
 	/**
 	 * Download a spreadsheet file to the user. If no filename is specified,
-	 * one will be generated based on the current URI and datetime.
+	 * one will be generated based on the current URI and datetime. Defaults to
+	 * Excel, but can optionally generate other formats (file types) as well.
 	 *
 	 * @param PHPExcel $obj_phpexcel
 	 * @param string $filename
+	 * @param string $file_type Use one of the class constants.
 	 */
 	public static function download( $obj_phpexcel, $filename = NULL, $file_type = self::FILETYPE_EXCEL ) {
 		if( empty( $filename )) {

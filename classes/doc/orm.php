@@ -20,7 +20,14 @@ class DOC_ORM extends Kohana_ORM {
 	const DEFAULT_SLUG_COLUMN = 'slug' ;
 	const DEFAULT_SLUG_MAX_LENGTH = 50 ;
 	
-	
+	/**
+	 * Checks whether the given property is supported by the object in any of the
+	 * standard relationships. This includes _table_columns, _belongs_to, _has_many
+	 * and _has_one.
+	 * 
+	 * @param string $prop_name
+	 * @return boolean 
+	 */
 	public function supports_property( $prop_name ) {
 				
 		if( array_key_exists( $prop_name, $this->_table_columns)) {
@@ -108,6 +115,13 @@ class DOC_ORM extends Kohana_ORM {
 				->get('total') ;
 	}
 	
+	/**
+	 * Given an array of property => value pairs, checks that the combination
+	 * specified does not already exist in the database.
+	 * 
+	 * @param array $propval_array
+	 * @return boolean 
+	 */
 	public function properties_are_unique( $propval_array ) {
 		$select = DB::select( array( DB::expr('COUNT(id)'), 'total' ))
 				->from($this->_table_name)
@@ -126,6 +140,19 @@ class DOC_ORM extends Kohana_ORM {
 	 *
 	 * @param string $text
 	 * @return string
+	 */
+	
+	
+	/**
+	 * Modifies a string to remove non-ASCII characters and spaces. May also check
+	 * for uniqueness and increment an integer suffix until the uniqueness constraint
+	 * is satisfied.
+	 * 
+	 * @param string $text The original text to slugify.
+	 * @param string $slug_column The DB column where slugs are stored.
+	 * @param int $max_length The maximum length for the slug.
+	 * @param string $uniqueness_property A property that uniquely identifies this object. Used to remove the current object from the query.
+	 * @return string 
 	 */
 	public function slugify( $text, $slug_column = self::DEFAULT_SLUG_COLUMN, $max_length = self::DEFAULT_SLUG_MAX_LENGTH, $uniqueness_property = self::UNIQUENESS_AGAINST_PK ) {
 		$slug_found = FALSE ;
@@ -157,7 +184,14 @@ class DOC_ORM extends Kohana_ORM {
 		return $slug ;
 	}
 
-	
+	/**
+	 * Slugify a string.
+	 * 
+	 * @param string $text
+	 * @param string $modifier
+	 * @param int $max_length
+	 * @return string 
+	 */
 	static function create_slug( $text, $modifier = '', $max_length = self::DEFAULT_SLUG_MAX_LENGTH ) {
 		// replace non letter or digits by -
 		$text = preg_replace('~[^\\pL\d]+~u', '-', $text);

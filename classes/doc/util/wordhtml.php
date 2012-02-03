@@ -15,7 +15,9 @@ class DOC_Util_WordHTML {
 	const ALLOWABLE_TAGS_DEFAULT = "<p><div><br><strong><b><em><i><u><strike><blockquote><ol><ul><li>" ;
 	
 	/**
-	 *
+	 * Turn Word-generated HTML into something without all the cruft. This is basically
+	 * an HTML cleaner, and could be used to clean up other problematic code.
+	 * 
 	 * @param string $str
 	 * @param string $allow_tags A list of allowable tags, i.e. "<p><b><strong>"
 	 * @return string 
