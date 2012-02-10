@@ -225,6 +225,12 @@
 		print('</div>') ;
 
 		print("<div class='submits'>") ;
+
+		print("<div class='submits-main'>") ;
+		print("<input type='submit' name='setFilter' value='Search' />") ;
+		print("<input type='submit' name='setFilter' value='Clear' />") ;
+		print("</div>") ;
+		
 		if( isset( $alternate_submits ) && count( $alternate_submits ) > 0 ) {
 			print("<div class='submits-alternate'>") ;
 			foreach( $alternate_submits as $submit_name => $submit_value ) {
@@ -233,10 +239,6 @@
 			print("</div>") ;
 		}
 
-		print("<div class='submits-main'>") ;
-		print("<input type='submit' name='setFilter' value='Search' />") ;
-		print("<input type='submit' name='setFilter' value='Clear' />") ;
-		print("</div>") ;
 		print("<div style='clear:right;'></div>") ;
 		print("</div>") ;
 
