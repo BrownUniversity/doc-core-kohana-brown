@@ -182,46 +182,38 @@ class DOC_Util_Ldap
      */
     public function search_people($s, $limit = 20, $paffil = null) {
         $result = array();
-
+        $s = trim($s);
         // search the people objects
         $base = "ou=People,dc=brown,dc=edu";
         $ss = explode(' ', $s);
 
+        /**
+         * Attempt a exact match to start of string comparison
+         */
         $filters = array();
-
-        foreach ($ss as $s)
-        {
-            //Probably overkill.  It *should* be ok to just search displayname.
-            $filters[] = "(|(displayname=*$s*)(brownsisid=$s*)(brownshortid=$s*)(brownnetid=$s*))";
-        }
-
-        if ( !is_null($paffil) )
-        {
+        $filters[] = "(displayname=" . implode('*', $ss) . "*)";
+       
+        if ( ! is_null($paffil) ) {
             $affiliations = is_array($paffil) ? $paffil : explode(',', $paffil);
             $afilters = array();
-
-            foreach ( $affiliations as $aff )
-            {
-                $afilters[] = "(brownprimaryaffiliation=$aff)";
+            foreach ($affiliations as $aff) {
+                $afilters[] = "(brownprimaraffiliation=$aff)";
             }
-
-            $filters[] = '(|'.implode('', $afilters).')';
+            
+            $filters = '(|' . implode('', $afilters) . ')';
         }
-
+        
         $filters = implode($filters);
-        $filter = "(&$filters)";
-
+        $filter = "(&{$filters})";
+        
         try {
-			$search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $limit);
-		}
-        catch (Exception $e)
-        {
+            $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $limit);
+        } catch (Exception $e) {
             $result['status']['ok'] = false;
             $result['status']['message'] = $e->getMessage();
+            return $result;
         }
-
-//        print_r($search_result);
-
+        
         $result['count'] = array_shift($search_result);
 
         // get the results
@@ -234,8 +226,66 @@ class DOC_Util_Ldap
 
         $result['results'] = $results;
         $result['status']['ok'] = true;
+        
+        if ($result['count'] == $limit) {
+            return $result;
+        } else {
+        
+            /**
+             * Run more general search
+             */
+            $new_limit = $limit - $result['count'];
+            $new_result = array();
+            
+            $filters = array();
 
-        return $result;
+            foreach ($ss as $s)
+            {
+                //Probably overkill.  It *should* be ok to just search displayname.
+                $filters[] = "(|(displayname=*$s*)(brownsisid=$s*)(brownshortid=$s*)(brownnetid=$s*))";
+            }
+
+            if ( !is_null($paffil) )
+            {
+                $affiliations = is_array($paffil) ? $paffil : explode(',', $paffil);
+                $afilters = array();
+
+                foreach ( $affiliations as $aff )
+                {
+                    $afilters[] = "(brownprimaryaffiliation=$aff)";
+                }
+
+                $filters[] = '(|'.implode('', $afilters).')';
+            }
+
+            $filters = implode($filters);
+            $filter = "(&$filters)";
+
+            try {
+                $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $new_limit);
+            }
+            catch (Exception $e)
+            {
+                return $result;
+            }
+
+            $new_result['count'] = array_shift($search_result);
+
+            // get the results
+            $new_results = array();
+            foreach ( $search_result as $sr )
+            {
+                $id = $sr['brownshortid'][0];
+                $new_results[$id] = $this->parse_person_array($sr);
+            }
+            
+            $result['count'] += $new_result['count'];
+            //$result['results'] = array_merge($result['results'], $new_results);
+            //$result['status']['ok'] = true;
+
+            return $result;
+        }
+         
     }
 
     /**
@@ -705,7 +755,7 @@ class DOC_Util_Ldap
     }
 
     /**
-     * Test is a string matches a pattern
+     * Test if a string matches a pattern
      *
      * @param string pattern for matching
      * @param string string for testing
