@@ -199,6 +199,21 @@ class DOC_Helper_Table {
 										break;
 								}
 							}
+							
+							if( isset( $col_spec[ 'class' ])) {
+								if( is_array( $col_spec[ 'class' ])) {
+									$key = $value ;
+									if( isset( $col_spec[ 'class' ][ 'key' ])) {
+										$key = $this->parse_string($object, $col_spec[ 'class' ][ 'key' ]) ;
+									}
+									if(array_key_exists( $key , $col_spec[ 'class' ][ 'classes' ])) {
+										$td_attrs[ 'class' ] = $col_spec[ 'class' ][ 'classes' ][ $key ] ;
+									}
+								} else {
+									$td_attrs[ 'class' ] = $col_spec[ 'class' ] ;
+								}
+							}
+							
 						} elseif ( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
 							$default_id = $object->pk() ;
 
