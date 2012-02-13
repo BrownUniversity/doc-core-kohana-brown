@@ -24,6 +24,7 @@ class DOC_Helper_Table {
 	const CONTEXT_WEB = 1 ;
 	const CONTEXT_SPREADSHEET = 2 ;
 	const CONTEXT_PDF = 3 ;
+	const CONTEXT_DEBUG = 4 ;
 
 	const FORMAT_DATE = 'date' ;
 	const FORMAT_LOOKUP = 'lookup' ;
