@@ -182,10 +182,11 @@ class DOC_Util_Ldap
      */
     public function search_people($s, $limit = 20, $paffil = null) {
         $result = array();
-        $s = trim($s);
+        $s_trim = trim($s);
+        
         // search the people objects
         $base = "ou=People,dc=brown,dc=edu";
-        $ss = explode(' ', $s);
+        $ss = explode(' ', $s_trim);
 
         /**
          * Attempt a exact match to start of string comparison
@@ -197,10 +198,9 @@ class DOC_Util_Ldap
             $affiliations = is_array($paffil) ? $paffil : explode(',', $paffil);
             $afilters = array();
             foreach ($affiliations as $aff) {
-                $afilters[] = "(brownprimaraffiliation=$aff)";
+                $afilters[] = "(brownprimaryaffiliation=$aff)";
             }
-            
-            $filters = '(|' . implode('', $afilters) . ')';
+            $filters[] = '(|' . implode('', $afilters) . ')';
         }
         
         $filters = implode($filters);
@@ -238,7 +238,7 @@ class DOC_Util_Ldap
             $new_result = array();
             
             $filters = array();
-
+            $ss = explode(' ', $s);
             foreach ($ss as $s)
             {
                 //Probably overkill.  It *should* be ok to just search displayname.
@@ -260,7 +260,7 @@ class DOC_Util_Ldap
 
             $filters = implode($filters);
             $filter = "(&$filters)";
-
+            
             try {
                 $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $new_limit);
             }
