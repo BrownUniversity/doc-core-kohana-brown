@@ -260,7 +260,7 @@ class DOC_Util_Ldap
 
             $filters = implode($filters);
             $filter = "(&$filters)";
-            
+
             try {
                 $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $new_limit);
             }
@@ -268,7 +268,7 @@ class DOC_Util_Ldap
             {
                 return $result;
             }
-
+			
             $new_result['count'] = array_shift($search_result);
 
             // get the results
@@ -280,7 +280,7 @@ class DOC_Util_Ldap
             }
             
             $result['count'] += $new_result['count'];
-            //$result['results'] = array_merge($result['results'], $new_results);
+            $result['results'] = array_merge($result['results'], $new_results);
             //$result['status']['ok'] = true;
 
             return $result;
