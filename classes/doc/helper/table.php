@@ -38,6 +38,7 @@ class DOC_Helper_Table {
 	const FORMAT_TRUNCATE = 'truncate' ;
 	const FORMAT_CUSTOM = 'custom' ;
 	const FORMAT_DEFAULT = 'default' ;
+	const FORMAT_CALLBACK = 'callback' ;
 
 	public function __construct( $data, $column_specs, $table_attrs = array(), $context = self::CONTEXT_WEB) {
 		$this->data = $data ;
@@ -195,7 +196,22 @@ class DOC_Helper_Table {
 										if( is_null( $value ) || $value == '' ) {
 											$value = $col_spec[ 'format' ][ 'output' ] ;
 										}
-
+										break ;
+									case self::FORMAT_CALLBACK:
+										$obj = $object ;
+										if( isset( $col_spec[ 'format' ][ 'obj' ])) {
+											$obj = $col_spec[ 'format' ][ 'obj' ] ;
+											if( strpos($obj, '{') !== FALSE ) {
+												$obj = $this->parse_string($object, $obj) ;
+											}
+										}
+										$args = NULL ;
+										if( isset( $col_spec[ 'format' ][ 'args' ])) {
+											$args = $col_spec[ 'format' ][ 'args' ] ;
+										}
+										$value = call_user_func_array(array($obj, $col_spec[ 'format' ][ 'method' ]), $args ) ;
+									
+										
 									default:
 										break;
 								}
