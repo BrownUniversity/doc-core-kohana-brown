@@ -33,6 +33,28 @@ class DOC_Util_WordHTML {
 		
 		return $_output ;
 	}
+	
+	/**
+	 * Convert smart quotes, en dashes, em dashes and ellipsis characters into plain text equivalents.
+	 * 
+	 * @param string $str
+	 * @return string 
+	 */
+	public static function convert_problem_chars( $str ) {
+		// UTF-8 Characters
+		$str = str_replace(
+			array("\xe2\x80\x98", "\xe2\x80\x99", "\xe2\x80\x9c", "\xe2\x80\x9d", "\xe2\x80\x93", "\xe2\x80\x94", "\xe2\x80\xa6"),
+			array("'", "'", '"', '"', '-', '--', '...'),
+			$str
+		);
+		// Next, replace their Windows-1252 equivalents.
+		$str = str_replace(
+			array(chr(145), chr(146), chr(147), chr(148), chr(150), chr(151), chr(133)),
+			array("'", "'", '"', '"', '-', '--', '...'),
+			$str
+		);
+		return $str ;
+	}
 }
 
 ?>
