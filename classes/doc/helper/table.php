@@ -208,6 +208,9 @@ class DOC_Helper_Table {
 										$args = NULL ;
 										if( isset( $col_spec[ 'format' ][ 'args' ])) {
 											$args = $col_spec[ 'format' ][ 'args' ] ;
+											if( !is_object($obj) || get_class( $obj ) != get_class( $object )) {
+												$args[] = $object ;
+											}
 										}
 										$value = call_user_func_array(array($obj, $col_spec[ 'format' ][ 'method' ]), $args ) ;
 									
