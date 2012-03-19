@@ -184,7 +184,7 @@ abstract class DOC_Util_File {
 	 * what we would have received in a file upload from the _FILES array. This
 	 * is required to enable us to generate files on the fly and have them
 	 * be treated as if they were a normal file upload.
-	 * 
+	 *
 	 * @param string $file Full path and filename to the file for which we want specs generated
 	 * @param string $original_filename An original filename to insert into the array.
 	 * @return array
@@ -201,10 +201,44 @@ abstract class DOC_Util_File {
 		} else {
 			// throw an exception...
 		}
-		
+
 		return $_output ;
 	}
 
+	/**
+	 * By default the incoming $_FILES array structure for an array of files is a little non-standard
+	 * in that we get a single item where the properties have multiple rows. This restructures
+	 * the array to better parallel what we would get from normal POST data. Stolen from PHP
+	 * user-contributed notes at http://www.php.net/manual/en/reserved.variables.files.php#106608.
+	 *
+	 * @param array $files Assumed to be the _FILES array from the form submission.
+	 * @param bool $top Indicates whether this is the first time through or not.
+	 */
+	public static function restructure_files_array( $files, $top = TRUE ) {
+		$_out_files = array();
+		foreach($files as $name=>$file){
+			if( $top ) {
+				$sub_name = $file['name'];
+			} else {
+				$sub_name = $name;
+			}
+			if(is_array($sub_name)){
+				foreach(array_keys($sub_name) as $key){
+					$_out_files[$name][$key] = array(
+						'name'     => $file['name'][$key],
+						'type'     => $file['type'][$key],
+						'tmp_name' => $file['tmp_name'][$key],
+						'error'    => $file['error'][$key],
+						'size'     => $file['size'][$key],
+					);
+					$_out_files[$name] = self::restructure_files_array($_out_files[$name], FALSE);
+				}
+			}else{
+				$_out_files[$name] = $file;
+			}
+		}
+		return $_out_files;
+	}
 }
 
 ?>
