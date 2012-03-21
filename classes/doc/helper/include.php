@@ -25,7 +25,7 @@ class DOC_Helper_Include {
 	 * Generate the proper URL for inclusion in your HTML. If passed a type, this
 	 * method will return the appropriate link, script or img tag. If no type
 	 * is included, then it will simply return the URL.
-	 * 
+	 *
 	 * @param string $path The path fragment you want to check for.
 	 * @param string $type Use one of the class constants, or leave NULL to just get the URL with no generated HTML.
 	 * @return string
@@ -48,12 +48,12 @@ class DOC_Helper_Include {
 			switch ($type) {
 				case self::TYPE_CSS:
 					$_output = "<link rel='stylesheet' href='{$include_url}' type='text/css' />" ;
-	
+
 					break;
 				case self::TYPE_JAVASCRIPT:
 					$_output = "<script src='{$include_url}' language='javascript' type='text/javascript'></script>" ;
 					break ;
-	
+
 				case self::TYPE_IMAGE:
 					$_output = "<img src='{$include_url}' />" ;
 					break ;
@@ -68,39 +68,57 @@ class DOC_Helper_Include {
 		return $_output ;
 
 	}
-	
-	
+
+
 	/**
-	 * Given a path, searches the include paths and returns the contents of the 
+	 * Given a path, searches the include paths and returns the contents of the
 	 * file it finds.
-	 * 
+	 *
 	 * @param string $path
-	 * @return string 
+	 * @return string
 	 */
 	static function file_contents( $path ) {
 		$_output = '' ;
 
-		$include_paths = Kohana::$config->load( 'includepaths' ) ;
-		foreach( $include_paths as $path_arr ) {
-			$file_path = $path_arr[ 'base_file_path' ] . $path ;
-			if( file_exists( $file_path )) {
-				$file_handle = fopen( $file_path, "r" ) ;
-				$_output = fread( $file_handle, filesize( $file_path )) ;
-				break ;
-			}
+		$file_path = self::file_path($path) ;
+		if( !empty( $file_path )) {
+			$file_handle = fopen( $file_path, "r" ) ;
+			$_output = fread( $file_handle, filesize( $file_path )) ;
 		}
 
 		return $_output ;
 	}
 
 	/**
+	 * Given a path fragment, returns the full file path on the system to the file.
+	 *
+	 * @param string $path Path fragment to be appended to the includepaths as set in config
+	 * @return string  The full file path to the file
+	 */
+	static function file_path( $path ) {
+		$_output = '' ;
+
+		$include_paths = Kohana::$config->load( 'includepaths' ) ;
+		foreach( $include_paths as $path_arr ) {
+			$file_path = $path_arr[ 'base_file_path' ] . $path ;
+			if( file_exists( $file_path )) {
+				$_output = $file_path ;
+				break ;
+			}
+		}
+
+		return $_output ;
+
+	}
+
+	/**
 	 * Returns the appropriate tag or contents, using the current request to build
 	 * a path. This assumes that your css or javascript directory has a "pages"
 	 * directory with a structure that matches the request directory/controller/action.
-	 * 
+	 *
 	 * @param string $type Use one of the class constants.
 	 * @param string $include_as Use one of the class constants.
-	 * @return string 
+	 * @return string
 	 */
 	static function companion( $type, $include_as = self::INCLUDE_LINK ) {
 
@@ -110,28 +128,28 @@ class DOC_Helper_Include {
 			self::TYPE_JAVASCRIPT => 'js'
 		) ;
 		$dir_ext = $dir_and_extensions[ $type ] ;
-		
-		
+
+
 		$request = Request::current() ;
 
-		
-		
+
+
 		$file = $dir_ext . '/pages/' ;
 		$directory = $request->directory() ;
 		if( !empty( $directory )) {
 			$file .= $directory . '/' ;
 		}
-		
+
 		$file .= $request->controller().'/'.$request->action() ;
 		$file .= '.' . $dir_ext ;
-		
+
 
 		if( $include_as == self::INCLUDE_LINK ) {
 			$_output = self::file_link( $file, $type ) ;
 		} else {
 			$_output = self::file_contents( $file ) ;
 		}
-		
+
 		return $_output ;
 
 	}

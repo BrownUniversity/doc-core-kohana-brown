@@ -54,10 +54,24 @@ class DOC_Util_File_Local extends DOC_Util_File {
 			@readfile( $file_path ) or die( "file not found" ) ;
 		} else {
 			header( $_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', TRUE, 404 ) ;
-			die( "Unable to find file." ) ;
+
 		}
 
 	}
+
+	public function get_attachment($root_dir, $filename, $new_filename = NULL) {
+		$file_path = $root_dir . $filename . self::UPLOAD_SUFFIX ;
+		if( $new_filename == NULL ) {
+			$new_filename = $filename ;
+		}
+
+		if( !file_exists( $file_path )) {
+			die( "Unable to find file." ) ;
+		}
+
+		return Swift_Attachment::newInstance($file_path, $new_filename, $info['content_type']) ;
+	}
+
 
 	public function get_root_dir($root_key = NULL, $dir_key = NULL) {
 		return $file_config[ 'default' ][ $root_key ] . $file_config[ 'default' ][ $dir_key ] ;

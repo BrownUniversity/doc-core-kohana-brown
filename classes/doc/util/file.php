@@ -49,8 +49,19 @@ abstract class DOC_Util_File {
 	 *
 	 * @param string $root_dir The directory location of the file.
 	 * @param string $filename The name of the file to be displayed.
+ 	 * @param string $new_filename The name of the file as presented to the browser.
 	 */
 	abstract public function display( $root_dir, $filename, $new_filename = NULL ) ;
+
+	/**
+	 * Create a file attachment for use in an email message.
+	 *
+	 * @param string $root_dir The directory location of the file.
+	 * @param string $filename The name of the file to be displayed.
+ 	 * @param string $new_filename The name of the file as presented to the browser.
+	 */
+	abstract public function get_attachment($root_dir, $filename, $new_filename = NULL) ;
+
 
 	/**
 	 * Delete the specified file from the filesystem.

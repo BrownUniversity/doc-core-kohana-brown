@@ -73,6 +73,23 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 
 	}
 
+	public function get_attachment($root_dir, $filename, $new_filename = NULL) {
+		if( $new_filename == NULL ) {
+			$new_filename = $filename ;
+		}
+
+		$headers = $this->s3->get_object_headers( $root_dir, $filename ) ;
+		$info = $headers->header['_info'] ;
+		$local_file = tempnam( sys_get_temp_dir(), 'askmsg') ;
+		$response = $this->s3->get_object(
+				$root_dir,
+				$filename,
+				array('fileDownload' => $local_file)
+		) ;
+
+		return Swift_Attachment::newInstance($local_file, $new_filename, $info['content_type']) ;
+	}
+
 	public function get_root_dir($root_key = NULL, $dir_key = NULL) {
 		return $this->aws_config['bucket'] ;
 	}
