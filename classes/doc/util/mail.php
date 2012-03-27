@@ -1,6 +1,6 @@
 <?php
 
-require_once Kohana::find_file('classes', 'Swift-4.0.6/lib/swift_required') ;
+// require_once Kohana::find_file('classes', 'Swift-4.1.5/lib/swift_required') ;
 
 /*
  * To change this template, choose Tools | Templates
@@ -13,18 +13,18 @@ require_once Kohana::find_file('classes', 'Swift-4.0.6/lib/swift_required') ;
  * @author jorrill
  */
 class DOC_Util_Mail {
-	
+
 	/**
 	 *
 	 * @param string $subject
 	 * @param string $body
 	 * @param string $recipients
 	 * @param string $cc
-	 * @return int 
+	 * @return int
 	 */
 	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL ) {
 		$_output = FALSE ;
-		
+
 		$mail_config = Kohana::$config->load('mail') ;
 		$transport = Swift_MailTransport::newInstance() ;
 		$mailer = Swift_Mailer::newInstance($transport) ;
@@ -42,14 +42,14 @@ class DOC_Util_Mail {
 		if( $reply_to == NULL ) {
 			$reply_to = $mail_config[ 'reply-to' ] ;
 		}
-		
-		
+
+
 		$message = Swift_Message::newInstance($subject, $body) ;
 		$message->setContentType('text/html') ;
 		$message->setTo( $recipients ) ;
 		$message->setFrom( $from ) ;
 		$message->setReplyTo( $reply_to ) ;
-		
+
 		if( !empty( $cc )) {
 			if( $mail_config[ 'test_mode' ] != TRUE ) {
 				$message->setCc($cc) ;
@@ -57,15 +57,15 @@ class DOC_Util_Mail {
 		}
 
 		$_output = $mailer->send($message) ;
-		
+
 		return $_output ;
-		
+
 	}
-	
+
 	/**
 	 * Validates a list of email addresses and converts them to an array. If any
 	 * address fail validation, throws an exception.
-	 * 
+	 *
 	 * @param mixed $address_list String or array containing email addresses
 	 * @return array An array of email addresses.
 	 */
@@ -83,31 +83,31 @@ class DOC_Util_Mail {
 						$_output[ $key ] = $address ;
 					} else {
 						// throw an exception
-						throw new Kohana_Exception("There appears to be a problem with the address(es) in the CC field. Be sure if you have multiple addresses that they are separated with a comma, and that each address is correct.") ;						
-					}					
+						throw new Kohana_Exception("There appears to be a problem with the address(es) in the CC field. Be sure if you have multiple addresses that they are separated with a comma, and that each address is correct.") ;
+					}
 				}
 			}
 		}
-		
+
 		return $_output ;
 	}
-	
+
 	/**
 	 * Mail merge-- this is highly dependent the individual app's data structure,
 	 * so not actually implemented here. The code is commented out as a reference
 	 * for local implementation.
-	 * 
+	 *
 	 * @param string $message_key
 	 * @param mixed $object
-	 * @return array 
+	 * @return array
 	 */
 //	public static function merge( $message_key, $object ) {
 //		$_output = array('subject' => '', 'body' => '') ;
 //		$mail_config = Kohana::$config->load('mail') ;
-//		
+//
 //		$_output[ 'subject' ] = $mail_config[ 'templates' ][ $message_key ][ 'subject' ] ;
 //		$_output[ 'body' ] = $mail_config[ 'templates' ][ $message_key ][ 'body' ] ;
-//		
+//
 //		switch ($message_key) {
 //			case 'lesson_plans_under_review':
 //				$replacements = array(
@@ -116,19 +116,19 @@ class DOC_Util_Mail {
 //				) ;
 //
 //				break;
-//			
+//
 //			default:
 //				break;
 //		}
-//		
-//		
+//
+//
 //		$_output = str_replace(array_keys( $replacements ), array_values( $replacements ), $_output) ;
-//		
+//
 //		return $_output ;
-//		
+//
 //	}
-	
-	
+
+
 }
 
 ?>

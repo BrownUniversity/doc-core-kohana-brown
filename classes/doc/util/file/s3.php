@@ -87,7 +87,7 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 				array('fileDownload' => $local_file)
 		) ;
 
-		return Swift_Attachment::newInstance($local_file, $new_filename, $info['content_type']) ;
+		return Swift_Attachment::fromPath($local_file, $info['content_type'])->setFilename($new_filename) ;
 	}
 
 	public function get_root_dir($root_key = NULL, $dir_key = NULL) {
