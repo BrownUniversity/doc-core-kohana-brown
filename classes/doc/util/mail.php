@@ -14,15 +14,7 @@
  */
 class DOC_Util_Mail {
 
-	/**
-	 *
-	 * @param string $subject
-	 * @param string $body
-	 * @param string $recipients
-	 * @param string $cc
-	 * @return int
-	 */
-	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL ) {
+	public static function send_message($message, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL ) {
 		$_output = FALSE ;
 
 		$mail_config = Kohana::$config->load('mail') ;
@@ -30,9 +22,15 @@ class DOC_Util_Mail {
 		$mailer = Swift_Mailer::newInstance($transport) ;
 
 		if( $mail_config[ 'test_mode' ] == TRUE ) {
-			$body .= "<br /><br />TEST MODE: This message would normally have gone to: " . implode( ', ', $recipients ) ;
+			$message->setBody(
+				$message->getBody() .
+				"<p>TEST MODE: This message would normally have gone to: " . implode( ', ', $recipients ) . "</p>"
+			) ;
 			if( !empty( $cc )) {
-				$body .= "<br />CC recipients: " . implode( ', ', $cc ) ;
+				$message->setBody(
+					$message->getBody() .
+					"<p>CC recipients: " . implode( ', ', $cc ) . "</p>"
+				) ;
 			}
 			$recipients = unserialize( $mail_config[ 'test_mode_recipients' ] ) ;
 		}
@@ -43,9 +41,6 @@ class DOC_Util_Mail {
 			$reply_to = $mail_config[ 'reply-to' ] ;
 		}
 
-
-		$message = Swift_Message::newInstance($subject, $body) ;
-		$message->setContentType('text/html') ;
 		$message->setTo( $recipients ) ;
 		$message->setFrom( $from ) ;
 		$message->setReplyTo( $reply_to ) ;
@@ -60,6 +55,21 @@ class DOC_Util_Mail {
 
 		return $_output ;
 
+	}
+
+	/**
+	 *
+	 * @param string $subject
+	 * @param string $body
+	 * @param string $recipients
+	 * @param string $cc
+	 * @return int
+	 */
+	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL ) {
+		$message = Swift_Message::newInstance($subject, $body) ;
+		$message->setContentType('text/html') ;
+
+		return self::send_message($message, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL ) ;
 	}
 
 	/**
