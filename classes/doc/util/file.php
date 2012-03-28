@@ -178,12 +178,10 @@ abstract class DOC_Util_File {
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 		header("Cache-Control: private",false);
-
-		if( $send_as == self::SEND_AS_DISPLAY ) {
-			header("Content-type: {$content_type}");
+		header("Content-type: {$content_type}");
+		if( $send_as == self::SEND_AS_DISPLAY ) {	
 			header('Content-Disposition: inline; filename="'.$filename.'"');
 		} else {
-			header("Content-type: application/x-download");
 			header('Content-Disposition: attachment; filename="'.$filename.'"');
 		}
 		header("Content-Transfer-Encoding: binary");

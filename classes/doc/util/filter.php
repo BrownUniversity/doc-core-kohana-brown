@@ -204,8 +204,7 @@ class DOC_Util_Filter {
 					}
 
 					$_output = $_output->$orm_connectors[ $bool_connector ]( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'id_column' ], 'in', $ids ) ;
-
-
+						
 
 				} else {
 					$column_type = self::get_data_type($_output, $filter_specs[ 'filter_column' ]) ;
@@ -215,13 +214,15 @@ class DOC_Util_Filter {
 						$_output = $_output->$orm_connectors[ $bool_connector ]( $query_column, 'LIKE', "%{$filter_specs[ 'search_val_0' ]}%") ;
 					} elseif ( self::data_type_is_date( $column_type )) {
 						$_output = $_output->and_where_open() ;
-						if( !empty( $filter_specs[ 'search_val_0' ])) {
-							$_output = $_output->and_where($query_column, '>=', Date::formatted_time($filter_specs[ 'search_val_0' ] . ' 00:00:00')) ;
+						if( empty( $filter_specs[ 'search_val_0' ])) {
+							$filter_specs[ 'search_val_0' ] = '2000-01-01' ;
 						}
-						if( !empty( $filter_specs[ 'search_val_1' ])) {
-							$_output = $_output->and_where($query_column, '<=', Date::formatted_time($filter_specs[ 'search_val_1' ] . ' 23:59:59'))  ;
+						if( empty( $filter_specs[ 'search_val_1' ])) {
+							$filter_specs[ 'search_val_1' ] = '2999-12-31' ;
 						}
-						$_output = $_output->and_where_close() ;
+						$_output = $_output->and_where($query_column, '>=', Date::formatted_time($filter_specs[ 'search_val_0' ] . ' 00:00:00')) ;
+						$_output = $_output->and_where($query_column, '<=', Date::formatted_time($filter_specs[ 'search_val_1' ] . ' 23:59:59'))  ;
+						$_output = $_output->and_where_close() ;							
 					} elseif ( self::data_type_is_numeric( $column_type )) {
 						$_output = $_output->$orm_connectors[ $bool_connector ]($query_column, self::get_operator( $filter_specs[ 'search_operator' ]), $filter_specs[ 'search_val_0' ]) ;
 
