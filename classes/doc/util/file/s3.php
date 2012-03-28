@@ -26,6 +26,10 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 
 	public function delete($root_dir, $filename) {
 		$response = $this->s3->delete_object( $root_dir, $filename ) ;
+		// also delete from the cache
+		if( file_exists( $this->aws_config['cache_path'] . $filename )) {
+			unlink( $this->aws_config['cache_path'] . $filename ) ;
+		}
 
 		return $response->isOK() ;
 	}
@@ -34,20 +38,15 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
 		}
-		$headers = $this->s3->get_object_headers( $root_dir, $filename ) ;
-		$info = $headers->header['_info'] ;
 
-		$file = $this->s3->get_object(
-				$root_dir,
-				$filename,
-				array( 'returnCurlHandle' => TRUE )
-		) ;
+		$file_path = $this->retrieve_file( $root_dir, $filename ) ;
+		$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
+		$mime_type = finfo_file( $finfo, $file_path ) ;
 
-		$this->send_headers($info[ 'content_type' ], $new_filename, $info[ 'download_content_length'], self::SEND_AS_DISPLAY) ;
+		$this->send_headers($mime_type, $new_filename, @filesize($file_path), self::SEND_AS_DISPLAY) ;
 
-		curl_setopt( $file, CURLOPT_HEADER, FALSE ) ;
-		curl_setopt( $file, CURLOPT_RETURNTRANSFER, FALSE ) ;
-		curl_exec( $file ) ;
+		set_time_limit(0) ;
+		@readfile( $file_path ) or die( "file not found" ) ;
 
 	}
 
@@ -56,20 +55,14 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 			$new_filename = $filename ;
 		}
 
-		$headers = $this->s3->get_object_headers( $root_dir, $filename ) ;
-		$info = $headers->header['_info'] ;
+		$file_path = $this->retrieve_file( $root_dir, $filename ) ;
+		$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
+		$mime_type = finfo_file( $finfo, $file_path ) ;
 
-		$file = $this->s3->get_object(
-				$root_dir,
-				$filename,
-				array( 'returnCurlHandle' => TRUE )
-		) ;
+		$this->send_headers($mime_type, $new_filename, @filesize($file_path), self::SEND_AS_DOWNLOAD) ;
 
-		$this->send_headers($info[ 'content_type' ], $new_filename, $info[ 'download_content_length'], self::SEND_AS_DOWNLOAD) ;
-
-		curl_setopt( $file, CURLOPT_HEADER, FALSE ) ;
-		curl_setopt( $file, CURLOPT_RETURNTRANSFER, FALSE ) ;
-		curl_exec( $file ) ;
+		set_time_limit(0) ;
+		@readfile( $file_path ) or die( "file not found" ) ;
 
 	}
 
@@ -78,16 +71,8 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 			$new_filename = $filename ;
 		}
 
-		$headers = $this->s3->get_object_headers( $root_dir, $filename ) ;
-		$info = $headers->header['_info'] ;
-		$local_file = tempnam( sys_get_temp_dir(), 'askmsg') ;
-		$response = $this->s3->get_object(
-				$root_dir,
-				$filename,
-				array('fileDownload' => $local_file)
-		) ;
-
-		return Swift_Attachment::fromPath($local_file, $info['content_type'])->setFilename($new_filename) ;
+		$local_file = $this->retrieve_file( $root_dir, $filename ) ;
+		return Swift_Attachment::fromPath( $local_file, $this->get_mime_type( $local_file))->setFilename( $new_filename ) ;
 	}
 
 	public function get_root_dir($root_key = NULL, $dir_key = NULL) {
@@ -107,6 +92,25 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		return $response->isOK() ;
 	}
 
-}
+	private function retrieve_file($root_dir, $filename) {
+		// check the cache for the file and use it if it's 24 hours old or less
+		$cached_file = $this->aws_config['cache_path'] . $filename ;
+		if( file_exists( $cached_file )) {
+			$stat = stat($cached_file) ;
+			if( $stat['mtime'] >= strtotime('-1 day')) {
+				return $cached_file ;
+			} else {
+				unlink( $cached_file ) ;
+			}
+		}
+		// no valid cache exists, retrieve from AWS. We'll still use the same $cached_file location
+		$response = $this->s3->get_object(
+				$root_dir,
+				$filename,
+				array('fileDownload' => $cached_file)
+		) ;
 
-?>
+		return $cached_file ;
+	}
+
+}
