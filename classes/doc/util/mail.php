@@ -69,7 +69,7 @@ class DOC_Util_Mail {
 		$message = Swift_Message::newInstance($subject, $body) ;
 		$message->setContentType('text/html') ;
 
-		return self::send_message($message, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL ) ;
+		return self::send_message($message, $recipients, $cc, $from, $reply_to) ;
 	}
 
 	/**
