@@ -14,12 +14,18 @@
  */
 class DOC_Util_Mail {
 
-	public static function send_message($message, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL ) {
+	public static function send_message($message, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE ) {
 		$_output = FALSE ;
 
 		$mail_config = Kohana::$config->load('mail') ;
-		$transport = Swift_MailTransport::newInstance() ;
-		$mailer = Swift_Mailer::newInstance($transport) ;
+
+		if( $spool ) {
+			$spool = new Swift_FileSpool($mail_config['spool_location']) ;
+			$mailer = new Swift_Mailer( new Swift_SpoolTransport( $spool )) ;
+		} else {
+			$transport = Swift_MailTransport::newInstance() ;
+			$mailer = Swift_Mailer::newInstance($transport) ;
+		}
 
 		if( $mail_config[ 'test_mode' ] == TRUE ) {
 			$message->setBody(
@@ -70,6 +76,15 @@ class DOC_Util_Mail {
 		$message->setContentType('text/html') ;
 
 		return self::send_message($message, $recipients, $cc, $from, $reply_to) ;
+	}
+
+	public static function flush_spool() {
+		$mail_config = Kohana::$config->load('mail') ;
+
+		$spool = new Swift_FileSpool($mail_config['spool_location']) ;
+		$transport = Swift_MailTransport::newInstance() ;
+		$count = $spool->flushQueue($transport) ;
+		Kohana::$log->add(Log::INFO, "Flushed {$count} messages from the spool.") ;
 	}
 
 	/**
