@@ -49,6 +49,8 @@ class DOC_Util_Spreadsheet {
 			$tds = $tr->getElementsByTagName('td') ;
 			for( $i = 0; $i < $tds->length; $i++ ) {
 				$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $tds->item($i)->nodeValue ) ;
+
+
 				if( $tds->item($i)->hasAttribute( 'class' )) {
 
 					switch( $tds->item($i)->getAttribute('class')) {
@@ -64,6 +66,10 @@ class DOC_Util_Spreadsheet {
 									->getStyleByColumnAndRow($i, $row_index)
 									->getNumberFormat()
 									->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD) ;
+							break ;
+
+						case 'wrap':
+							$active_sheet->getStyleByColumnAndRow($i, $row_index)->getAlignment()->setWrapText(TRUE);
 							break ;
 
 						default:
