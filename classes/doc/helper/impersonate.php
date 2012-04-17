@@ -1,17 +1,17 @@
 <?php
-/** 
+/**
  * @package Kohana 3.x Modules
  * @module Impersonation
  * @version 1.0
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
 defined('SYSPATH') OR die('No direct access allowed.');
- 
+
 /**
  * Impersonation Helper class
  */
 class DOC_Helper_Impersonate {
-    
+
     /**
      * Assume a user's identity
      *
@@ -20,7 +20,7 @@ class DOC_Helper_Impersonate {
     public static function assume($id)
     {
         $session = self::session();
-        
+
         if( $session->get( Kohana::$config->load('impersonate.session_original_user_id')) == NULL ) {
 			$method = Kohana::$config->load('impersonate.logged_in_method');
 			$model = Kohana::$config->load('impersonate.user_model');
@@ -28,11 +28,11 @@ class DOC_Helper_Impersonate {
 			$values = Kohana::$config->load('impersonate.permissions_values');
 			$user = eval("return Model_{$model}::{$method}();");
         	$session->set(Kohana::$config->load('impersonate.session_original_user_id'),$user->$attribute) ;
-        }        
-        
+        }
+
         $session->set(Kohana::$config->load('impersonate.session_key'), $id);
     }
-    
+
     /**
      * Generate a link for canceling impersonation if a user is being impersonated.
      *
@@ -48,7 +48,7 @@ class DOC_Helper_Impersonate {
     		return html::anchor('impersonate/clear', $message);
     	}
     }
-    
+
     /**
      * Determine if access to impersonation should be allowed
      */
@@ -63,14 +63,14 @@ class DOC_Helper_Impersonate {
 		$attribute = Kohana::$config->load('impersonate.permissions_property');
 		$values = Kohana::$config->load('impersonate.permissions_values');
 		$user = eval("return Model_{$model}::{$method}();");
-		
+
 		if (array_search($user->$attribute, $values) !== FALSE) {
 			return TRUE;
 		} else {
 			return FALSE;
 		}
 	}
-	
+
     /**
      * Remove impersonation from the session instance and restore the original user.
      */
@@ -83,7 +83,7 @@ class DOC_Helper_Impersonate {
         		$session->get( Kohana::$config->load('impersonate.session_original_user_id'))
         ) ;
     }
-    
+
     /**
      * Get the results of a user impersonation search
      */
@@ -92,10 +92,10 @@ class DOC_Helper_Impersonate {
         $session = self::session();
         return $session->get(Kohana::$config->load('impersonate.results_key'));
     }
-    
+
     /**
      * Get the return link
-     * 
+     *
      * @return string
      */
     public static function get_return_link()
@@ -103,7 +103,7 @@ class DOC_Helper_Impersonate {
         $session = self::session();
         return $session->get(Kohana::$config->load('impersonate.return_link_key'));
     }
-    
+
     /**
      * Get the current user or impersonated user
      */
@@ -111,7 +111,7 @@ class DOC_Helper_Impersonate {
     {
         $session = self::session();
         $id = $session->get(Kohana::$config->load('impersonate.session_key'));
-        
+
         $logged_in_method = Kohana::$config->load('impersonate.logged_in_method');
         $alternate_method = Kohana::$config->load('impersonate.alternate_method');
         $model = Kohana::$config->load('impersonate.user_model');
@@ -123,7 +123,7 @@ class DOC_Helper_Impersonate {
         }
         return eval($command);
     }
-    
+
     /**
      * Check if an impersonation session is underway
      *
@@ -135,51 +135,51 @@ class DOC_Helper_Impersonate {
     	$session = self::session();
     	$current_id = $session->get(Kohana::$config->load('impersonate.session_key'));
     	$original_id = $session->get(Kohana::$config->load('impersonate.session_original_user_id'));
-    	
+
     	if( $current_id != NULL && $original_id != NULL && $current_id != $original_id ) {
     		$_output = TRUE ;
 		}
-    	
+
     	return $_output ;
     }
-    
+
     /**
      * Return an instance of a Session
-     * 
+     *
      * @return Session Instance
      */
     public static function session()
     {
         return Session::instance(Kohana::$config->load('impersonate.session_type'));
     }
-    
+
     /**
      * Store the entry referrer in the session
-     * 
-     * @param string $link 
+     *
+     * @param string $link
      */
     public static function set_return_link($link = NULL)
     {
         $session = self::session();
-        
-        if ($session->get(Kohana::$config->load('impersonate.return_link_key')) === NULL) {
+
+//         if ($session->get(Kohana::$config->load('impersonate.return_link_key')) === NULL) {
             if ($link === NULL) {
 				$link = url::base();
 			}
             $session->set(Kohana::$config->load('impersonate.return_link_key'), $link);
-        }
+//         }
     }
-    
+
     /**
      * Store the impersonation search results array
-     * 
+     *
      * @param array $results
      */
     public static function set_search_results($results)
     {
         $session = self::session();
-        
+
         $session->set(Kohana::$config->load('impersonate.results_key'), $results);
     }
-    
+
 } // End Impersonation Helper

@@ -59,10 +59,54 @@ class DOC_Helper_Form {
 		$_output .= '<input type="text" name="'.$name_prefix.self::SUFFIX_DATE.'" value="'.Date::formatted_time( $datetime, self::DATE_FORMAT ).'" class="'.self::DATEPICKER_CLASS.'" size="12" maxlength="12" /> ' ;
 		$_output .= 'Time ' ;
 
-		$_output .= Form::select($name_prefix.self::SUFFIX_HOUR, $hours, Date::formatted_time( $datetime, self::HOUR_FORMAT)) ;
+		$_output .= self::time_input_fields(
+				Date::formatted_time( $datetime, self::HOUR_FORMAT),
+				Date::formatted_time( $datetime, self::MINUTE_FORMAT),
+				Date::formatted_time( $datetime, self::MERIDIAN_FORMAT),
+				$name_prefix,
+				$minute_increment
+		) ;
+
+
+		return $_output ;
+	}
+
+
+	/**
+	 * Given separated fields to define a time, return a set of select menus to edit the data.
+	 * Note that this expects the hour to be 12 or less, so if you are working with a 24-hour
+	 * time string you'll need to convert to PM when your hours are greater than 12.
+	 *
+	 * @param int $hour
+	 * @param int $minute
+	 * @param string $meridian
+	 * @param string $name_prefix
+	 * @param int $minute_increment The number of minutes between options in the minutes menu.
+	 * @return string
+	 */
+	public static function time_input_fields( $hour, $minute, $meridian, $name_prefix, $minute_increment = self::MINUTE_INCREMENT ) {
+		$hours = array() ;
+		for( $i = 1; $i <= 12; $i++ ) {
+			$hours[ $i ] = sprintf( '%02d', $i ) ;
+		}
+
+		$minutes = array() ;
+		for( $i = 0; $i < 60; $i += $minute_increment) {
+			$minute_formatted = sprintf( '%02d', $i ) ;
+			$minutes[ $minute_formatted ] = $minute_formatted ;
+		}
+
+		$meridians = array(
+			'AM' => 'AM',
+			'PM' => 'PM'
+		) ;
+
+		$_output = '' ;
+
+		$_output .= Form::select( $name_prefix.self::SUFFIX_HOUR, $hours, $hour ) ;
 		$_output .= ':' ;
-		$_output .= Form::select($name_prefix.self::SUFFIX_MINUTE, $minutes, floor( Date::formatted_time( $datetime, self::MINUTE_FORMAT)/$minute_increment) * $minute_increment ) ;
-		$_output .= Form::select($name_prefix.self::SUFFIX_MERIDIAN, $meridian, Date::formatted_time( $datetime, self::MERIDIAN_FORMAT)) ;
+		$_output .= Form::select( $name_prefix.self::SUFFIX_MINUTE, $minutes, floor( $minute/$minute_increment) * $minute_increment ) ;
+		$_output .= Form::select( $name_prefix.self::SUFFIX_MERIDIAN, $meridians, $meridian ) ;
 
 		return $_output ;
 	}
@@ -90,6 +134,32 @@ class DOC_Helper_Form {
 		$_output = date( self::DATETIME_FORMAT, strtotime( $datetime_str )) ;
 
 		return $_output ;
+	}
+
+	/**
+	 * Similar to input_fields_to_datetime, this compiles time-related
+	 * fields into a simple time string using a 24-hour clock.
+	 *
+	 * @param string $name_prefix
+	 * @return string
+	 */
+	public static function input_fields_to_time( $name_prefix ) {
+		$_output = '' ;
+
+		$request = Request::current() ;
+
+		$meridian = $request->post( $name_prefix . self::SUFFIX_MERIDIAN ) ;
+		$hour = $request->post( $name_prefix . self::SUFFIX_HOUR ) ;
+		$minute = $request->post( $name_prefix . self::SUFFIX_MINUTE ) ;
+
+		if( strtoupper($meridian) == 'PM' ) {
+			$hour = ((int) $hour) + 12 ;
+		}
+
+		$_output = "{$hour}:{$minute}:00" ;
+
+		return $_output ;
+
 	}
 
 	/**
@@ -199,7 +269,7 @@ class DOC_Helper_Form {
 	 */
 	public static function radio_group( $radio_name, $radio_array, $selected, $mode = self::MODE_EDITABLE ) {
 		$_output = array() ;
-		
+
 		foreach( $radio_array as $key => $value ) {
 			$unique_id = "{$radio_name}_{$key}" ;
 			if( $mode == self::MODE_EDITABLE ) {
