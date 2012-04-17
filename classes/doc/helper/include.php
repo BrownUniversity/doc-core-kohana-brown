@@ -28,9 +28,10 @@ class DOC_Helper_Include {
 	 *
 	 * @param string $path The path fragment you want to check for.
 	 * @param string $type Use one of the class constants, or leave NULL to just get the URL with no generated HTML.
+	 * @param array $attrs Attributes to add to the tag. Only used when generating a link, script or img tag.
 	 * @return string
 	 */
-	static function file_link( $path, $type = NULL ) {
+	static function file_link( $path, $type = NULL, $attrs = NULL ) {
 		$_output = '' ;
 		$include_url = '' ;
 		// check the include directories, find the first instance of the file
@@ -43,19 +44,20 @@ class DOC_Helper_Include {
 			}
 		}
 
+
 		if( !empty( $include_url )) {
 			// if $type is not null, then crank out the full html code, otherwise just output the URL
 			switch ($type) {
 				case self::TYPE_CSS:
-					$_output = "<link rel='stylesheet' href='{$include_url}' type='text/css' />" ;
+					$_output = "<link rel='stylesheet' href='{$include_url}' type='text/css' ".HTML::attributes($attrs)." />" ;
 
 					break;
 				case self::TYPE_JAVASCRIPT:
-					$_output = "<script src='{$include_url}' language='javascript' type='text/javascript'></script>" ;
+					$_output = "<script src='{$include_url}' language='javascript' type='text/javascript'".HTML::attributes($attrs)."></script>" ;
 					break ;
 
 				case self::TYPE_IMAGE:
-					$_output = "<img src='{$include_url}' />" ;
+					$_output = "<img src='{$include_url}' ".HTML::attributes($attrs)."/>" ;
 					break ;
 				default:
 					$_output = $include_url ;
