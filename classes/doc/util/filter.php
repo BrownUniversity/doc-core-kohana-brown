@@ -20,7 +20,13 @@ class DOC_Util_Filter {
 	 * @return string
 	 */
 	public static function get_filter_key() {
-		return Request::detect_uri() . self::FILTER_SUFFIX ;
+		$route_arr = Request::process_uri( Request::current()->uri()) ;
+		if( !is_array( $route_arr )) {
+			return '/' ;
+		}
+		$base_params = array_intersect_key( $route_arr['params'], array('directory' => '', 'controller' => '', 'action' => '' ));
+
+		return '/' . $route_arr['route']->uri( $base_params ) . self::FILTER_SUFFIX ;
 	}
 
 	/**
@@ -90,6 +96,7 @@ class DOC_Util_Filter {
 	 * @return ORM
 	 */
 	public static function add_filter($orm_base, $substitutions = NULL) {
+
 		$_output = $orm_base ;
 		$filter_key = self::get_filter_key() ;
 		$filter_specs_arr = NULL ;
@@ -100,7 +107,7 @@ class DOC_Util_Filter {
 			'OR' => 'or_where',
 			'AND' => 'and_where'
 		) ;
-
+// DOC_Util_Debug::dump( array( $filter_key, $search_filters )) ;
 		// check for a reset...
 		if( $request->post('setFilter') == 'Clear' ) {
 			$session->delete( $filter_key ) ;
@@ -197,6 +204,7 @@ class DOC_Util_Filter {
 					}
 
 					$result = $query->execute( $db ) ;
+
 					$ids = array() ;
 					$ids[] = -1 ;
 					foreach( $result as $row ) {
@@ -204,7 +212,7 @@ class DOC_Util_Filter {
 					}
 
 					$_output = $_output->$orm_connectors[ $bool_connector ]( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'id_column' ], 'in', $ids ) ;
-						
+
 
 				} else {
 					$column_type = self::get_data_type($_output, $filter_specs[ 'filter_column' ]) ;
@@ -222,7 +230,7 @@ class DOC_Util_Filter {
 						}
 						$_output = $_output->and_where($query_column, '>=', Date::formatted_time($filter_specs[ 'search_val_0' ] . ' 00:00:00')) ;
 						$_output = $_output->and_where($query_column, '<=', Date::formatted_time($filter_specs[ 'search_val_1' ] . ' 23:59:59'))  ;
-						$_output = $_output->and_where_close() ;							
+						$_output = $_output->and_where_close() ;
 					} elseif ( self::data_type_is_numeric( $column_type )) {
 						$_output = $_output->$orm_connectors[ $bool_connector ]($query_column, self::get_operator( $filter_specs[ 'search_operator' ]), $filter_specs[ 'search_val_0' ]) ;
 
@@ -281,6 +289,7 @@ class DOC_Util_Filter {
 	 */
 	public static function get_query_column( $orm_object, $column ) {
 		$columns = $orm_object->list_columns() ;
+
 		if( isset( $columns[ $column ])) {
 			return $orm_object->object_name() . '.' . $column ;
 //			return $column ;
