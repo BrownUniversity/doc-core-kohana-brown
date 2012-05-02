@@ -87,6 +87,14 @@ class DOC_Util_Filter {
 		return in_array( $data_type, $valid_types ) ;
 	}
 
+	public static function filter_exists() {
+		$session = Session::instance( 'database' ) ;
+		$stored_filter = $session->get( self::get_filter_key() ) ;
+		$new_filter = Request::current()->post('setFilter') == 'Search' ;
+		return !empty( $stored_filter ) || $new_filter ;
+	}
+
+
 	/**
 	 * Modifies and returns the passed in ORM object, adding in search filters
 	 * based on the current parameters. Defaults to data in the session, but
