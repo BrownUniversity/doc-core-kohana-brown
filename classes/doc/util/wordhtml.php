@@ -11,34 +11,34 @@
  * @author jorrill
  */
 class DOC_Util_WordHTML {
-	
-	const ALLOWABLE_TAGS_DEFAULT = "<p><div><br><strong><b><em><i><u><strike><blockquote><ol><ul><li>" ;
-	
+
+	const ALLOWABLE_TAGS_DEFAULT = "<div><br><strong><em><strike><blockquote><ol><ul><li><b><p><i><u>" ;
+
 	/**
 	 * Turn Word-generated HTML into something without all the cruft. This is basically
 	 * an HTML cleaner, and could be used to clean up other problematic code.
-	 * 
+	 *
 	 * @param string $str
 	 * @param string $allow_tags A list of allowable tags, i.e. "<p><b><strong>"
-	 * @return string 
+	 * @return string
 	 */
 	public static function clean( $str, $allow_tags = self::ALLOWABLE_TAGS_DEFAULT ) {
 		$_output = $str ;
 		$_output = strip_tags($str, $allow_tags) ;
-		
+
 		preg_match_all( "/<([^>]+)>/i", $allow_tags, $all_tags, PREG_PATTERN_ORDER ) ;
 		foreach( $all_tags[1] as $tag ) {
-			$_output = preg_replace( "/<".$tag."[^>]*>/i", "<".$tag.">", $_output ) ;
+			$_output = preg_replace( "/<".$tag." [^>]*>/i", "<".$tag.">", $_output ) ;
 		}
-		
+
 		return $_output ;
 	}
-	
+
 	/**
 	 * Convert smart quotes, en dashes, em dashes and ellipsis characters into plain text equivalents.
-	 * 
+	 *
 	 * @param string $str
-	 * @return string 
+	 * @return string
 	 */
 	public static function convert_problem_chars( $str ) {
 		// UTF-8 Characters
