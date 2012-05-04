@@ -13,6 +13,7 @@
 class DOC_Util_WordHTML {
 
 	const ALLOWABLE_TAGS_DEFAULT = "<div><br><strong><em><strike><blockquote><ol><ul><li><b><p><i><u>" ;
+	const IGNORE_ATTRS_IN_TAGS = "<a>" ;
 
 	/**
 	 * Turn Word-generated HTML into something without all the cruft. This is basically
@@ -22,13 +23,16 @@ class DOC_Util_WordHTML {
 	 * @param string $allow_tags A list of allowable tags, i.e. "<p><b><strong>"
 	 * @return string
 	 */
-	public static function clean( $str, $allow_tags = self::ALLOWABLE_TAGS_DEFAULT ) {
+	public static function clean( $str, $allow_tags = self::ALLOWABLE_TAGS_DEFAULT, $ignore_attributes_in_tags = self::IGNORE_ATTRS_IN_TAGS ) {
 		$_output = $str ;
 		$_output = strip_tags($str, $allow_tags) ;
 
 		preg_match_all( "/<([^>]+)>/i", $allow_tags, $all_tags, PREG_PATTERN_ORDER ) ;
+		preg_match_all( "/<([^>]+)>/i", $ignore_attributes_in_tags, $ignore_tag_attrs, PREG_PATTERN_ORDER ) ;
 		foreach( $all_tags[1] as $tag ) {
-			$_output = preg_replace( "/<".$tag." [^>]*>/i", "<".$tag.">", $_output ) ;
+			if( !(isset( $ignore_tag_attrs[1] ) && is_array( $ignore_tag_attrs[1] ) && in_array($tag, $ignore_tag_attrs[1] ))) {
+				$_output = preg_replace( "/<".$tag." [^>]*>/i", "<".$tag.">", $_output ) ;
+			}
 		}
 
 		return $_output ;
