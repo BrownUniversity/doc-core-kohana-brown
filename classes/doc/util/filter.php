@@ -351,6 +351,15 @@ class DOC_Util_Filter {
 		) ;
 	}
 
+	public static function safe_array_for_in_clause( $arr ) {
+		$_output = $arr ;
+
+		if( !is_array( $arr ) || count( $arr ) == 0 ) {
+			$_output = array(-1) ;
+		}
+
+		return $_output ;
+	}
 }
 
 
