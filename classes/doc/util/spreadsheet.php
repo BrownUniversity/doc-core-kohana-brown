@@ -38,46 +38,69 @@ class DOC_Util_Spreadsheet {
 
 		$dom = new DomDocument() ;
 		@$dom->loadHTML($table_html) ;
-		$ths = $dom->getElementsByTagName('thead')->item(0)->getElementsByTagName('th') ;
-		for( $i = 0; $i < $ths->length; $i++ ) {
-			$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $ths->item($i)->nodeValue ) ;
+
+		$thead = $dom->getElementsByTagName('thead') ;
+		if( $thead->length > 0 ) {
+			$ths = $dthead->item(0)->getElementsByTagName('th') ;
+			if( $ths->length > 0 ) {
+				for( $i = 0; $i < $ths->length; $i++ ) {
+					$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $ths->item($i)->nodeValue ) ;
+				}
+			} else {
+				$active_sheet->setCellValueByColumnAndRow( 0, $row_index, 'No header columns' ) ;
+			}
+		} else {
+			$active_sheet->setCellValueByColumnAndRow( 0, $row_index, 'No header row' ) ;
 		}
 
-		$trs = $dom->getElementsByTagName('tbody')->item(0)->getElementsByTagName('tr') ;
-		foreach( $trs as $tr ) {
-			$row_index++ ;
-			$tds = $tr->getElementsByTagName('td') ;
-			for( $i = 0; $i < $tds->length; $i++ ) {
-				$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $tds->item($i)->nodeValue ) ;
+		$tbody = $dom->getElementsByTagName('tbody') ;
+		if( $tbody->length > 0 ) {
+			$trs = $tbody->item(0)->getElementsByTagName('tr') ;
+			if( $trs->length > 0 ) {
+				foreach( $trs as $tr ) {
+					$row_index++ ;
+					$tds = $tr->getElementsByTagName('td') ;
+					for( $i = 0; $i < $tds->length; $i++ ) {
+						$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $tds->item($i)->nodeValue ) ;
 
 
-				if( $tds->item($i)->hasAttribute( 'class' )) {
+						if( $tds->item($i)->hasAttribute( 'class' )) {
 
-					switch( $tds->item($i)->getAttribute('class')) {
-						case 'datetime':
-							$active_sheet
-									->getStyleByColumnAndRow($i, $row_index)
-									->getNumberFormat()
-									->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_DATETIME) ;
-							break ;
+							switch( $tds->item($i)->getAttribute('class')) {
+								case 'datetime':
+									$active_sheet
+											->getStyleByColumnAndRow($i, $row_index)
+											->getNumberFormat()
+											->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_DATETIME) ;
+									break ;
 
-						case 'dollars':
-							$active_sheet
-									->getStyleByColumnAndRow($i, $row_index)
-									->getNumberFormat()
-									->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD) ;
-							break ;
+								case 'dollars':
+									$active_sheet
+											->getStyleByColumnAndRow($i, $row_index)
+											->getNumberFormat()
+											->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD) ;
+									break ;
 
-						case 'wrap':
-							$active_sheet->getStyleByColumnAndRow($i, $row_index)->getAlignment()->setWrapText(TRUE);
-							break ;
+								case 'wrap':
+									$active_sheet->getStyleByColumnAndRow($i, $row_index)->getAlignment()->setWrapText(TRUE);
+									break ;
 
-						default:
-							// do nothing
+								default:
+									// do nothing
+							}
+						}
 					}
 				}
+			} else {
+				$row_index++ ;
+				$active_sheet->setCellValueByColumnAndRow( 0, $row_index, 'No data' ) ;
 			}
+		} else {
+			$row_index++ ;
+			$active_sheet->setCellValueByColumnAndRow( 0, $row_index, 'No data') ;
 		}
+
+
 
 		return $obj_phpexcel ;
 
