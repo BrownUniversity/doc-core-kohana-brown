@@ -19,6 +19,34 @@ class DOC_Util_Spreadsheet {
 	const FILETYPE_EXCEL_2007 = 'Excel2007' ;
 	const FILETYPE_HTML = 'HTML' ;
 
+    /**
+     * Create a representation of an XLSX Cognos report
+     * 
+     * @param type $path location of file to ingest
+     * @return array
+     */
+    public static function read_cognos( $path ) {
+        $reader = new PHPExcel_Reader_Excel2007();
+        $excel = $reader->load($path);
+        
+        $excel->setActiveSheetIndex(0);
+        $sheet = $excel->getActiveSheet();
+        
+        $values = array();
+        foreach ($sheet->getRowIterator() as $row) {
+            set_time_limit(10);
+            $inner = array();
+            $cells = $row->getCellIterator();
+            $cells->setIterateOnlyExistingCells(FALSE);
+            foreach ($cells as $cell) {
+                $inner[] = $cell->getValue();
+            }
+            $values[] = $inner;
+        }
+        
+        return array_slice($values, 2, count($values) -3);
+    }
+    
 	/**
 	 * Given a set of data, returns a spreadsheet object. Note that this makes
 	 * use of the Table class, and uses the same type of formatting data that we
@@ -156,5 +184,5 @@ class DOC_Util_Spreadsheet {
 		$phpexcel_writer->save('php://output') ;
 		exit() ;
 	}
-
 }
+// End DOC_Util_Spreadsheet
