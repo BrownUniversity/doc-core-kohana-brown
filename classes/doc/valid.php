@@ -135,6 +135,16 @@ class DOC_Valid extends Kohana_Valid {
 
 		return $_output ;
 	}
+    
+    /**
+     * Verify that the value is a properly formatted auth id
+     * 
+     * @param string $value
+     * @return boolean
+     */
+    public static function auth_id( $value ) {
+        return preg_match('/^[a-z0-9]{1,8}$/', $value);
+    }
 }
 
 ?>
