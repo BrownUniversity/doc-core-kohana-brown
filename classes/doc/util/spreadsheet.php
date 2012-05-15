@@ -41,7 +41,7 @@ class DOC_Util_Spreadsheet {
 
 		$thead = $dom->getElementsByTagName('thead') ;
 		if( $thead->length > 0 ) {
-			$ths = $dthead->item(0)->getElementsByTagName('th') ;
+			$ths = $thead->item(0)->getElementsByTagName('th') ;
 			if( $ths->length > 0 ) {
 				for( $i = 0; $i < $ths->length; $i++ ) {
 					$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $ths->item($i)->nodeValue ) ;

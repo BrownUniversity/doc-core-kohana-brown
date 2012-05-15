@@ -93,7 +93,7 @@ class DOC_Helper_Table {
 						$header_attributes[ 'class' ] = '{sorter: false}' ;
 					}
 
-					
+
 
 					$_output[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
 
@@ -205,21 +205,31 @@ class DOC_Helper_Table {
 												$obj = $this->parse_string($object, $obj) ;
 											}
 										}
-										$args = NULL ;
+
+										$args = array() ;
 										if( isset( $col_spec[ 'format' ][ 'args' ])) {
 											$args = $col_spec[ 'format' ][ 'args' ] ;
+											if( count( $args ) > 0 ) {
+												foreach( $args as $key => $arg ) {
+													if( strpos( $arg, '{' ) !== FALSE ) {
+														$args[$key] = $this->parse_string($object, $arg, FALSE) ;
+													}
+												}
+											}
+
 											if( !is_object($obj) || get_class( $obj ) != get_class( $object )) {
 												$args[] = $object ;
 											}
 										}
+
 										$value = call_user_func_array(array($obj, $col_spec[ 'format' ][ 'method' ]), $args ) ;
-									
-										
+
+
 									default:
 										break;
 								}
 							}
-							
+
 							if( isset( $col_spec[ 'class' ])) {
 								if( is_array( $col_spec[ 'class' ])) {
 									$key = $value ;
@@ -233,7 +243,7 @@ class DOC_Helper_Table {
 									$td_attrs[ 'class' ] = $col_spec[ 'class' ] ;
 								}
 							}
-							
+
 						} elseif ( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
 							$default_id = $object->pk() ;
 
@@ -351,15 +361,22 @@ class DOC_Helper_Table {
 	}
 
 
-	protected function parse_string( $object, $parseable_string ) {
+	protected function parse_string( $object, $parseable_string, $return_as_string = TRUE ) {
 		$_output = $parseable_string ;
 		preg_match_all('/\{(.+?)\}/', $parseable_string, $matches) ;
 
 		if( count( $matches ) > 0 ) {
-			foreach( $matches[1] as $match ) {
-				$_output = str_replace('{'.$match.'}', $this->generate_content($object, $match), $_output) ;
+			if( count( $matches[1] ) > 1 || $return_as_string ) {
+				foreach( $matches[1] as $match ) {
+					$_output = str_replace('{'.$match.'}', $this->generate_content($object, $match), $_output) ;
+				}
+			} else {
+				$match = $matches[1][0] ;
+				$_output = $this->generate_content($object, $match) ;
 			}
 		}
+
+
 
 		return $_output ;	}
 
