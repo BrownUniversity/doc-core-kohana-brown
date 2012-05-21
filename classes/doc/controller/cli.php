@@ -13,6 +13,9 @@ class DOC_Controller_CLI extends Controller {
 	public function before() {
 		parent::before() ;
 
+		ob_implicit_flush(TRUE) ;
+		ob_end_flush() ;
+
 		$cli_config = Kohana::$config->load('cli') ;
 		if( $cli_config[ 'cli_enabled' ] === TRUE ) {
 			$auth = CLI::options('username', 'password') ;
