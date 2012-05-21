@@ -24,6 +24,17 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		$this->s3 = new AmazonS3( $this->aws_config[ 'key' ], $this->aws_config[ 'secret' ]) ;
 	}
 
+    /**
+     * Download the file from S3 and cache to read for re-uploading
+     * 
+     * @param string $root_dir
+     * @param string $filename
+     * @return string
+     */
+    public function cache_file($root_dir, $filename) {
+        return $this->retrieve_file( $root_dir, $filename );
+    }
+    
 	public function delete($root_dir, $filename) {
 		$response = $this->s3->delete_object( $root_dir, $filename ) ;
 		// also delete from the cache
