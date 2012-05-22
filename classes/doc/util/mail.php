@@ -1,7 +1,5 @@
 <?php
 
-// require_once Kohana::find_file('classes', 'Swift-4.1.5/lib/swift_required') ;
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.

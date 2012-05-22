@@ -1,7 +1,5 @@
 <?php
 
-require_once( Kohana::find_file('classes', 'sdk-1.4.7/sdk.class')) ;
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -26,7 +24,7 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 
     /**
      * Download the file from S3 and cache to read for re-uploading
-     * 
+     *
      * @param string $root_dir
      * @param string $filename
      * @return string
@@ -34,7 +32,7 @@ class DOC_Util_File_S3 extends DOC_Util_File {
     public function cache_file($root_dir, $filename) {
         return $this->retrieve_file( $root_dir, $filename );
     }
-    
+
 	public function delete($root_dir, $filename) {
 		$response = $this->s3->delete_object( $root_dir, $filename ) ;
 		// also delete from the cache

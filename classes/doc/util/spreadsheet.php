@@ -1,7 +1,5 @@
 <?php
 
-require Kohana::find_file('classes', 'PHPExcel');
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -21,17 +19,17 @@ class DOC_Util_Spreadsheet {
 
     /**
      * Create a representation of an XLSX Cognos report
-     * 
+     *
      * @param type $path location of file to ingest
      * @return array
      */
     public static function read_cognos( $path ) {
         $reader = new PHPExcel_Reader_Excel2007();
         $excel = $reader->load($path);
-        
+
         $excel->setActiveSheetIndex(0);
         $sheet = $excel->getActiveSheet();
-        
+
         $values = array();
         foreach ($sheet->getRowIterator() as $row) {
             set_time_limit(10);
@@ -43,10 +41,10 @@ class DOC_Util_Spreadsheet {
             }
             $values[] = $inner;
         }
-        
+
         return array_slice($values, 2, count($values) -3);
     }
-    
+
 	/**
 	 * Given a set of data, returns a spreadsheet object. Note that this makes
 	 * use of the Table class, and uses the same type of formatting data that we
