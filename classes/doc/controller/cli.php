@@ -50,4 +50,11 @@ class DOC_Controller_CLI extends Controller {
 	 * Task names should be processed using an if or switch block.
 	 */
 	public function action_index() {}
+
+	protected function show_progress($count, $total, $break_at = 50 ) {
+		print('.') ;
+		if( $count % $break_at == 0 ) {
+			print( " ({$count}/{$total})\n") ;
+		}
+	}
 }
