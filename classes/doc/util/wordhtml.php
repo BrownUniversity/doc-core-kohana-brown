@@ -13,6 +13,7 @@
 class DOC_Util_WordHTML {
 
 	const ALLOWABLE_TAGS_DEFAULT = "<div><br><strong><em><strike><blockquote><ol><ul><li><b><p><i><u>" ;
+	const ALLOWABLE_TAGS_LINKS_OK = "<div><br><strong><em><strike><blockquote><ol><ul><li><b><p><i><u><a>" ;
 	const IGNORE_ATTRS_IN_TAGS = "<a>" ;
 
 	/**
