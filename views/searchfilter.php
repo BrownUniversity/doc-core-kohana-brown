@@ -59,8 +59,8 @@
 			$saved_filter_specs_arr = Util_Filter::get_default_filter_specs() ;
 		}
 		$form_action = preg_replace('/\/+/', '/', Kohana::$base_url.Request::detect_uri()) ;
-
-
+// DOC_Util_Debug::dump( $saved_filter_specs_arr, FALSE ) ;
+// DOC_Util_Debug::dump( $filter_fields ) ;
 		print("<form id='filter' method='POST' action='{$form_action}'>") ;
 
 		if( isset( $filter_extras )) {
@@ -95,13 +95,13 @@
 				if( isset( $filter_specs[ 'relation_name' ])) {
 					$option_class = $filter_specs[ 'relation_name' ] ;
 					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
-					$relation_menus[] = "<span class='filter_value {$filter_specs[ 'relation_name' ]}'> is {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
+					$relation_menus[] = "<span class='filter_value {$filter_specs[ 'relation_name' ]}'> is {$column_menu}<input type='hidden' value='' name='search_val_1[]' /><input type='hidden' name='search_operator[]' value='' /></span>" ;
 
 				// in case we have a special array for the menu but not a special label (likely for enum fields)
 				} elseif( isset( $filter_specs[ 'relation_options' ])) {
 					$option_class = $filter_col ;
 					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
-					$relation_menus[] = "<span class='filter_value {$option_class}'> is {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
+					$relation_menus[] = "<span class='filter_value {$option_class}'> is {$column_menu}<input type='hidden' value='' name='search_val_1[]' /><input type='hidden' name='search_operator[]' value='' /></span>" ;
 
 				} elseif( isset( $filter_specs[ 'custom_query' ]) && $filter_specs[ 'custom_query'] == TRUE ) {
 					$option_class = 'filter_text' ;
@@ -123,7 +123,7 @@
 
 							$option_class = $filter_col ;
 							$column_menu = Form::select("search_val_0[]", $enum_menu, $search_val_0) ;
-							$relation_menus[] = "<span class='filter_value {$filter_col}'> = {$column_menu}</span>" ;
+							$relation_menus[] = "<span class='filter_value {$filter_col}'> = {$column_menu}<input type='hidden' name='search_operator[]' value='' /></span>" ;
 						} else {
 							$option_class = preg_replace( '/^(.+?) ?/', '$1', $table_columns[ $filter_col ][ 'data_type' ] ) ;
 						}
@@ -147,7 +147,7 @@
 
 							$option_class = $filter_col ;
 							$column_menu = Form::select("search_val_0[]", $enum_menu, $search_val_0) ;
-							$relation_menus[] = "<span class='filter_value {$filter_col}'> = {$column_menu}</span>" ;
+							$relation_menus[] = "<span class='filter_value {$filter_col}'> = {$column_menu}<input type='hidden' name='search_operator[]' value='' /></span>" ;
 						} else {
 							$option_class = preg_replace( '/^(.+?) ?/', '$1', $property_columns[ $column ][ 'data_type' ] ) ;
 						}
@@ -205,7 +205,7 @@
 						to
 						<input type='text' value='{$date_default_1}' name='search_val_1[]' class='datepicker' />
 					</span>") ;
-
+// DOC_Util_Debug::dump( $search_operator, false ) ;
 			print("<span class='filter_value filter_numeric'>".Form::select("search_operator[]", $operators, $search_operator)."<input type='text' value='{$numeric_default}' name='search_val_0[]' /><input type='hidden' value='' name='search_val_1[]' /></span>") ;
 
 
@@ -230,7 +230,7 @@
 		print("<input type='submit' name='setFilter' value='Search' />") ;
 		print("<input type='submit' name='setFilter' value='Clear' />") ;
 		print("</div>") ;
-		
+
 		if( isset( $alternate_submits ) && count( $alternate_submits ) > 0 ) {
 			print("<div class='submits-alternate'>") ;
 			foreach( $alternate_submits as $submit_name => $submit_value ) {
