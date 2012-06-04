@@ -9,6 +9,13 @@ class DOC_Controller_CLI extends Controller {
 
 	protected $task_name ;
 	protected $task_data = NULL ;
+	/**
+	 * Defines the task(s) that may be performed. The structure should be as follows:
+	 * array( 'task name' => array('method' => '[protected method in local CLI class]', 'help' => '[user help content]')
+	 */
+	protected $task_map = array() ;
+
+	const HELP = 'help' ;
 
 	public function before() {
 		parent::before() ;
@@ -27,12 +34,16 @@ class DOC_Controller_CLI extends Controller {
 
 					if( isset( $task_args[ 'task' ] ) && !empty( $task_args[ 'task' ] )) {
 						$this->task_name = $task_args[ 'task' ] ;
+						if( $this->task_name == self::HELP ) {
+							$this->show_help() ;
+						}
 						if( isset( $task_args[ 'data' ] ) && !empty( $task_args[ 'data' ] )) {
 							$this->task_data = json_decode( $task_args[ 'data' ]) ;
 						}
 
 					} else {
-						die("\nNo task specified.\n") ;
+						print("\nNo task specified.\n") ;
+						$this->show_help() ;
 					}
 				} else {
 					die("\nInvalid username/password.\n") ;
@@ -47,14 +58,31 @@ class DOC_Controller_CLI extends Controller {
 
 	/**
 	 * Use the action_index() method to contain all processing required.
-	 * Task names should be processed using an if or switch block.
 	 */
-	public function action_index() {}
+	public function action_index() {
+		if(array_key_exists($this->task_name, $this->task_map)) {
+			$this->{$this->task_name}() ;
+		} else {
+			print( "\nUnrecognized CLI task.\n") ;
+			$this->show_help() ;
+		}
+	}
 
 	protected function show_progress($count, $total, $break_at = 50 ) {
 		print('.') ;
 		if( $count % $break_at == 0 ) {
 			print( " ({$count}/{$total})\n") ;
 		}
+	}
+
+	protected function show_help() {
+		if( count( $this->task_map ) > 0 ) {
+			print( "\nAvailable tasks:\n\n" ) ;
+			foreach( $this->task_map as $name => $task_info ) {
+				print( "{$name}:\n" ) ;
+				print( "\t{$task_info['help']}\n\n" ) ;
+			}
+		}
+		exit() ;
 	}
 }
