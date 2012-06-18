@@ -122,4 +122,8 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		return $cached_file ;
 	}
 
+	public function get_s3_object() {
+		return $this->s3 ;
+	}
+
 }
