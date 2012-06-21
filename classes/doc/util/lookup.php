@@ -25,7 +25,12 @@ class DOC_Util_Lookup {
 		$_output = array() ;
 		$orm = ORM::factory($model) ;
 		if( !empty( $order )) {
-			$orm->order_by( $order ) ;
+            if ( ! is_array($order)) {
+                $order = array($order => 'asc');
+            }
+            foreach ($order as $column => $direction) {
+                $orm->order_by($column, $direction);
+            }
 		} else {
 			if( $orm->supports_property('id')) {
 				$orm->order_by('id') ;
