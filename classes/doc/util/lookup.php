@@ -16,7 +16,7 @@ class DOC_Util_Lookup {
 	 * @param string $model A model name.
 	 * @param string $key A property of the model to be used as the key in the array.
 	 * @param string $mode Use one of the class constants here.
-	 * @param string $order The field to order the results by. Always ascending.
+	 * @param mixed $order The field to order the results by. If a string, will be on that column ascending. If an array, will expect the keys to be column names and the values to all be either 'asc' or 'desc'.
 	 * @param array $wheres An array of arrays, with each matching the arguments that are sent via the where() method.
 	 * @return array
 	 * @todo Look into replacing some of this functionality with Kohana's baked-in as_array() method
@@ -36,13 +36,13 @@ class DOC_Util_Lookup {
 				$orm->order_by('id') ;
 			}
 		}
-		
+
 		if( is_array( $wheres )) {
 			foreach( $wheres as $where ) {
 				$orm->where( $where[0], $where[1], $where[2] ) ;
 			}
 		}
-		
+
 		$arr = $orm->find_all() ;
 
 		foreach( $arr as $obj ) {
@@ -59,12 +59,12 @@ class DOC_Util_Lookup {
 	 * Use this when you need to create a string composed of multiple elements in the object.
 	 * For example, if you need to combine first and last name into a single name
 	 * containing both.
-	 * 
+	 *
 	 * @param string $model
 	 * @param array $keys
 	 * @param string $format For use in sprintf.
 	 * @param string $mode Use one of the class constants.
-	 * @return type 
+	 * @return type
 	 */
 	static function get_formatted_lut( $model, $keys, $format, $mode = self::BY_VAL ) {
 		$_output = array() ;
@@ -75,21 +75,21 @@ class DOC_Util_Lookup {
 
 		$arr = $orm->find_all() ;
 		foreach( $arr as $obj ) {
-			
+
 			$values = array() ;
 			foreach( $keys as $key ) {
 				$values[] = '"'.$obj->$key.'"' ;
 			}
-	
+
 			eval("\$thisKey = sprintf(\"$format\", ".implode(',',$values).");") ;
 			$_output[ $thisKey ] = $obj->pk() ;
 		}
 		if( $mode == self::BY_KEY ) {
 			$_output = array_flip( $_output ) ;
 		}
-		
+
 		return $_output ;
 	}
-	
+
 }
 ?>

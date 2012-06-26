@@ -125,6 +125,26 @@ class DOC_Helper_Impersonate {
     }
 
     /**
+     * Get the real user when impersonating
+     */
+    public static function get_real_user() {
+        $session = self::session();
+        $id = $session->get(Kohana::$config->load('impersonate.session_original_user_id'));
+
+        $logged_in_method = Kohana::$config->load('impersonate.logged_in_method');
+        $alternate_method = Kohana::$config->load('impersonate.alternate_method');
+        $model = Kohana::$config->load('impersonate.user_model');
+        $command = NULL;
+        if ($id !== NULL) {
+            $command = "return Model_{$model}::{$alternate_method}('{$id}');";
+        } else {
+        	$command = "return Model_{$model}::{$logged_in_method}();";
+        }
+        return eval($command);
+
+    }
+
+    /**
      * Check if an impersonation session is underway
      *
      * return boolean
