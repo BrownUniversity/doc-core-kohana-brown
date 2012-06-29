@@ -97,7 +97,7 @@ class DOC_Util_Spreadsheet {
 									$active_sheet
 											->getStyleByColumnAndRow($i, $row_index)
 											->getNumberFormat()
-											->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_DATETIME) ;
+											->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_XLSX22) ;
 									break ;
 
 								case 'dollars':
