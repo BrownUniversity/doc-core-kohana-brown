@@ -351,11 +351,17 @@ class DOC_Util_Filter {
 		) ;
 	}
 
-	public static function safe_array_for_in_clause( $arr ) {
+	public static function safe_array_for_in_clause( $arr, $substitute = -1 ) {
 		$_output = $arr ;
 
 		if( !is_array( $arr ) || count( $arr ) == 0 ) {
 			$_output = array(-1) ;
+		}
+
+		foreach( $_output as $key => $val ) {
+			if( $val === NULL ) {
+				$_output[ $key ] = $substitute ;
+			}
 		}
 
 		return $_output ;
