@@ -101,12 +101,20 @@ class DOC_Util_Mail {
 
 			foreach( $address_list as $key => $address ) {
 				$address = trim( $address ) ;
+
+				preg_match('/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $address, $matches) ;
+
+				if( isset( $matches[0] )) {
+					$address = $matches[0] ;
+				}
+
+
 				if( !empty( $address )) {
 					if( Valid::email( $address )) {
 						$_output[ $key ] = $address ;
 					} else {
 						// throw an exception
-						throw new Kohana_Exception("There appears to be a problem with the address(es) in the CC field. Be sure if you have multiple addresses that they are separated with a comma, and that each address is correct.") ;
+						throw new Kohana_Exception("There appears to be a problem with the address(es) in the CC field. Be sure if you have multiple addresses that they are separated with a comma, and that each address is correct ($address).") ;
 					}
 				}
 			}
