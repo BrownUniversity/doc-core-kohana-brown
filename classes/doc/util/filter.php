@@ -115,7 +115,8 @@ class DOC_Util_Filter {
 			'OR' => 'or_where',
 			'AND' => 'and_where'
 		) ;
-// DOC_Util_Debug::dump( array( $filter_key, $search_filters )) ;
+
+        // DOC_Util_Debug::dump( array( $filter_key, $search_filters )) ;
 		// check for a reset...
 		if( $request->post('setFilter') == 'Clear' ) {
 			$session->delete( $filter_key ) ;
@@ -144,11 +145,11 @@ class DOC_Util_Filter {
 				) ;
 			}
 
-			$session->set( $filter_key, $filter_specs_arr ) ;
+            $session->set( $filter_key, $filter_specs_arr ) ;
 			$session->write() ;
 		}
 
-		if( $filter_specs_arr != NULL ) {
+        if( $filter_specs_arr != NULL ) {
 			$_output = $_output->and_where_open() ;
 			foreach( $filter_specs_arr as $filter_specs ) {
 				$bool_connector = 'AND' ;
@@ -229,6 +230,10 @@ class DOC_Util_Filter {
 					if( self::data_type_is_text( $column_type )) {
 						$_output = $_output->$orm_connectors[ $bool_connector ]( $query_column, 'LIKE', "%{$filter_specs[ 'search_val_0' ]}%") ;
 					} elseif ( self::data_type_is_date( $column_type )) {
+                        $open = $orm_connectors[ $bool_connector ] . "_open";
+                        $close = $orm_connectors[ $bool_connector ] . "_close";
+                        
+                        $_output = $_output->$open();
 						$_output = $_output->and_where_open() ;
 						if( empty( $filter_specs[ 'search_val_0' ])) {
 							$filter_specs[ 'search_val_0' ] = '2000-01-01' ;
@@ -239,6 +244,7 @@ class DOC_Util_Filter {
 						$_output = $_output->and_where($query_column, '>=', Date::formatted_time($filter_specs[ 'search_val_0' ] . ' 00:00:00')) ;
 						$_output = $_output->and_where($query_column, '<=', Date::formatted_time($filter_specs[ 'search_val_1' ] . ' 23:59:59'))  ;
 						$_output = $_output->and_where_close() ;
+                        $_output = $_output->$close();
 					} elseif ( self::data_type_is_numeric( $column_type )) {
 						$_output = $_output->$orm_connectors[ $bool_connector ]($query_column, self::get_operator( $filter_specs[ 'search_operator' ]), $filter_specs[ 'search_val_0' ]) ;
 
@@ -250,8 +256,7 @@ class DOC_Util_Filter {
 			}
 			$_output = $_output->and_where_close() ;
 		}
-
-		return $_output ;
+        return $_output ;
 	}
 
 
