@@ -183,7 +183,7 @@ class DOC_Util_Ldap
     public function search_people($s, $limit = 20, $paffil = null) {
         $result = array();
         $s_trim = trim($s);
-        
+
         // search the people objects
         $base = "ou=People,dc=brown,dc=edu";
         $ss = explode(' ', $s_trim);
@@ -193,7 +193,7 @@ class DOC_Util_Ldap
          */
         $filters = array();
         $filters[] = "(displayname=" . implode('*', $ss) . "*)";
-       
+
         if ( ! is_null($paffil) ) {
             $affiliations = is_array($paffil) ? $paffil : explode(',', $paffil);
             $afilters = array();
@@ -202,10 +202,10 @@ class DOC_Util_Ldap
             }
             $filters[] = '(|' . implode('', $afilters) . ')';
         }
-        
+
         $filters = implode($filters);
         $filter = "(&{$filters})";
-        
+
         try {
             $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $limit);
         } catch (Exception $e) {
@@ -213,7 +213,7 @@ class DOC_Util_Ldap
             $result['status']['message'] = $e->getMessage();
             return $result;
         }
-        
+
         $result['count'] = array_shift($search_result);
 
         // get the results
@@ -226,17 +226,17 @@ class DOC_Util_Ldap
 
         $result['results'] = $results;
         $result['status']['ok'] = true;
-        
+
         if ($result['count'] == $limit) {
             return $result;
         } else {
-        
+
             /**
              * Run more general search
              */
             $new_limit = $limit - $result['count'];
             $new_result = array();
-            
+
             $filters = array();
             $ss = explode(' ', $s);
             foreach ($ss as $s)
@@ -268,7 +268,7 @@ class DOC_Util_Ldap
             {
                 return $result;
             }
-			
+
             $new_result['count'] = array_shift($search_result);
 
             // get the results
@@ -278,14 +278,14 @@ class DOC_Util_Ldap
                 $id = $sr['brownshortid'][0];
                 $new_results[$id] = $this->parse_person_array($sr);
             }
-            
+
             $result['count'] += $new_result['count'];
             $result['results'] = array_merge($result['results'], $new_results);
             //$result['status']['ok'] = true;
 
             return $result;
         }
-         
+
     }
 
     /**
@@ -388,21 +388,23 @@ class DOC_Util_Ldap
     	$role = strtolower($role);
     	$result['status']['ok'] = TRUE;
     	$result['courses'] = array();
-    	$count = array_shift($find_result[0][$attribute]);
-    	foreach ($find_result[0][$attribute] as $c) {
-    		$fields = explode(':', $c);
-    		if (strtolower($fields[0]) === "course") {
-    			$course = "{$fields[1]}:{$fields[2]}:{$fields[3]}:{$fields[4]}";
-    			if ($this->wildcard_match($coursespec, $course)) {
-    				if ($role == '*') {
-    					$result['courses'][$fields[5]][] = $course;
-    				} else {
-    					if (strtolower($fields[5]) == $role) {
-    						$result['courses'][] = $course;
-    					}
-    				}
-    			}
-    		}
+    	if( isset( $find_result[0][$attribute] ) && is_array( $find_result[0][$attribute] )) {
+			$count = array_shift($find_result[0][$attribute]);
+			foreach ($find_result[0][$attribute] as $c) {
+				$fields = explode(':', $c);
+				if (strtolower($fields[0]) === "course") {
+					$course = "{$fields[1]}:{$fields[2]}:{$fields[3]}:{$fields[4]}";
+					if ($this->wildcard_match($coursespec, $course)) {
+						if ($role == '*') {
+							$result['courses'][$fields[5]][] = $course;
+						} else {
+							if (strtolower($fields[5]) == $role) {
+								$result['courses'][] = $course;
+							}
+						}
+					}
+				}
+			}
     	}
     	return $result;
 	}
