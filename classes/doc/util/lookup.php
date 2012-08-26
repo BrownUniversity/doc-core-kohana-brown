@@ -45,12 +45,15 @@ class DOC_Util_Lookup {
 
 		$arr = $orm->find_all() ;
 
-		foreach( $arr as $obj ) {
-			$_output[ $obj->$key ] = $obj->pk() ;
-		}
-		if( $mode == self::BY_KEY ) {
-			$_output = array_flip( $_output ) ;
-		}
+        if ( $mode == self::BY_VAL) {
+            foreach( $arr as $obj ) {
+                $_output[ $obj->$key ] = $obj->pk() ;
+            }
+        } else {
+            foreach ( $arr as $obj ) {
+                $_output[ $obj->pk() ] = $obj->$key;
+            }
+        }
 
 		return $_output ;
 	}
