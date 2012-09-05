@@ -179,7 +179,7 @@ abstract class DOC_Util_File {
 		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 		header("Cache-Control: private",false);
 		header("Content-type: {$content_type}");
-		if( $send_as == self::SEND_AS_DISPLAY ) {	
+		if( $send_as == self::SEND_AS_DISPLAY ) {
 			header('Content-Disposition: inline; filename="'.$filename.'"');
 		} else {
 			header('Content-Disposition: attachment; filename="'.$filename.'"');
@@ -247,6 +247,25 @@ abstract class DOC_Util_File {
 			}
 		}
 		return $_out_files;
+	}
+
+	public function is_web_friendly($mime_type) {
+		$friendly_mime_types = array(
+			'application/pdf',
+			'image/jpeg',
+			'video/jpeg',
+			'image/gif',
+			'image/png',
+			'application/x-shockwave-flash',
+			'audio/mpeg',
+			'video/mpeg',
+			'audio/mp4',
+			'video/mp4',
+			'video/quicktime',
+			'image/tiff'
+		) ;
+
+		return in_array($mime_type, $friendly_mime_types) ;
 	}
 }
 

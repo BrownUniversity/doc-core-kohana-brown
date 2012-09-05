@@ -16,7 +16,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	const UPLOAD_SUFFIX = '.upload' ;
 
 	public function delete($root_dir, $filename) {
-		$file_path = $root_dir . $filename ; 
+		$file_path = $root_dir . $filename ;
 		if( !file_exists( $file_path )) {
 			$file_path .= self::UPLOAD_SUFFIX ;
 		}
@@ -24,7 +24,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	}
 
 	public function display($root_dir, $filename, $new_filename = NULL) {
-		$file_path = $root_dir . $filename ; 
+		$file_path = $root_dir . $filename ;
 		if( !file_exists( $file_path )) {
 			$file_path .= self::UPLOAD_SUFFIX ;
 		}
@@ -33,10 +33,15 @@ class DOC_Util_File_Local extends DOC_Util_File {
 			$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
 			$mime_type = finfo_file( $finfo, $file_path ) ;
 
-			$this->send_headers($mime_type, $filename, @filesize($file_path), self::SEND_AS_DISPLAY) ;
+			if( $this->is_web_friendly( $mime_type )) {
+				$this->send_headers($mime_type, $filename, @filesize($file_path), self::SEND_AS_DISPLAY) ;
 
-			set_time_limit(0) ;
-			@readfile( $file_path ) or die( "file not found" ) ;
+				set_time_limit(0) ;
+				@readfile( $file_path ) or die( "file not found" ) ;
+			} else {
+				$this->download( $root_dir, $filename, $new_filename ) ;
+			}
+
 		} else {
 			header( $_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', TRUE, 404 ) ;
 			die( "Unable to find file." ) ;
@@ -44,11 +49,11 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	}
 
 	public function download($root_dir, $filename, $new_filename = NULL) {
-		$file_path = $root_dir . $filename ; 
+		$file_path = $root_dir . $filename ;
 		if( !file_exists( $file_path )) {
 			$file_path .= self::UPLOAD_SUFFIX ;
 		}
-		
+
 
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
@@ -70,7 +75,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	}
 
 	public function get_attachment($root_dir, $filename, $new_filename = NULL) {
-		$file_path = $root_dir . $filename ; 
+		$file_path = $root_dir . $filename ;
 		if( !file_exists( $file_path )) {
 			$file_path .= self::UPLOAD_SUFFIX ;
 		}

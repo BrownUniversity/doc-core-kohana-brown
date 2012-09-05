@@ -52,10 +52,16 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
 		$mime_type = finfo_file( $finfo, $file_path ) ;
 
-		$this->send_headers($mime_type, $new_filename, @filesize($file_path), self::SEND_AS_DISPLAY) ;
+		if( $this->is_web_friendly( $mime_type )) {
+			$this->send_headers($mime_type, $new_filename, @filesize($file_path), self::SEND_AS_DISPLAY) ;
 
-		set_time_limit(0) ;
-		@readfile( $file_path ) or die( "file not found" ) ;
+			set_time_limit(0) ;
+			@readfile( $file_path ) or die( "file not found" ) ;
+
+		} else {
+			$this->download( $root_dir, $filename, $new_filename ) ;
+		}
+
 
 	}
 
