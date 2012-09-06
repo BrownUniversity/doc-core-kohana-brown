@@ -122,6 +122,24 @@ class DOC_Util_Mysql {
         return $this->statements[$key];
     }
     
+    /**
+     * Remove a set of records from a table (used in provisioning)
+     * 
+     * @param string $table
+     * @param string $key
+     * @param string $values
+     */
+    public function purge($table, $key, $values) {
+        $values = implode(', ', $values);
+        
+        $sql = "
+            DELETE FROM {$table}
+            WHERE {$key} IN ({$values})
+        ";
+        
+        return $this->mysqli->query($sql);
+    }
+    
 }
 
 // End DOC_Util_Mysql
