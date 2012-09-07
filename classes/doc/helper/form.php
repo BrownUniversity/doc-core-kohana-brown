@@ -37,7 +37,7 @@ class DOC_Helper_Form {
 	 * @param string $name_prefix
 	 * @return string
 	 */
-	public static function datetime_input_fields( $datetime, $name_prefix, $minute_increment = self::MINUTE_INCREMENT ) {
+	public static function datetime_input_fields( $datetime, $name_prefix, $minute_increment = self::MINUTE_INCREMENT, $date_class = self::DATEPICKER_CLASS, $include_labels = TRUE ) {
 		$hours = array() ;
 		for( $i = 1; $i <= 12; $i++ ) {
 			$hours[ $i ] = sprintf( '%02d', $i ) ;
@@ -55,9 +55,13 @@ class DOC_Helper_Form {
 		) ;
 
 		$_output = '' ;
-		$_output .= 'Date ' ;
-		$_output .= '<input type="text" name="'.$name_prefix.self::SUFFIX_DATE.'" value="'.Date::formatted_time( $datetime, self::DATE_FORMAT ).'" class="'.self::DATEPICKER_CLASS.'" size="12" maxlength="12" /> ' ;
-		$_output .= 'Time ' ;
+		if( $include_labels ) {
+			$_output .= 'Date ' ;
+		}
+		$_output .= '<input type="text" name="'.$name_prefix.self::SUFFIX_DATE.'" value="'.Date::formatted_time( $datetime, self::DATE_FORMAT ).'" class="'.$date_class.'" size="12" maxlength="12" /> ' ;
+		if( $include_labels ) {
+			$_output .= 'Time ' ;
+		}
 
 		$_output .= self::time_input_fields(
 				Date::formatted_time( $datetime, self::HOUR_FORMAT),
@@ -103,10 +107,10 @@ class DOC_Helper_Form {
 
 		$_output = '' ;
 
-		$_output .= Form::select( $name_prefix.self::SUFFIX_HOUR, $hours, $hour ) ;
+		$_output .= Form::select( $name_prefix.self::SUFFIX_HOUR, $hours, $hour, array('class' => str_replace('_', '-', 'select'.self::SUFFIX_HOUR ))) ;
 		$_output .= ':' ;
-		$_output .= Form::select( $name_prefix.self::SUFFIX_MINUTE, $minutes, floor( $minute/$minute_increment) * $minute_increment ) ;
-		$_output .= Form::select( $name_prefix.self::SUFFIX_MERIDIAN, $meridians, $meridian ) ;
+		$_output .= Form::select( $name_prefix.self::SUFFIX_MINUTE, $minutes, floor( $minute/$minute_increment) * $minute_increment, array('class' => str_replace('_', '-', 'select'.self::SUFFIX_MINUTE ))) ;
+		$_output .= Form::select( $name_prefix.self::SUFFIX_MERIDIAN, $meridians, $meridian, array('class' => str_replace('_', '-', 'select'.self::SUFFIX_MERIDIAN ))) ;
 
 		return $_output ;
 	}
