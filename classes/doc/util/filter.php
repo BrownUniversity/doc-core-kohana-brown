@@ -65,6 +65,7 @@ class DOC_Util_Filter {
 		return in_array( $data_type, $valid_types ) ;
 	}
 
+
 	/**
 	 * Determine whether the passed in data type is numeric.
 	 *
@@ -182,13 +183,17 @@ class DOC_Util_Filter {
 						if( empty( $replacement_0 )) {
 							$replacement_0 = '2000-01-01 00:00:00' ;
 						} else {
-							$replacement_0 = Date::formatted_time( $replacement_0 . ' 00:00:00' ) ;
+							if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $replacement_0) == 0 ) {
+								$replacement_0 = Date::formatted_time( $replacement_0 . ' 00:00:00' ) ;
+							}
 						}
 
 						if( empty( $replacement_1 )) {
 							$replacement_1 = '2999-12-31 23:59:59' ; // Y3K bug, FTW!
 						} else {
-							$replacement_1 = Date::formatted_time( $replacement_1 . ' 00:00:00' ) ;
+							if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $replacement_1) == 0 ) {
+								$replacement_1 = Date::formatted_time( $replacement_1 . ' 00:00:00' ) ;
+							}
 						}
 
 						$query->parameters( array(
@@ -211,7 +216,7 @@ class DOC_Util_Filter {
 					if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) && !empty( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ])) {
 						$db = Database::instance($search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) ;
 					}
-
+//					DOC_Util_Debug::dump( $query->compile($db)) ;
 					$result = $query->execute( $db ) ;
 
 					$ids = array() ;
@@ -232,7 +237,7 @@ class DOC_Util_Filter {
 					} elseif ( self::data_type_is_date( $column_type )) {
                         $open = $orm_connectors[ $bool_connector ] . "_open";
                         $close = $orm_connectors[ $bool_connector ] . "_close";
-                        
+
                         $_output = $_output->$open();
 						$_output = $_output->and_where_open() ;
 						if( empty( $filter_specs[ 'search_val_0' ])) {
@@ -241,8 +246,21 @@ class DOC_Util_Filter {
 						if( empty( $filter_specs[ 'search_val_1' ])) {
 							$filter_specs[ 'search_val_1' ] = '2999-12-31' ;
 						}
-						$_output = $_output->and_where($query_column, '>=', Date::formatted_time($filter_specs[ 'search_val_0' ] . ' 00:00:00')) ;
-						$_output = $_output->and_where($query_column, '<=', Date::formatted_time($filter_specs[ 'search_val_1' ] . ' 23:59:59'))  ;
+
+						$date_string_0 = $filter_specs[ 'search_val_0' ];
+						$date_string_1 = $filter_specs[ 'search_val_1' ];
+
+						if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $date_string_0) == 0 ) {
+							$date_string_0 = Date::formatted_time($filter_specs[ 'search_val_0' ] . ' 00:00:00') ;
+						}
+						if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $date_string_1) == 0 ) {
+							$date_string_1 = Date::formatted_time($filter_specs[ 'search_val_1' ] . ' 00:00:00') ;
+						}
+
+						$_output = $_output->and_where( $query_column, '>=', $date_string_0 ) ;
+						$_output = $_output->and_where( $query_column, '<=', $date_string_1 ) ;
+
+
 						$_output = $_output->and_where_close() ;
                         $_output = $_output->$close();
 					} elseif ( self::data_type_is_numeric( $column_type )) {
@@ -256,6 +274,7 @@ class DOC_Util_Filter {
 			}
 			$_output = $_output->and_where_close() ;
 		}
+
         return $_output ;
 	}
 

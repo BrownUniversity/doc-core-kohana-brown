@@ -1,6 +1,6 @@
 <style type="text/css">
 	form#filter {
-		width: 720px ;
+		width: 780px ;
 	}
 	.search-group-manipulation {
 		float:right;
@@ -34,7 +34,7 @@
 	}
 	.search-group {
 		float:left ;
-		width: 85% ;
+		width: 88% ;
 	}
 	.boolean-connector {
 		float: right ;
@@ -43,6 +43,12 @@
 
 </style>
 <?php
+
+	if( !isset( $minute_increment )) {
+		$minute_increment = DOC_Helper_Form::MINUTE_INCREMENT ;
+	}
+
+
 	$operators = array(
 		'lt' => 'less than',
 		'eq' => 'equals',
@@ -205,6 +211,19 @@
 						to
 						<input type='text' value='{$date_default_1}' name='search_val_1[]' class='datepicker' />
 					</span>") ;
+
+			$datetime_0 = DOC_Helper_Form::datetime_input_fields( $date_default_0, 'datetime_0', $minute_increment, 'datepicker-filter', FALSE ) ;
+			$datetime_1 = DOC_Helper_Form::datetime_input_fields( $date_default_1, 'datetime_1', $minute_increment, 'datepicker-filter', FALSE ) ;
+
+			print("<span class='filter_value filter_datetime'>
+						<input type='hidden' name='search_operator[]' value='' />
+						<input type='hidden' value='{$date_default_0}' name='search_val_0[]' />
+						<input type='hidden' value='{$date_default_1}' name='search_val_1[]' />
+
+						from {$datetime_0} to {$datetime_1}
+
+					</span>") ;
+
 // DOC_Util_Debug::dump( $search_operator, false ) ;
 			print("<span class='filter_value filter_numeric'>".Form::select("search_operator[]", $operators, $search_operator)."<input type='text' value='{$numeric_default}' name='search_val_0[]' /><input type='hidden' value='' name='search_val_1[]' /></span>") ;
 
@@ -227,8 +246,8 @@
 		print("<div class='submits'>") ;
 
 		print("<div class='submits-main'>") ;
-		print("<input type='submit' name='setFilter' value='Search' />") ;
-		print("<input type='submit' name='setFilter' value='Clear' />") ;
+		print("<input type='submit' name='setFilter' value='Search' id='set-filter-search' />") ;
+		print("<input type='submit' name='setFilter' value='Clear' id='set-filter-clear' />") ;
 		print("</div>") ;
 
 		if( isset( $alternate_submits ) && count( $alternate_submits ) > 0 ) {
