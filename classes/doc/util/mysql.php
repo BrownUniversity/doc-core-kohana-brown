@@ -8,7 +8,7 @@ defined('SYSPATH') or die('No direct script access.');
  * DOC_Util_Mysql
  * 
  * Used to allow ad-hoc querying of MySQL database that the Kohana 3 
- * framework doesn't seem to give us
+ * framework doesn't seem to give us.  By default, Auto Commit will be off.
  * 
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
@@ -49,6 +49,8 @@ class DOC_Util_Mysql {
             $msg = "Failed to connect to MySQL: " . $this->mysqli->connect_error;
             throw new Kohana_Exception($msg);
         }
+        
+        $this->mysqli->autocommit(FALSE);
     }
     
     /**
@@ -73,6 +75,15 @@ class DOC_Util_Mysql {
     }
     
     /**
+     * Commit a transaction
+     * 
+     * @return boolean
+     */
+    public function commit() {
+        return $this->mysqli->query('COMMIT;');
+    }
+    
+    /**
      * Use file transfer to achieve bulk data inserts/updates
      * 
      * @param string $path path to local file
@@ -85,7 +96,9 @@ class DOC_Util_Mysql {
         $columns = implode(', ', $columns);
         $sql = "
             LOAD DATA LOCAL INFILE '{$path}'
-            REPLACE INTO TABLE {$table} 
+            REPLACE INTO TABLE {$table}
+            FIELDS TERMINATED BY '\t' ENCLOSED BY ''
+            LINES TERMINATED BY '\n'
             ({$columns}) 
         ";
         
@@ -140,6 +153,23 @@ class DOC_Util_Mysql {
         return $this->mysqli->query($sql);
     }
     
+    /**
+     * Rollback a transaction
+     * 
+     * @return boolean
+     */
+    public function rollback() {
+        return $this->mysqli->query('ROLLBACK;');
+    }
+    
+    /**
+     * Begin a transaction
+     * 
+     * @return boolean
+     */
+    public function start() {
+        return $this->mysqli->query('START TRANSACTION;');
+    }
 }
 
 // End DOC_Util_Mysql
