@@ -372,8 +372,8 @@ class DOC_Helper_Table {
 						$_output[] = "<td class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></td>" ;
 
 					} else {
-						foreach( $supplemental_data as $property_name => $supplement_value ) {
-							$_output[] = "<td>{$supplement_value}</td>" ;
+						foreach( $supplemental_data as $supplement_col ) {
+							$_output[] = "<td".HTML::attributes( $supplement_col['td_attrs'] ).">{$supplement_col['value']}</td>" ;
 						}
 					}
 				}
