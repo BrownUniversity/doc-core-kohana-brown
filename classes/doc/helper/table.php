@@ -20,6 +20,7 @@ class DOC_Helper_Table {
 	const TYPE_DATA = 1 ;
 	const TYPE_CHECKBOX = 2 ;
 	const TYPE_ACTION = 3 ;
+	const TYPE_SUPPLEMENTAL = 4 ;
 
 	const CONTEXT_WEB = 1 ;
 	const CONTEXT_SPREADSHEET = 2 ;
@@ -55,6 +56,7 @@ class DOC_Helper_Table {
 	 */
 	public function render() {
 		$_output = array() ;
+		$supplemental_column_headers = array() ;
 
 		if( count( $this->data ) > 0 ) {
 			$_output[] = "<table" . HTML::attributes($this->table_attrs) . ">" ;
@@ -70,6 +72,11 @@ class DOC_Helper_Table {
 			foreach( $this->column_specs as $col_spec ) {
 
 				if( !isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context ) {
+
+					// TODO: This should only create columns for data that is NOT TYPE_SUPPLEMENTAL.
+					// Anything else should be ignored here except for creating a flag to indicate that
+					// supplemental data exists.
+
 					$property = '' ;
 					if( isset( $col_spec[ 'property' ] )) {
 						$property = $col_spec[ 'property' ] ;
@@ -85,22 +92,36 @@ class DOC_Helper_Table {
 						$header_attributes = $col_spec[ 'attributes' ] ;
 					}
 
-					if( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
-						$header_attributes['class'] = '{sorter: false}' ;
+
+
+					if( $col_spec[ 'type' ] != self::TYPE_SUPPLEMENTAL ) {
+
+						if( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
+							$header_attributes['class'] = '{sorter: false}' ;
+						}
+
+						if( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
+							$heading = "<input type='checkbox' name='_id' class='check_all' />" ;
+							$header_attributes[ 'class' ] = '{sorter: false}' ;
+						}
+
+						$_output[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+					} else {
+						if( $this->context == self::CONTEXT_SPREADSHEET ) {
+							$supplemental_column_headers[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+						} else {
+							$supplemental_column_headers = array("<th".HTML::attributes( array('class' => '{sorter: false}')).">&nbsp;</th>") ;
+						}
 					}
-
-					if( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
-						$heading = "<input type='checkbox' name='_id' class='check_all' />" ;
-						$header_attributes[ 'class' ] = '{sorter: false}' ;
-					}
-
-
-
-					$_output[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
-
 				}
-
 			}
+
+			// output supplemental headers, if they exist
+
+			if( count( $supplemental_column_headers ) > 0 ) {
+				$_output[] = implode("\n", $supplemental_column_headers) ;
+			}
+
 
 			$_output[] = "</tr>" ;
 			$_output[] = "</thead>" ;
@@ -113,11 +134,24 @@ class DOC_Helper_Table {
 			$_output[] = "<tbody>" ;
 
 			foreach( $this->data as $object ) {
+				$supplemental_data = array() ;
 				$_output[] = "<tr>" ;
+
+				// Supplemental data in the body of the table needs to be handled similarly to our headers.
+				// As we encounter supplemental data for a row, it should be collected into an array.
+				// At the end of the set of rows, we'll then add either a single column (web) with an icon and class to hook into jquery
+				// or we'll create a new set of columns (spreadsheet) with the data we've collected.
+
+
 				foreach( $this->column_specs as $col_spec ) {
 					if( !isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context ) {
 						$td_attrs = array() ;
-						if( $col_spec[ 'type' ] == self::TYPE_DATA ) {
+
+
+						// Note that both TYPE_SUPPLEMENTAL and TYPE_DATA will need much of the same processing,
+						// but only TYPE_DATA should be immediately dumped into a column.
+
+						if( $col_spec[ 'type' ] == self::TYPE_DATA || $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
 							$value = $this->generate_content($object, $col_spec[ 'property' ]) ;
 
 							if( isset( $col_spec[ 'format' ]) && is_array( $col_spec[ 'format' ]) && count( $col_spec[ 'format' ]) > 0 ) {
@@ -304,12 +338,47 @@ class DOC_Helper_Table {
 							$value = $this->parse_string( $object, $checkbox ) ;
 						}
 
+						if( $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
+							// TODO: Build an array structure containing the header and value pairs.
+							//			We'll turn that into a JSON string and assign it to the "data-supplement" property
+							//			of our supplemental data column.
+							//
+							//			This same structure should also store other attributes created in this loop
+							//			so that we can pass them to the spreadsheet (or web?) for proper formatting.
 
+							$heading = ucwords( $col_spec[ 'property' ]) ;
+							if( isset( $col_spec[ 'heading' ])) {
+								$heading = $col_spec[ 'heading' ] ;
+							}
 
-						$_output[] = "<td".HTML::attributes( $td_attrs ).">{$value}</td>" ;
+							$supplemental_data[] = array(
+									'heading' => $heading,
+									'value' => $value,
+									'td_attrs' => $td_attrs
+							) ;
+
+							$value ;
+						} else {
+							$_output[] = "<td".HTML::attributes( $td_attrs ).">{$value}</td>" ;
+						}
+
 
 					}
 				}
+
+				if( count( $supplemental_data ) > 0 ) {
+					if( $this->context == self::CONTEXT_WEB ) {
+						$supplemental_data_json = json_encode( $supplemental_data ) ;
+						$_output[] = "<td class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></td>" ;
+
+					} else {
+						foreach( $supplemental_data as $property_name => $supplement_value ) {
+							$_output[] = "<td>{$supplement_value}</td>" ;
+						}
+					}
+				}
+
+
 				$_output[] = "</tr>" ;
 			}
 
@@ -485,6 +554,8 @@ class DOC_Helper_Table {
 		return $_output ;
 
 	}
+
+
 
 
 }
