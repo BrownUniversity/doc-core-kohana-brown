@@ -160,7 +160,6 @@
  			updateDatetimeViaTime( $(this).closest('span.filter_datetime'), $(this).attr('name')) ;
  		}) ;
 
-// 		theForm.find('input[name^="datetime_"]').datepicker({
 		$('.datepicker-filter').datepicker({
 			changeMonth: true,
 			changeYear: true,
