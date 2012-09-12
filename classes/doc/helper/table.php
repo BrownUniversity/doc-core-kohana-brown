@@ -352,8 +352,8 @@ class DOC_Helper_Table {
 							}
 
 							$supplemental_data[] = array(
-									'heading' => $heading,
-									'value' => $value,
+									'heading' => htmlentities($heading, ENT_QUOTES),
+									'value' => htmlentities($value, ENT_QUOTES),
 									'td_attrs' => $td_attrs
 							) ;
 

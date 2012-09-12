@@ -17,6 +17,7 @@
 				row.removeClass('supplemental-highlight') ;
 			} else {
 				var supplemental_data = $(this).closest('td').data('supplement') ;
+				var supplemental_data_value ;
 				$(this).closest('table').find('tr').removeClass('supplemental-highlight') ;
 
 				// create the table
@@ -24,7 +25,8 @@
 				var table_body = $('<tbody></tbody>') ;
 
 				for( var i = 0; i < supplemental_data.length; i++ ) {
-					table_body.append('<tr><th>' + supplemental_data[i].heading + '</th><td>' + supplemental_data[i].value + '</td></tr>') ;
+					supplemental_data_value = supplemental_data[i].value == null ? '' : supplemental_data[i].value ;
+					table_body.append('<tr><th>' + supplemental_data[i].heading + '</th><td>' + supplemental_data_value + '</td></tr>') ;
 				}
 
 				table.append(table_body) ;
