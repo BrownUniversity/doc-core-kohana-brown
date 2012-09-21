@@ -28,7 +28,9 @@
 				.tablesorterPager({
 					container: $('#<?php print( $pager_id ) ; ?>'),
 					positionFixed: false,
-					size: 50
+					size: 50,
+					output: "{startRow} to {endRow} ({totalRows})",
+					pagerArrows: true
 				})
 
 			<? } ?>

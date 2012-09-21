@@ -8,7 +8,7 @@
 	<form>
 		<a class="first">|&lt;</a>
 		<a class="prev">&lt;</a>
-		<input type="text" class="pagedisplay" />
+		<span class="pagedisplay"></span>
 		<a class="next">&gt;</a>
 		<a class="last">&gt;|</a>
 		<select class="pagesize">
