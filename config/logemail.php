@@ -19,7 +19,7 @@ return array(
 
         ),
         Log::ERROR => array(
-            
+            'Christopher_Keith@brown.edu',
         ),
         Log::WARNING => array(
 
