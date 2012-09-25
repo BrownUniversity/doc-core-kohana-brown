@@ -13,15 +13,15 @@
  * @author jorrill
  */
 class DOC_Util_Prevalidation {
-	
+
 	/**
 	 * Compares arrays to be sure that their keys all match.
-	 * 
-	 * @return boolean 
+	 *
+	 * @return boolean
 	 */
 	public static function array_keys_match() {
 		$arrays = func_get_args() ;
-		
+
 		for( $i = 0 ; $i < count( $arrays ) - 1; $i++) {
 			if( count( array_diff_key( $arrays[$i], $arrays[$i+1])) > 0 ) {
 				return FALSE ;
@@ -30,28 +30,27 @@ class DOC_Util_Prevalidation {
 				return FALSE ;
 			}
 		}
-		
+
 		return TRUE ;
 	}
-	
+
 	/**
 	 * Accepts any number of arrays as arguments, and will check that each one
 	 * is a non-empty array.
-	 * 
-	 * @return boolean 
+	 *
+	 * @return boolean
 	 */
 	public static function arrays_non_empty() {
 		$arrays = func_get_args() ;
-		
+
 		foreach( $arrays as $arr ) {
 			if( !is_array( $arr ) || count( $arr ) == 0 ) {
 				return FALSE ;
 			}
 		}
-		
+
 		return TRUE ;
 	}
-	
+
 }
 
-?>

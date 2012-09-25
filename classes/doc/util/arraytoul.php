@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -23,14 +23,14 @@ class DOC_Util_Arraytoul {
 		if( $suppress_duplicates ) {
 			$var = array_unique( $var ) ;
 		}
-		
+
 		foreach( $var as $v) {
 			if( is_array( $v )) {
 				$_output .= self::create($v, FALSE) ;
 			} else {
 				$_output .= "<li>{$v}</li>" ;
 			}
-			
+
 		}
 		if( $include_outer ) {
 			$_output .= '</ul>' ;
@@ -39,4 +39,3 @@ class DOC_Util_Arraytoul {
 		return $_output ;
 	}
 }
-?>

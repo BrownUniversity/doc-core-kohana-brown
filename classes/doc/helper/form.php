@@ -363,4 +363,3 @@ class DOC_Helper_Form {
 	}
 
 }
-?>

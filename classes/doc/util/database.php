@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -20,7 +20,7 @@ class DOC_Util_Database {
 	 * @param array $current_collection
 	 * @param string $field_name
 	 * @param Model $obj_template
-	 * @param string $obj_type 
+	 * @param string $obj_type
 	 * @todo Determine whether this method is really necessary. Kohana 2.x could do something like $obj->prop = array(id, id, id), but it's not clear whether 3.1 supports that.
 	 */
 	public static function merge_relation( $posted_ids, $current_collection, $field_name, $obj_template, $obj_type = self::STD_OBJ) {
@@ -37,7 +37,7 @@ class DOC_Util_Database {
 			} else {
 				$current_obj->delete() ;
 			}
-				
+
 		}
 		if( is_array( $posted_ids )) {
 			$new_ids = array_diff( $posted_ids, $current_ids ) ;
@@ -65,4 +65,3 @@ class DOC_Util_Database {
 		}
 	}
 }
-?>

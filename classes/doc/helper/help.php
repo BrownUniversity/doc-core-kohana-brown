@@ -30,5 +30,3 @@ class DOC_Helper_Help {
 		print("<div id='help'>{$help_content}</div>") ;
 	}
 }
-
-?>

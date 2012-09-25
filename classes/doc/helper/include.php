@@ -157,4 +157,3 @@ class DOC_Helper_Include {
 	}
 
 }
-?>

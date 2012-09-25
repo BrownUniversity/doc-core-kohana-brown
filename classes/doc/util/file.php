@@ -269,4 +269,3 @@ abstract class DOC_Util_File {
 	}
 }
 
-?>

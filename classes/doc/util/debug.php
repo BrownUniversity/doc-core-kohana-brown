@@ -9,4 +9,3 @@ class DOC_Util_Debug {
 	}
 }
 
-?>

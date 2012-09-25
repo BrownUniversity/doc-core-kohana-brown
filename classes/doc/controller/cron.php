@@ -26,9 +26,8 @@ class DOC_Controller_Cron extends Controller {
 	public function action_monthly() {
 		Kohana::$log->add(Log::INFO, 'Executing monthly cron script') ;
 	}
-	
+
 	public function action_index() {}
-	
+
 }
 
-?>

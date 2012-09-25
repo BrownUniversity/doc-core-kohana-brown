@@ -102,5 +102,3 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	}
 
 }
-
-?>

@@ -162,4 +162,3 @@ class DOC_Util_Mail {
 
 }
 
-?>

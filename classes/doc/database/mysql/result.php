@@ -19,7 +19,7 @@ class DOC_Database_MySQL_Result extends Kohana_Database_MySQL_Result {
 		}
 		return json_encode( $arr ) ;
 	}
-	
+
 	public function as_complete_array() {
 		$arr = array() ;
 		foreach( $this as $obj ) {
@@ -27,7 +27,5 @@ class DOC_Database_MySQL_Result extends Kohana_Database_MySQL_Result {
 		}
 		return $arr ;
 	}
-	
-}
 
-?>
+}

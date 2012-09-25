@@ -61,5 +61,3 @@ class DOC_Util_WordHTML {
 		return $str ;
 	}
 }
-
-?>

@@ -95,4 +95,3 @@ class DOC_Util_Lookup {
 	}
 
 }
-?>

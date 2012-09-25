@@ -392,5 +392,3 @@ class DOC_Util_Filter {
 	}
 }
 
-
-?>
