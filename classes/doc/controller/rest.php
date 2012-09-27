@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @package    Kohana-Based Web Services
  * @author     Christopher Keith <christopher_keith@brown.edu>
@@ -25,7 +25,7 @@ class DOC_Controller_REST extends Controller {
 
 	/**
 	 * Content-types accepted by this service.  Keys represent content-
-	 * types from HTTP accept-type header and Values represent the path 
+	 * types from HTTP accept-type header and Values represent the path
 	 * to the appropriate view file.
 	 * @todo Pull the actual settings out of this controller and set via config in the before() method.
 	 */
@@ -33,58 +33,58 @@ class DOC_Controller_REST extends Controller {
 //		'application/json' => 'json',
 //		'text/xml' => 'version_0.1/xml',
 //		'text/xml;version=0.1' => 'version_0.1/xml',
-//		'vnd.edu.brown.college.advisors+xml;version=0.1' => 'version_0.1/xml'		
+//		'vnd.edu.brown.college.advisors+xml;version=0.1' => 'version_0.1/xml'
 	);
-	
+
 	/**
 	 * Name of data model
 	 */
 	protected $model = NULL;
-	
+
 	/**
 	 * List of HTTP Status Codes
 	 */
 	private $status_codes = array(
-		100 => 'Continue',  
-		101 => 'Switching Protocols',  
-		200 => 'OK',  
-		201 => 'Created',  
-		202 => 'Accepted',  
-		203 => 'Non-Authoritative Information',  
-		204 => 'No Content',  
-		205 => 'Reset Content',  
-		206 => 'Partial Content',  
-		300 => 'Multiple Choices',  
-		301 => 'Moved Permanently',  
-		302 => 'Found',  
-		303 => 'See Other',  
-		304 => 'Not Modified',  
-		305 => 'Use Proxy',  
-		306 => '(Unused)',  
-		307 => 'Temporary Redirect',  
-		400 => 'Bad Request',  
-		401 => 'Unauthorized',  
-		402 => 'Payment Required',  
-		403 => 'Forbidden',  
-		404 => 'Not Found',  
-		405 => 'Method Not Allowed',  
-		406 => 'Not Acceptable',  
-		407 => 'Proxy Authentication Required',  
-		408 => 'Request Timeout',  
-		409 => 'Conflict',  
-		410 => 'Gone',  
-		411 => 'Length Required',  
-		412 => 'Precondition Failed',  
-		413 => 'Request Entity Too Large',  
-		414 => 'Request-URI Too Long',  
-		415 => 'Unsupported Media Type',  
-		416 => 'Requested Range Not Satisfiable',  
-		417 => 'Expectation Failed',  
-		500 => 'Internal Server Error',  
-		501 => 'Not Implemented',  
-		502 => 'Bad Gateway',  
-		503 => 'Service Unavailable',  
-		504 => 'Gateway Timeout',  
+		100 => 'Continue',
+		101 => 'Switching Protocols',
+		200 => 'OK',
+		201 => 'Created',
+		202 => 'Accepted',
+		203 => 'Non-Authoritative Information',
+		204 => 'No Content',
+		205 => 'Reset Content',
+		206 => 'Partial Content',
+		300 => 'Multiple Choices',
+		301 => 'Moved Permanently',
+		302 => 'Found',
+		303 => 'See Other',
+		304 => 'Not Modified',
+		305 => 'Use Proxy',
+		306 => '(Unused)',
+		307 => 'Temporary Redirect',
+		400 => 'Bad Request',
+		401 => 'Unauthorized',
+		402 => 'Payment Required',
+		403 => 'Forbidden',
+		404 => 'Not Found',
+		405 => 'Method Not Allowed',
+		406 => 'Not Acceptable',
+		407 => 'Proxy Authentication Required',
+		408 => 'Request Timeout',
+		409 => 'Conflict',
+		410 => 'Gone',
+		411 => 'Length Required',
+		412 => 'Precondition Failed',
+		413 => 'Request Entity Too Large',
+		414 => 'Request-URI Too Long',
+		415 => 'Unsupported Media Type',
+		416 => 'Requested Range Not Satisfiable',
+		417 => 'Expectation Failed',
+		500 => 'Internal Server Error',
+		501 => 'Not Implemented',
+		502 => 'Bad Gateway',
+		503 => 'Service Unavailable',
+		504 => 'Gateway Timeout',
 		505 => 'HTTP Version Not Supported'
 	);
 
@@ -121,9 +121,9 @@ class DOC_Controller_REST extends Controller {
 		// ***REMOVED***
 		// ***REMOVED***
 	);
-	
+
 	protected $authentication_method = self::AUTH_NONE ;
-	
+
 	/**
 	 * Folder containing the views associated with content-types
 	 */
@@ -136,54 +136,54 @@ class DOC_Controller_REST extends Controller {
 		parent::before();
 		$this->auto_render = FALSE;
 		$this->validate_ip();
-		
+
 		// Note that the view_folder and model handling here assumes that REST controllers
 		// will always be Controller_REST_[Modelname]. This may not be true 100% of the
 		// time, though exceptions would be handled by child classes.
-		
+
 		if ($this->view_folder === NULL) {
 			$this->view_folder = strtolower(substr(get_class($this), 16));
 		}
-		
+
 		if ($this->model === NULL) {
 			$this->model = inflector::singular($this->view_folder);
 		}
 
 		$this->process_accept_type();
-		
+
 		if ( ! $this->authenticate_request()) {
 			$this->send_response(401);
 		}
-		
+
 		// this was originally in the index() method
-		
+
 		if ( ! array_key_exists($this->accept_type, $this->definitions)) {
 			$this->send_response(415);
 		}
-			
+
 		if (array_search($this->request->method(), $this->supported_methods) === FALSE) {
 			$this->send_response(405);
 		}
-		
+
 		$method = strtolower( $this->request->method() ) ;
-		
+
 		$controller_method = "process_{$method}_".$this->request->action() ;
 		if( !method_exists( $this, $controller_method )) {
 			$controller_method = "process_{$method}" ;
-		} 
+		}
 
 		$result = $this->$controller_method() ;
-				
+
 		$this->send_response($result['status'], $result['headers'], $result['payload']);
 
-		
-		
+
+
 	}
-	
+
 	/**
-	 * Method for authenticating a request. This should call one of the other 
-	 * 
-	 * @return boolean 
+	 * Method for authenticating a request. This should call one of the other
+	 *
+	 * @return boolean
 	 */
 	protected function authenticate_request() {
 		if( !empty( $this->authentication_method )) {
@@ -193,19 +193,19 @@ class DOC_Controller_REST extends Controller {
 		}
 		return $this->$auth_method() ;
 	}
-	
+
 	/**
 	 * Use this when the service in question does not require authentication.
-	 * 
-	 * @return boolean 
+	 *
+	 * @return boolean
 	 */
 	protected function authenticate_none() {
 		return TRUE ;
 	}
-	
+
 	/**
 	 *
-	 * @return boolean 
+	 * @return boolean
 	 * @todo Update ORM settings to pull from a config variable so that this can be more generic?
 	 */
 	protected function authenticate_http_basic() {
@@ -220,10 +220,10 @@ class DOC_Controller_REST extends Controller {
 				->find();
 			$_output = $key->loaded;
 		}
-		
+
 		return $_output ;
 	}
-	
+
 	/**
 	 * Determines whether or not a request is valid by calculating a HMAC
 	 * signature from the key/secret pair.  The key is sent as the username
@@ -231,7 +231,7 @@ class DOC_Controller_REST extends Controller {
 	 * sent as the password.  This system rebuilds the signature and compares
 	 * to that received in the request.  If they match, the request is valid.
 	 *
-	 * @return boolean 
+	 * @return boolean
 	 * @todo Update ORM settings to pull from a config variable so that this can be more generic?
 	 */
 	protected function authenticate_hmac() {
@@ -245,7 +245,7 @@ class DOC_Controller_REST extends Controller {
 		$url = explode('/', $script_url);
 		$uri = $_SERVER['SCRIPT_URI'];
 		$resource = $url[1];
-		
+
 		if (isset($_SERVER['PHP_AUTH_USER'])) {
 			$key = $_SERVER['PHP_AUTH_USER'];
 		}
@@ -266,15 +266,15 @@ class DOC_Controller_REST extends Controller {
 				}
 			}
 		}
-		
-		return $_output ;		
+
+		return $_output ;
 	}
-	
+
 	/**
 	 * Process requested HTTP accept types. This will give preference to the query
 	 * string if it contains a mimeType and a version. If these are missing, it
 	 * will use the $_SERVER[ 'HTTP_ACCEPT' ] value.
-	 * 
+	 *
 	 * @todo Create a way to more flexibly set a default accept_type.
 	 */
 	final protected function process_accept_type()
@@ -287,7 +287,7 @@ class DOC_Controller_REST extends Controller {
 		} else {
 			$raw = (isset($_SERVER['HTTP_ACCEPT'])) ? $_SERVER['HTTP_ACCEPT'] : NULL;
 		}
-		
+
 		$raw_array = explode(';', $raw);
 		$types = explode(',', $raw_array[0]);
 		if (count($types) == 1)
@@ -303,23 +303,23 @@ class DOC_Controller_REST extends Controller {
 			}
 		}
 	}
-	
+
 	/**
 	 * Process requests to this URI with the DELETE verb
-	 * 
+	 *
 	 */
 	protected function process_delete()
 	{
 		return array(
-			'status'  => 501, 
-			'headers' => NULL, 
+			'status'  => 501,
+			'headers' => NULL,
 			'payload' => NULL,
 		);
 	}
-	
+
 	/**
 	 * Process requests to this URI with the GET verb
-	 * 
+	 *
 	 * @params mixed parameters after the controller in the URI
 	 * @todo Either modify this to make use of the new get_payload method or strip it down to the 501 settings we have for the others.
 	 */
@@ -351,39 +351,39 @@ class DOC_Controller_REST extends Controller {
 			}
 		}
 		return array(
-			'status'  => $status, 
-			'headers' => $headers, 
+			'status'  => $status,
+			'headers' => $headers,
 			'payload' => $payload
 		);
 
 	}
-	
+
 	/**
 	 * Process requests to this URI with the POST verb
-	 * 
+	 *
 	 */
 	protected function process_post()
 	{
 		return array(
-			'status'  => 501, 
-			'headers' => NULL, 
+			'status'  => 501,
+			'headers' => NULL,
 			'payload' => NULL,
 		);
 	}
-	
+
 	/**
 	 * Process requests to this URI with the PUT verb
-	 * 
+	 *
 	 */
 	protected function process_put()
 	{
 		return array(
-			'status'  => 501, 
-			'headers' => NULL, 
+			'status'  => 501,
+			'headers' => NULL,
 			'payload' => NULL,
 		);
 	}
-	
+
 	/**
 	 * Process search requests.  Overload in child controllers to add
 	 * functionality
@@ -391,16 +391,16 @@ class DOC_Controller_REST extends Controller {
 	protected function search($query_string)
 	{
 		return array(
-			'status'  => 501, 
-			'headers' => NULL, 
+			'status'  => 501,
+			'headers' => NULL,
 			'payload' => NULL,
 		);
 	}
-	
+
 	protected function get_payload( $data, $options = array() ) {
 		$view_root = 'rest/' ;
 		$mime_path = $this->definitions[ $this->accept_type ] ;
-		
+
 		// there may be a more clever way to do this...
 		$view_file = $view_root . $mime_path . '/' . $this->request->controller().'/'.$this->request->action() . '/output' ;
 		if( !Kohana::find_file('views', $view_file)) {
@@ -417,9 +417,9 @@ class DOC_Controller_REST extends Controller {
 		$view->data = $data ;
 		$view->options = $options ;
 		return $view->render() ;
-		
+
 	}
-	
+
 	/**
 	 * Send response message to requester
 	 *
@@ -432,19 +432,19 @@ class DOC_Controller_REST extends Controller {
 		header('HTTP/1.1 ' . $status . ' ' . $this->status_codes[$status]);
 		header('Cache-Control: no-cache, must-revalidate') ;
 		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT') ;
-		
+
 		if ($headers === NULL) {
 			$headers = array("Content-Type: {$this->accept_type}");
 		} else if ( ! is_array($headers)) {
 			$headers = array($headers);
 		}
-		
+
 		foreach ($headers as $header) {
 			header($header);
 		}
-		
-		
-		
+
+
+
 		if ($status != 200) {
 			if ($status == 405) {
 				header('Allow: ' . implode(', ', $this->supported_methods));
@@ -470,7 +470,7 @@ class DOC_Controller_REST extends Controller {
 		}
 		exit;
 	}
-	
+
 	/**
 	 * Validate the source IP address of the request with the list of IPs
 	 * allowed to access this instance.
@@ -481,7 +481,7 @@ class DOC_Controller_REST extends Controller {
 			$source_ip = $_SERVER['REMOTE_ADDR'];
 			if (array_search($source_ip, $this->valid_ips) === FALSE) {
 				$this->send_response(401);
-			}			
+			}
 		}
 	}
 } // End Rest Controller
