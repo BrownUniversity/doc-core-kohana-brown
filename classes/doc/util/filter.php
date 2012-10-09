@@ -88,6 +88,12 @@ class DOC_Util_Filter {
 		return in_array( $data_type, $valid_types ) ;
 	}
 
+	/**
+	 * Checks both session data and the POST array to determine whether
+	 * there is a filter in place.
+	 *
+	 * @return boolean
+	 */
 	public static function filter_exists() {
 		$session = Session::instance( 'database' ) ;
 		$stored_filter = $session->get( self::get_filter_key() ) ;
@@ -95,6 +101,18 @@ class DOC_Util_Filter {
 		return !empty( $stored_filter ) || $new_filter ;
 	}
 
+	/**
+	 * Return the current filter specs from the session. This is primarily for use
+	 * with external code that might want to examine the filters...
+	 *
+	 * @return array
+	 */
+	public static function get_current_filter_specs() {
+		$filter_key = self::get_filter_key() ;
+		$session = Session::instance( 'database' ) ;
+
+		return $session->get( $filter_key ) ;
+	}
 
 	/**
 	 * Modifies and returns the passed in ORM object, adding in search filters
@@ -364,6 +382,12 @@ class DOC_Util_Filter {
 
 	}
 
+	/**
+	 * Return a default set of filters...basically an array with NULL values for
+	 * each element in the array.
+	 *
+	 * @return array
+	 */
 	public static function get_default_filter_specs() {
 		return array(
 			array(
@@ -375,6 +399,12 @@ class DOC_Util_Filter {
 		) ;
 	}
 
+	/**
+	 * Return an array safe for use in a SQL 'IN' clause by adding a default value
+	 * to the array if it would otherwise be empty.
+	 *
+	 * @return array
+	 */
 	public static function safe_array_for_in_clause( $arr, $substitute = -1 ) {
 		$_output = $arr ;
 
