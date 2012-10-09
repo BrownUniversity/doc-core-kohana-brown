@@ -101,6 +101,22 @@ class DOC_ORM extends Kohana_ORM {
 	}
     
     /**
+     * Overload to include calculated columns
+     * 
+     * @return array
+     */
+    public function as_array() {
+        $_output = parent::as_array();
+        if ((isset($this->_calculated_columns)) && (is_array($this->_calculated_columns))) {
+            foreach ($this->_calculated_columns as $cc) {
+                $_output[$cc] = (isset($this->$cc)) ? $this->$cc : NULL;
+            }
+        }
+        
+        return $_output;
+    }
+    
+    /**
      * Encode the object as JSON
      * 
      * @return string
