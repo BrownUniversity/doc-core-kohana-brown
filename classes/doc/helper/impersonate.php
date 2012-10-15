@@ -100,8 +100,11 @@ class DOC_Helper_Impersonate {
      */
     public static function get_return_link()
     {
+        $key = Kohana::$config->load('impersonate.return_link_key');
         $session = self::session();
-        return $session->get(Kohana::$config->load('impersonate.return_link_key'));
+        $link = $session->get($key);
+        $session->delete($key);
+        return $link;
     }
 
     /**
@@ -181,13 +184,13 @@ class DOC_Helper_Impersonate {
     public static function set_return_link($link = NULL)
     {
         $session = self::session();
-
-//         if ($session->get(Kohana::$config->load('impersonate.return_link_key')) === NULL) {
-            if ($link === NULL) {
-				$link = url::base();
-			}
+        if ($link === NULL) {
+            $link = url::base();
+		}
+        $already_set = $session->get(Kohana::$config->load('impersonate.return_link_key'), FALSE);
+        if ( ! $already_set) {
             $session->set(Kohana::$config->load('impersonate.return_link_key'), $link);
-//         }
+        }
     }
 
     /**
