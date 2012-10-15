@@ -93,6 +93,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
                              . $record['first_name'] . ', ' 
                              . $record['auth_id'];
                     	$sort[$key] = $record;
+                        unset($sort[$key]['memberships']);
                     }
                     ksort($sort);
                     $results = array_values($sort);
