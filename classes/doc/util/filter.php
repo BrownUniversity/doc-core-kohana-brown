@@ -13,6 +13,8 @@
  */
 class DOC_Util_Filter {
 	const FILTER_SUFFIX = '_search_filter' ;
+	const WILDCARDS_ON = TRUE ;
+	const WILDCARDS_OFF = FALSE ;
 
 	/**
 	 * Get the key we are using for the filter data on the current page (URI).
@@ -419,6 +421,52 @@ class DOC_Util_Filter {
 		}
 
 		return $_output ;
+	}
+	
+	/**
+	 * Breaks up a single string into an array of search terms based on white
+	 * space in the original string. Optionally adds SQL wildcards to either end of
+	 * each string.
+	 * 
+	 * @param string $str
+	 * @param boolean $add_wildcards Use the class constants for clarity
+	 * @return array
+	 */
+	public static function get_search_terms( $str, $add_wildcards = self::WILDCARDS_ON ) {
+		$terms = array() ;
+
+		// First look for any quoted strings. Add those to the array
+		// and remove them from the original string.
+		preg_match_all('/"(.*?)"/', $str, $matches) ;
+
+		if( count( $matches[0] ) > 0 ) {
+			$terms = $matches[1] ;
+			$str = str_replace( $matches[0], '', $str ) ;
+			$str = preg_replace( '/\s+/', ' ', $str ) ;
+		}
+
+		if( !empty( $str )) {
+			$terms = array_merge( $terms, explode( ' ', $str )) ;
+		}
+
+
+		if( $add_wildcards == self::WILDCARDS_ON ) {
+			array_walk( $terms, "Util_Filter::add_sql_wildcards" ) ;
+		}
+
+		return $terms ;
+
+	}
+
+	/**
+	 * Used by DOC_Util_Filter::get_search_terms in an array_walk to surround a
+	 * given string with SQL wildcard characters.
+	 * 
+	 * @param string $item
+	 * @param type $key
+	 */
+	public static function add_sql_wildcards( &$item, $key ) {
+		$item = "%{$item}%" ;
 	}
 }
 
