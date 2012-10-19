@@ -263,6 +263,35 @@ class DOC_Helper_Form {
 	}
 
 	/**
+	 * Returns a single checkbox with label.
+	 * 
+	 * @param string $name
+	 * @param string $value
+	 * @param string $label
+	 * @param boolean $selected
+	 * @param string $mode
+	 * @param string $unchecked
+	 * @return string
+	 */
+	public static function checkbox_single( $name, $value, $label, $selected, $mode = self::MODE_EDITABLE, $unchecked = self::UNCHECKED_BLANK ) {
+		$_output = '' ;
+		$unchecked_class = 'checkmark-unchecked' ;
+		if( $unchecked == self::UNCHECKED_EXPLICIT ) {
+			$unchecked_class = 'checkmark-unchecked-explicit' ;
+		}
+		$css_id = preg_replace('/[^A-Za-z0-9]/', '-', $name) ;
+		if( $mode == self::MODE_EDITABLE ) {
+			$_output .= Form::checkbox($name, $value, $selected, array('id' => $css_id )) ;
+		} else {
+			$css_class = $selected ? 'checkmark-checked' : $unchecked_class ;
+			$_output .= "<span id='{$name}' class='{$css_class}'>&nbsp;</span>" ;
+		}
+		$_output .= "<label for='{$css_id}'>{$label}</label>" ;
+		return $_output ;
+	}
+	
+	
+	/**
 	 * Create a set of radio buttons from an array.
 	 *
 	 * @param string $radio_name
