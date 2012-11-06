@@ -22,6 +22,8 @@ class DOC_Util_Database {
 	 * @param Model $obj_template
 	 * @param string $obj_type
 	 * @todo Determine whether this method is really necessary. Kohana 2.x could do something like $obj->prop = array(id, id, id), but it's not clear whether 3.1 supports that.
+	 * @todo Remove this from the module-- the user handling here may not apply to all apps.
+	 * @deprecated since 2012-11-01
 	 */
 	public static function merge_relation( $posted_ids, $current_collection, $field_name, $obj_template, $obj_type = self::STD_OBJ) {
 		$current_ids = array() ;

@@ -87,7 +87,16 @@ class DOC_Util_Spreadsheet {
 					$row_index++ ;
 					$tds = $tr->getElementsByTagName('td') ;
 					for( $i = 0; $i < $tds->length; $i++ ) {
-						$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $tds->item($i)->nodeValue ) ;
+						$cell_node = $tds->item($i) ;
+						$cell_value = $dom->saveXML($cell_node) ;
+						$cell_value = str_replace('&gt;', '>', $cell_value) ;
+						$cell_value = str_replace('&lt;', '<', $cell_value) ;
+						$cell_value = preg_replace('/<\/?((p)|(br)|(div)).*?\/?>/',"\r", $cell_value ) ; 
+						$cell_value = DOC_Util_WordHTML::clean($cell_value,'') ;
+
+  //DOC_Util_Debug::dump( $cell_value, false ) ;
+ 
+						$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $cell_value ) ;
 
 
 						if( $tds->item($i)->hasAttribute( 'class' )) {
