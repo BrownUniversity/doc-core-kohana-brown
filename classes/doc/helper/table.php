@@ -291,7 +291,10 @@ class DOC_Helper_Table {
 							}
 
 						} elseif ( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
-							$default_id = $object->pk() ;
+							$default_id = NULL ;
+							if( method_exists( $object, 'pk')) {
+								$default_id = $object->pk() ;
+							}
 
 							$actions = array() ;
 							foreach( $col_spec[ 'actions' ] as $action ) {
@@ -307,7 +310,8 @@ class DOC_Helper_Table {
 								if( isset( $action[ 'class' ]) && !empty( $action[ 'class' ])) {
 									$action_class = $action[ 'class' ] ;
 								}
-								$action_str = "<a href='".Kohana::$base_url."{$action[ 'url_fragment' ]}{$id}' class='{$action_class}'>{$action[ 'name' ]}</a>" ;
+								$url_fragment = $this->parse_string($object, $action[ 'url_fragment' ]) ;
+								$action_str = "<a href='".Kohana::$base_url."{$url_fragment}{$id}' class='{$action_class}'>{$action[ 'name' ]}</a>" ;
 
 								if( isset( $action[ 'conditional' ])) {
 									$test = "return " . $this->parse_string($object, $action[ 'conditional' ]) . ';' ;
@@ -544,7 +548,7 @@ class DOC_Helper_Table {
 	protected function generate_content( $data_root, $key ) {
 		$key_array = explode('->', $key) ;
 
-        if( $data_root->supports_property( $key_array[0] )) {
+        if( property_exists($data_root, $key) || $data_root->supports_property( $key_array[0] )) {
 			$_output = @$data_root->{$key_array[0]};
 		} elseif (method_exists($data_root, $key_array[0])) {
 			$_output = @$data_root->{$key_array[0]}() ;

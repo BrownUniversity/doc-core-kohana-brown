@@ -232,11 +232,11 @@ class DOC_Util_Filter {
 						)) ;
 					}
 
-					$db = NULL ;
+					$db = Database::instance() ;
 					if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) && !empty( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ])) {
 						$db = Database::instance($search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) ;
 					}
-//					DOC_Util_Debug::dump( $query->compile($db)) ;
+//					DOC_Util_Debug::dump( $query->compile($db), false) ;
 					$result = $query->execute( $db ) ;
 
 					$ids = array() ;
