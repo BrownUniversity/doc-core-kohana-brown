@@ -34,6 +34,7 @@ class DOC_Helper_Table {
 	const FORMAT_PHONE = 'phone' ;
 	const FORMAT_DOLLARS = 'dollars' ;
 	const FORMAT_XLS_DOLLARS = 'xls_dollars' ;
+	const FORMAT_TRIM_DECIMAL = 'trim_decimal' ;
 	const FORMAT_DATETIME = 'datetime' ;
 	const FORMAT_DATETIME_PRECISE = 'datetime_precise' ;
 	const FORMAT_DATETIME_SHORT = 'datetime_short' ;
@@ -201,6 +202,10 @@ class DOC_Helper_Table {
 										$td_attrs[ 'class' ] = 'dollars' ;
 										break ;
 
+									case self::FORMAT_TRIM_DECIMAL:
+										$value = rtrim($value,'.0') ;
+										break ;
+										
 									case self::FORMAT_XLS_DOLLARS:
 										$value = $this->format_dollars($value, FALSE) ;
 										$td_attrs[ 'class' ] = 'dollars' ;
