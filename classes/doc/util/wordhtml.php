@@ -17,6 +17,12 @@ class DOC_Util_WordHTML {
 	const IGNORE_ATTRS_IN_TAGS = "<a>" ;
 
 	/**
+	 *
+	 * @var DOMDocument
+	 */
+	static $domdocument = NULL ;
+	
+	/**
 	 * Turn Word-generated HTML into something without all the cruft. This is basically
 	 * an HTML cleaner, and could be used to clean up other problematic code.
 	 *
@@ -59,5 +65,30 @@ class DOC_Util_WordHTML {
 			$str
 		);
 		return $str ;
+	}
+	
+	/**
+	 * We don't have access to HTML Tidy on the server we're using, but running HTML
+	 * through DOMDocument cleans things up a bit.
+	 * 
+	 * @param string $str
+	 * @return string
+	 */
+	public static function domdocument_tidy( $str, $strip_html_body = TRUE ) {
+		if( self::$domdocument == NULL ) {
+			self::$domdocument = new DOMDocument() ;
+		}
+		
+		@self::$domdocument->loadHTML($str) ;
+        $str = self::$domdocument->saveHTML() ;
+		
+		// a side effect of this approach is that we end up with DOCTYPE, html and body tags
+		if( $strip_html_body ) {
+			$str = preg_replace('/<\/?(body|html)>/', '', $str) ;
+			$str = preg_replace('/<!DOCTYPE.+?>/','',$str) ;
+		}
+		
+		return $str ;
+		
 	}
 }
