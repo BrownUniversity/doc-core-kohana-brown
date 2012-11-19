@@ -34,9 +34,10 @@ abstract class DOC_Util_Banner_Import {
 	 * @throws Kohana_Exception
 	 * @param string $name name of the file
 	 * @param string $pattern regular expression to match individual documents
+	 * @param string $local_path root directory for local file storage.
 	 * @return array JSON-encoded documents
 	 */
-	public static function get_file($name, $pattern) {
+	public static function get_file($name, $pattern, $local_path) {
         /**
          * Initialize data for the file transfer
          */
@@ -45,9 +46,7 @@ abstract class DOC_Util_Banner_Import {
         $user = Kohana::$config->load('bannerintegration.username');
         $pass = Kohana::$config->load('bannerintegration.password');
 
-        $local = Kohana::$config->load('bannerintegration.local_path')
-               . DIRECTORY_SEPARATOR . $name;
-
+        $local = $local_path . DIRECTORY_SEPARATOR . $name ;
         $remote = $path . DIRECTORY_SEPARATOR . $name;
 
         /**

@@ -12,13 +12,9 @@ if( file_exists( dirname( __FILE__ ) . '/myConfig.php' )) include_once( dirname(
 defined('FTPS_SERVER') or define('FTPS_SERVER', 'ftps.example.edu');
 defined('FTPS_PATH') or define('FTPS_PATH', '/XFER/PRD/DOC');
 
-// this should really be defined by the local application...
-// defined('LOCAL_PATH') or define('LOCAL_PATH', '/www/vhosts/ask.brown.edu/protected/var/banner');
-
 return array(
     'server'				=> FTPS_SERVER,
 	'path'					=> FTPS_PATH,
-	'local_path'			=> '',
     'username'				=> '***REMOVED***',
     'password'				=> '***REMOVED***',
 	'imports'				=> array(
