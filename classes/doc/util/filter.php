@@ -287,7 +287,7 @@ class DOC_Util_Filter {
 						$_output = $_output->$orm_connectors[ $bool_connector ]($query_column, self::get_operator( $filter_specs[ 'search_operator' ]), $filter_specs[ 'search_val_0' ]) ;
 
 					} else {
-						$_output = $_output->$orm_connectors[ $bool_connector ]($query_column, '=', $filter_specs[ 'search_val_0']) ;
+						$_output = $_output->$orm_connectors[ $bool_connector ]($query_column, self::get_operator( $filter_specs[ 'search_operator' ]), $filter_specs[ 'search_val_0']) ;
 					}
 
 				}
@@ -374,7 +374,9 @@ class DOC_Util_Filter {
 			'lt' => '<',
 			'eq' => '=',
 			'gt' => '>',
-			'ne' => '!='
+			'ne' => '!=',
+			'is' => '=',
+			'not' => '!='
 		) ;
 
 		if( array_key_exists( $operator_string, $operators )) {

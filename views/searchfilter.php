@@ -55,6 +55,16 @@
 		'gt' => 'greater than',
 		'ne' => 'does not equal'
 	) ;
+	
+	$relation_operators = array(
+		'choice' => array(
+			'is' => 'is',
+			'not' => 'is not'
+		),
+		'no-choice' => array(
+			'is' => 'is'
+		)
+	) ;
 
 	if( isset( $filter_fields ) && isset( $filter_model )) {
 		$session = Session::instance('database') ;
@@ -89,6 +99,9 @@
 				$search_val_1 = '' ;
 				$boolean_connector = 'AND' ;
 				$boolean_connector = isset( $saved_filter_specs[ 'boolean_connector' ]) ? $saved_filter_specs[ 'boolean_connector' ] : 'AND' ;
+				$my_relation_operators = ( isset( $filter_specs[ 'include_is_not' ]) && $filter_specs[ 'include_is_not' ] == TRUE ) 
+						? $relation_operators['choice'] 
+						: $relation_operators['no-choice'] ; 
 
 				if( isset( $saved_filter_specs[ 'filter_column' ]) && $saved_filter_specs[ 'filter_column' ] == $option_value ) {
 					$selected = "selected='selected'" ;
@@ -101,13 +114,18 @@
 				if( isset( $filter_specs[ 'relation_name' ])) {
 					$option_class = $filter_specs[ 'relation_name' ] ;
 					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
-					$relation_menus[] = "<span class='filter_value {$filter_specs[ 'relation_name' ]}'> is {$column_menu}<input type='hidden' value='' name='search_val_1[]' /><input type='hidden' name='search_operator[]' value='' /></span>" ;
+					
+					$relation_menus[] = "<span class='filter_value {$filter_specs[ 'relation_name' ]}'> " . 
+							Form::select("search_operator[]", $my_relation_operators, $search_operator) . 
+							" {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
 
 				// in case we have a special array for the menu but not a special label (likely for enum fields)
 				} elseif( isset( $filter_specs[ 'relation_options' ])) {
 					$option_class = $filter_col ;
 					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
-					$relation_menus[] = "<span class='filter_value {$option_class}'> is {$column_menu}<input type='hidden' value='' name='search_val_1[]' /><input type='hidden' name='search_operator[]' value='' /></span>" ;
+					$relation_menus[] = "<span class='filter_value {$option_class}'> " . 
+							Form::select("search_operator[]", $my_relation_operators, $search_operator) . 
+							" {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
 
 				} elseif( isset( $filter_specs[ 'custom_query' ]) && $filter_specs[ 'custom_query'] == TRUE ) {
 					$option_class = 'filter_text' ;
