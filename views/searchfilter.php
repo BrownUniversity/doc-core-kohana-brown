@@ -65,6 +65,30 @@
 			'is' => 'is'
 		)
 	) ;
+	
+
+	// For future use. It should be possible to support customized text operators
+	// the same way we do for relations. Below are some possible options. Note that
+	// some of these require manipulating both the operator and the string being
+	// tested in some of the 'fancy' options...
+	
+//	$text_operators = array(
+//		'choice' => array(
+//			'like' => 'like',
+//			'not-like' => 'not like'
+//		),
+//		'no-choice' => array(
+//			'like' => 'like'
+//		),
+//		'fancy' => array(
+//			'like' => 'like',
+//			'not-like' => 'not like',
+//			'starts' => 'starts',
+//			'ends' => 'ends',
+//			'is' => 'is'
+//		)
+//	) ;
+	
 
 	if( isset( $filter_fields ) && isset( $filter_model )) {
 		$session = Session::instance('database') ;
@@ -99,9 +123,9 @@
 				$search_val_1 = '' ;
 				$boolean_connector = 'AND' ;
 				$boolean_connector = isset( $saved_filter_specs[ 'boolean_connector' ]) ? $saved_filter_specs[ 'boolean_connector' ] : 'AND' ;
-				$my_relation_operators = ( isset( $filter_specs[ 'include_is_not' ]) && $filter_specs[ 'include_is_not' ] == TRUE ) 
-						? $relation_operators['choice'] 
-						: $relation_operators['no-choice'] ; 
+				$relation_menu_type = (isset( $filter_specs[ 'relation_menu_type' ]) && array_key_exists( $filter_specs[ 'relation_menu_type'], $relation_operators))
+						? $filter_specs[ 'relation_menu_type' ] 
+						: 'no-choice' ;
 
 				if( isset( $saved_filter_specs[ 'filter_column' ]) && $saved_filter_specs[ 'filter_column' ] == $option_value ) {
 					$selected = "selected='selected'" ;
@@ -116,7 +140,7 @@
 					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
 					
 					$relation_menus[] = "<span class='filter_value {$filter_specs[ 'relation_name' ]}'> " . 
-							Form::select("search_operator[]", $my_relation_operators, $search_operator) . 
+							Form::select("search_operator[]", $relation_operators[$relation_menu_type], $search_operator) . 
 							" {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
 
 				// in case we have a special array for the menu but not a special label (likely for enum fields)
@@ -124,7 +148,7 @@
 					$option_class = $filter_col ;
 					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
 					$relation_menus[] = "<span class='filter_value {$option_class}'> " . 
-							Form::select("search_operator[]", $my_relation_operators, $search_operator) . 
+							Form::select("search_operator[]", $relation_operators[$relation_menu_type], $search_operator) . 
 							" {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
 
 				} elseif( isset( $filter_specs[ 'custom_query' ]) && $filter_specs[ 'custom_query'] == TRUE ) {
