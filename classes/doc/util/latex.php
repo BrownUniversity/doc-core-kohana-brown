@@ -56,16 +56,15 @@ class DOC_Util_LaTeX {
 		
 		$_output = DOC_Util_WordHTML::convert_problem_chars($_output) ;
 		
-		// run what's left through html_entity_decode
-		
-		$_output = html_entity_decode($_output) ;
-		
 		// tidy the document
 		
 		$_output = DOC_Util_WordHTML::domdocument_tidy($_output) ;
-
 		$_output = str_replace('&nbsp;', ' ', $_output) ;
 
+		// run through html_entity_decode
+
+		$_output = html_entity_decode($_output) ;
+		
 		// tighten up any extra whitespace
 		
 		$_output = preg_replace('/(\s|\n){2,}/s',' ',$_output) ;
@@ -104,7 +103,7 @@ class DOC_Util_LaTeX {
 	 */
 	public static function latex_special_chars($str) {
 		$replacements = array(
-//			'\\' => '{\textbackslash}',
+			'\\' => '\textbackslash',
 			'{' => '\{',
 			'}' => '\}',
 			'&' => '\&',
@@ -116,14 +115,18 @@ class DOC_Util_LaTeX {
 			'|' => '{\textbar}',
 			'#' => '\#',
 			'\'' => '{\textquotesingle}',
-			'"' => '{\textquotedouble}',
+			'"' => '{\textquotedbl}',
+			'\textbackslash' => '{\textbackslash}'
 //			'<' => '\textless',
 //			'>' => '\textgreater'
 		) ;
 		
 		return str_replace(array_keys( $replacements ), array_values( $replacements ), $str) ;
-		
-		
-		
 	}
+	
+	public static function render_pdf($latex_str) {
+		// write the latex to a temp file
+		// render the pdf and return the appropriate file info
+	}
+	
 }
