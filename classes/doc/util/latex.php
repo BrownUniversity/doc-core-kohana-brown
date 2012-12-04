@@ -97,13 +97,15 @@ class DOC_Util_LaTeX {
 	
 	/**
 	 * Parse a string for any characters that need special handling in LaTeX. Note
-	 * that we skip the greater than/less than characters here, because those need to happen last.
+	 * that we skip the greater than/less than characters here, because those need 
+	 * to happen after some other processing. We also deal with backslashes in two
+	 * passes to keep their curly braces from getting escaped.
 	 * 
 	 * @param string $str
 	 */
 	public static function latex_special_chars($str) {
 		$replacements = array(
-			'\\' => '\textbackslash',
+			'\\' => '\textbackslash', 
 			'{' => '\{',
 			'}' => '\}',
 			'&' => '\&',
@@ -124,9 +126,36 @@ class DOC_Util_LaTeX {
 		return str_replace(array_keys( $replacements ), array_values( $replacements ), $str) ;
 	}
 	
-	public static function render_pdf($latex_str) {
-		// write the latex to a temp file
-		// render the pdf and return the appropriate file info
+	public static function create_pdf($latex_str, $filename) {
+		$latex_config = Kohana::$config->load('latex') ;
+		
+		$safe_filename = DOC_Util_File::safe_filename($filename) ;
+		$safe_filename = preg_replace('/\.pdf$/','',$safe_filename) ;
+		$safe_filename .= '_' . date_format(new DateTime(), 'YmdHisu').Text::random() ;
+		
+		// write the latex to a temp file -- note that we use DateTime here so that
+		// we can get microseconds to reduce the likelihood of collision even further
+		$latex_file = "{$latex_config->tmp_path}/{$safe_filename}.tex" ;
+		file_put_contents($latex_file,$latex_str) ;
+
+		$pdf_file = "{$latex_config->tmp_path}/{$safe_filename}.pdf" ;
+		
+
+		// render the pdf and return the appropriate file info. Note that we 
+		// do NOT want a pdf extension on the destination filename in the -jobname
+		// argument. pdflatex will add the extension itself.
+		//
+		// pdflatex -jobname $filename -output-directory [get from php] source.tex
+		
+		
+		$command = "{$latex_config->bin_path}/pdflatex -jobname {$safe_filename} -output-directory {$latex_config->tmp_path} {$latex_file}" ;
+				
+		$result = exec( $command, $full_result ) ;
+		
+		$_output = DOC_Util_File::get_file_specs( $pdf_file, $filename ) ;
+		
+		return $_output ;
+		
 	}
 	
 }
