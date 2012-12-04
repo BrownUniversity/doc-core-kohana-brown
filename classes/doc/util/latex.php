@@ -14,6 +14,13 @@ class DOC_Util_LaTeX {
 		
 	const LATEX_LINE_END = '\\\\\\\\ ' ;
 	
+	/**
+	 * Intended for use with preg_replace_callback to remove HTML code that would
+	 * render as whitespace only. 
+	 * 
+	 * @param array $input
+	 * @return string
+	 */
 	public static function strip_empty($input) {
 		if( DOC_Valid::not_empty_html($input[1])) {
 			return $input[0] ;
@@ -183,5 +190,4 @@ class DOC_Util_LaTeX {
 			closedir( $handle ) ;
 		}
 	}
-	
 }
