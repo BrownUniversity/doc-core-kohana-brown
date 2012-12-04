@@ -25,11 +25,10 @@ class DOC_Util_LaTeX {
 	 * Parses HTML code and returns valid LaTeX to generate the equivalent.
 	 * 
 	 * @return string LaTeX code
+	 * @todo Add support for hyperlinks
 	 */
 	public static function parse_html($html, $supported_tags = DOC_Util_WordHTML::ALLOWABLE_TAGS_DEFAULT) {
 		$_output = $html ;
-
-		// todo: add support for hyperlinks
 		
 		$replacements = array(
 			'/<div.*?>(.*?)<\/div>/s' => '$1'.self::LATEX_LINE_END,
@@ -126,36 +125,63 @@ class DOC_Util_LaTeX {
 		return str_replace(array_keys( $replacements ), array_values( $replacements ), $str) ;
 	}
 	
-	public static function create_pdf($latex_str, $filename) {
+	/**
+	 * Given a LaTeX string, render a pdf file and return the file information
+	 * so that it can be further processed or downloaded.
+	 * 
+	 * @param string $latex_str LaTeX string ready to be rendered.
+	 * @param string $filename Desired pdf filename. Extension is not required.
+	 * @return array File description array, matching what we get from php's $_FILES
+	 */
+	public static function create_pdf($latex_str, $filename, $run_cleanup = TRUE) {
+		if( $run_cleanup === TRUE ) {
+			self::cleanup(TRUE) ;
+		}
+		
 		$latex_config = Kohana::$config->load('latex') ;
 		
 		$safe_filename = DOC_Util_File::safe_filename($filename) ;
-		$safe_filename = preg_replace('/\.pdf$/','',$safe_filename) ;
-		$safe_filename .= '_' . date_format(new DateTime(), 'YmdHisu').Text::random() ;
-		
-		// write the latex to a temp file -- note that we use DateTime here so that
-		// we can get microseconds to reduce the likelihood of collision even further
+		$safe_filename = preg_replace( '/\.pdf$/', '', $safe_filename ) ;
+		$safe_filename .= '_' . date('YmdHis').Text::random() ;
+
+		// write out the LaTeX
 		$latex_file = "{$latex_config->tmp_path}/{$safe_filename}.tex" ;
 		file_put_contents($latex_file,$latex_str) ;
 
+		// render the pdf and return the appropriate file info. 
 		$pdf_file = "{$latex_config->tmp_path}/{$safe_filename}.pdf" ;
 		
-
-		// render the pdf and return the appropriate file info. Note that we 
-		// do NOT want a pdf extension on the destination filename in the -jobname
-		// argument. pdflatex will add the extension itself.
-		//
-		// pdflatex -jobname $filename -output-directory [get from php] source.tex
-		
-		
 		$command = "{$latex_config->bin_path}/pdflatex -jobname {$safe_filename} -output-directory {$latex_config->tmp_path} {$latex_file}" ;
-				
 		$result = exec( $command, $full_result ) ;
-		
 		$_output = DOC_Util_File::get_file_specs( $pdf_file, $filename ) ;
 		
 		return $_output ;
 		
+	}
+	
+	/**
+	 * Go through the latex tmp directory and remove any old files.
+	 * 
+	 * @param boolean $remove_old_pdf Set to TRUE to also remove old pdf files. By default they're skipped.
+	 * @param string $older_than String suitable as input to strtotime.
+	 */
+	public static function cleanup( $remove_old_pdf = FALSE, $older_than = '-1 hour' ) {
+		$tmp_dir = Kohana::$config->load('latex')->tmp_path ;
+		$file_util = new DOC_Util_File_Local() ;
+		
+		if( $handle = opendir( $tmp_dir )) {
+			while( FALSE !== ($entry = readdir( $handle ))) {
+				if( $entry != '.' && $entry != '..') {
+					$file_path = $tmp_dir.'/'.$entry ;
+					if( filemtime( $file_path ) <= strtotime($older_than)) {
+						if( $remove_old_pdf || $file_util->get_mime_type($file_path) != 'application/pdf') {
+							@unlink($file_path) ;
+						}
+					}
+				}
+			}
+			closedir( $handle ) ;
+		}
 	}
 	
 }
