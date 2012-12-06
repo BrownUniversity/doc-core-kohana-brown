@@ -179,11 +179,11 @@ class DOC_Helper_Table {
 										}
 										$empty_content = '--' ;
 										if( isset( $col_spec[ 'format' ][ 'empty_content' ])) {
-											$order_by = $col_spec[ 'format' ][ 'empty_content' ] ;
+											$empty_content = $col_spec[ 'format' ][ 'empty_content' ] ;
 										}
 										$separator = '<br />' ;
 										if( isset( $col_spec[ 'format' ][ 'separator' ])) {
-											$order_by = $col_spec[ 'format' ][ 'separator' ] ;
+											$separator = $col_spec[ 'format' ][ 'separator' ] ;
 										}
 
 										$value = $this->format_list($object, $root_key, $col_spec[ 'format' ][ 'relation_name' ], $col_spec[ 'format' ][ 'property_name' ], $order_by, $empty_content, $separator) ;
@@ -205,7 +205,7 @@ class DOC_Helper_Table {
 									case self::FORMAT_TRIM_DECIMAL:
 										$value = rtrim($value,'.0') ;
 										break ;
-										
+
 									case self::FORMAT_XLS_DOLLARS:
 										$value = $this->format_dollars($value, FALSE) ;
 										$td_attrs[ 'class' ] = 'dollars' ;
@@ -215,7 +215,7 @@ class DOC_Helper_Table {
 										$value = $this->format_datetime( $value, 'M j, Y g:i A' ) ;
 										$td_attrs[ 'class' ] = 'datetime' ;
 										break ;
-										
+
 									case self::FORMAT_DATETIME_SHORT:
 										$value = $this->format_datetime( $value, 'm/d/y g:i A' ) ;
 										$td_attrs[ 'class' ] = 'datetime' ;
