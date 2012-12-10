@@ -3,41 +3,43 @@
  * @package DOC Core Module
  */
 defined('SYSPATH') or die('No direct script access.') ;
-
+    
 /**
  * Banner Import Utility Class
  */
 abstract class DOC_Util_Banner_Import {
 
-	const DATABASE_NULL = "\N" ;
+    const DATABASE_NULL = "\N" ;
 
-	/**
-	 *
-	 * @var boolean
-	 */
-	protected static $initialized = FALSE ;
+    /**
+     *
+     * @var boolean
+     */
+    protected static $initialized = FALSE ;
 
-	/**
-	 *
-	 * @var array
-	 */
-	protected static $ldap_misses = array() ;
+    /**
+     *
+     * @var array
+     */
+    protected static $ldap_misses = array() ;
 
-	/**
-	 *
-	 * @var array
-	 */
-	protected static $user_ids = array() ;
+    /**
+     *
+     * @var array
+     */
+    protected static $user_ids = array() ;
 
-	/**
-	 *
-	 * @throws Kohana_Exception
-	 * @param string $name name of the file
-	 * @param string $pattern regular expression to match individual documents
-	 * @param string $local_path root directory for local file storage.
-	 * @return array JSON-encoded documents
-	 */
-	public static function get_file($name, $pattern, $local_path, $delete_downloaded_file = TRUE) {
+    /**
+     * Read a file from the CIS Transfer FTPs File System
+     * 
+     * @throws Kohana_Exception
+     * @param string $name name of the file
+     * @param string $pattern regular expression to match individual documents
+     * @param string $local_path root directory for local file storage.
+     * @return array JSON-encoded documents
+     */
+    public static function get_file($name, $pattern, $local_path, $delete_downloaded_file = TRUE) {
+
         /**
          * Initialize data for the file transfer
          */
@@ -46,8 +48,8 @@ abstract class DOC_Util_Banner_Import {
         $user = Kohana::$config->load('bannerintegration.username');
         $pass = Kohana::$config->load('bannerintegration.password');
 
-        $local = $local_path . DIRECTORY_SEPARATOR . $name ;
-        $remote = $path . DIRECTORY_SEPARATOR . $name;
+        $local = $local_path . $name ;
+        $remote = $path . $name;
 
         /**
          * Connect to FTPs server
@@ -104,9 +106,10 @@ abstract class DOC_Util_Banner_Import {
         }
         $data = preg_replace("#\n#", '', $data);
         fclose($fp);
-		if( $delete_downloaded_file === TRUE ) {
-			unlink($local);
-		}
+		
+        if( $delete_downloaded_file === TRUE ) {
+            unlink($local);
+        }
 
         $_output = array();
         preg_match_all($pattern, $data, $_output);
@@ -116,14 +119,14 @@ abstract class DOC_Util_Banner_Import {
         } else {
             return array();
         }
-	}
+    }
 
-	/**
-	 * Initialize required lookup tables. These will vary by specific application.
-	 * This should also set self::$initialized to TRUE so that the initialization
-	 * only happens once.
-	 */
-	protected static function init() {}
+    /**
+     * Initialize required lookup tables. These will vary by specific application.
+     * This should also set self::$initialized to TRUE so that the initialization
+     * only happens once.
+     */
+    protected static function init() {}
 }
 
 // End DOC_Util_Banner_Import
