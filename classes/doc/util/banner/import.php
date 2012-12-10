@@ -37,7 +37,7 @@ abstract class DOC_Util_Banner_Import {
 	 * @param string $local_path root directory for local file storage.
 	 * @return array JSON-encoded documents
 	 */
-	public static function get_file($name, $pattern, $local_path) {
+	public static function get_file($name, $pattern, $local_path, $delete_downloaded_file = TRUE) {
         /**
          * Initialize data for the file transfer
          */
@@ -104,7 +104,9 @@ abstract class DOC_Util_Banner_Import {
         }
         $data = preg_replace("#\n#", '', $data);
         fclose($fp);
-        unlink($local);
+		if( $delete_downloaded_file === TRUE ) {
+			unlink($local);
+		}
 
         $_output = array();
         preg_match_all($pattern, $data, $_output);
