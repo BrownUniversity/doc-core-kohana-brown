@@ -326,6 +326,15 @@ class DOC_Util_Filter {
 			}
 		}
 
+		// no? try checking the custom search filters
+		$search_filters = Kohana::$config->load('searchfilters') ;
+		$this_filter = $search_filters[ self::get_filter_key() ] ;
+//
+		if( isset( $this_filter[ $column ]) && isset( $this_filter[ $column ][ 'data_type' ] )) {
+			return $this_filter[ $column ][ 'data_type' ] ;
+		}
+
+
 		return 'unknown' ;
 
 	}
@@ -424,12 +433,12 @@ class DOC_Util_Filter {
 
 		return $_output ;
 	}
-	
+
 	/**
 	 * Breaks up a single string into an array of search terms based on white
 	 * space in the original string. Optionally adds SQL wildcards to either end of
 	 * each string.
-	 * 
+	 *
 	 * @param string $str
 	 * @param boolean $add_wildcards Use the class constants for clarity
 	 * @return array
@@ -463,7 +472,7 @@ class DOC_Util_Filter {
 	/**
 	 * Used by DOC_Util_Filter::get_search_terms in an array_walk to surround a
 	 * given string with SQL wildcard characters.
-	 * 
+	 *
 	 * @param string $item
 	 * @param type $key
 	 */
