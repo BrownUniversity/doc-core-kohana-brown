@@ -40,7 +40,9 @@ class DOC_Util_LaTeX {
 		$replacements = array(
 			'/<div.*?>(.*?)<\/div>/s' => '$1'.self::LATEX_LINE_END,
 			'/<p.*?>(.*?)<\/p>/s' => "$1\n\n",
-			'/<br.*?>/' => self::LATEX_LINE_END,
+			// LaTeX doesn't like seeing a line break with no other content on the line,
+			// which this might otherwise allow, so we'll stick a non-breaking space in front of it
+			'/<br.*?>/' => '~'.self::LATEX_LINE_END, 
 			'/<strong>(.*?)<\/strong>/s' => '\textbf{$1}',
 			'/<b>(.*?)<\/b>/s' => '\textbf{$1}',
 			'/<em>(.*?)<\/em>/s' => '\textit{$1}',
