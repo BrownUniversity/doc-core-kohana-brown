@@ -104,7 +104,7 @@ class DOC_Helper_Table {
 
 						if( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
 							$heading = "<input type='checkbox' name='_id' class='check_all' />" ;
-							$header_attributes[ 'class' ] = '{sorter: false}' ;
+							$header_attributes[ 'class' ] = '{sorter: false} checkbox-column' ;
 						}
 
 						$_output[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
