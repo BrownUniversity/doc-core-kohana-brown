@@ -155,7 +155,7 @@ class DOC_Util_LaTeX {
 		$safe_filename .= '_' . date('YmdHis').Text::random() ;
 
 		// write out the LaTeX
-		$latex_file = "{$latex_config->tmp_path}/{$safe_filename}.tex" ;
+		$latex_file = "{$latex_config->tmp_path}{$safe_filename}.tex" ;
 		$success = file_put_contents($latex_file,$latex_str) ;
 
                 if ($success === FALSE) {
@@ -163,8 +163,8 @@ class DOC_Util_LaTeX {
                 }
                 
 		// render the pdf and return the appropriate file info. 
-		$pdf_file = "{$latex_config->tmp_path}/{$safe_filename}.pdf" ;
-		$command = "{$latex_config->bin_path}/pdflatex -jobname {$safe_filename} -output-directory {$latex_config->tmp_path} {$latex_file}" ;
+		$pdf_file = "{$latex_config->tmp_path}{$safe_filename}.pdf" ;
+		$command = "{$latex_config->bin_path}pdflatex -jobname {$safe_filename} -output-directory {$latex_config->tmp_path} {$latex_file}" ;
 		$result = exec( $command, $full_result ) ;
 		
                 $_output = DOC_Util_File::get_file_specs( $pdf_file, $filename ) ;
@@ -190,7 +190,7 @@ class DOC_Util_LaTeX {
 		if( $handle = opendir( $tmp_dir )) {
 			while( FALSE !== ($entry = readdir( $handle ))) {
 				if( $entry != '.' && $entry != '..') {
-					$file_path = $tmp_dir.'/'.$entry ;
+					$file_path = $tmp_dir.$entry ;
 					if( filemtime( $file_path ) <= strtotime($older_than)) {
 						if( $remove_old_pdf || $file_util->get_mime_type($file_path) != 'application/pdf') {
 							@unlink($file_path) ;
