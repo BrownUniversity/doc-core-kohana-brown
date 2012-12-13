@@ -24,6 +24,30 @@
 		$table_attributes = NULL ;
 	}
 
+	// determine the default sort from the column_specs
+	$sorts = array('asc' => '0', 'desc' => '1') ;
+	$col_index = 0 ;
+	$default_sort = array() ;
+
+	foreach( $column_specs as $col ) {
+		if( isset( $col['sort'] )) {
+			$sort_index = isset( $col['sort']['priority'] ) ? $col['sort']['priority'] : count($default_sort) ;
+			$default_sort[ $sort_index ] = "[{$col_index},{$sorts[$col['sort']['dir']]}]" ;
+		}
+		if( (!isset( $col['context'] ) || $col['context'] == DOC_Helper_Table::CONTEXT_WEB) &&
+			isset( $col['type']) && $col['type'] == DOC_Helper_Table::TYPE_DATA )
+		{
+			$col_index++ ;
+		}
+	}
+	if( count( $default_sort ) > 0 ) {
+		ksort($default_sort) ;
+		$default_sort = '[' . implode(',',$default_sort) . ']' ;
+	} else {
+		$default_sort = '[[0,0]]' ;
+	}
+
+
 	$table = new DOC_Helper_Table( $data, $column_specs, $table_attributes, $context ) ;
 
 	print( "<div id='{$div_id}' class='{$div_class}'>" ) ;
@@ -42,6 +66,7 @@
 			$jquery->table_id = $table_id ;
 			$jquery->pager_id = $pager_id ;
 			$jquery->no_pager = $no_pager ;
+			$jquery->default_sort = $default_sort ;
 			print( $jquery->render() ) ;
 
 		}

@@ -8,6 +8,9 @@
 	if( !isset( $no_pager )) {
 		$no_pager = FALSE ;
 	}
+	if( !isset( $default_sort )) {
+		$default_sort = '[[0,0]]' ;
+	}
 ?>
 
 <script language="javascript">
@@ -15,7 +18,7 @@
 	$(document).ready( function() {
 		$('#<?php print( $table_id ) ; ?>')
 			.tablesorter({
-				sortList: [[0,0]],
+				sortList: <?php print( $default_sort ) ; ?>,
 				widgets: ['zebra'],
 				debug: false
 			})
