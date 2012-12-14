@@ -23,6 +23,13 @@
 	if( !isset( $table_attributes )) {
 		$table_attributes = NULL ;
 	}
+	if( !isset( $theme )) {
+		if( defined( 'JQUERY_TABLESORTER_THEME' )) {
+			$theme = JQUERY_TABLESORTER_THEME ;
+		} else {
+			$theme = 'default' ;
+		}
+	}
 
 	// determine the default sort from the column_specs
 	$sorts = array('asc' => '0', 'desc' => '1') ;
@@ -67,6 +74,7 @@
 			$jquery->pager_id = $pager_id ;
 			$jquery->no_pager = $no_pager ;
 			$jquery->default_sort = $default_sort ;
+			$jquery->theme = $theme ;
 			print( $jquery->render() ) ;
 
 		}

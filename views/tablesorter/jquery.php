@@ -11,6 +11,13 @@
 	if( !isset( $default_sort )) {
 		$default_sort = '[[0,0]]' ;
 	}
+	if( !isset( $theme )) {
+		if( defined( 'JQUERY_TABLESORTER_THEME' )) {
+			$theme = JQUERY_TABLESORTER_THEME ;
+		} else {
+			$theme = 'default' ;
+		}
+	}
 ?>
 
 <script language="javascript">
@@ -20,7 +27,8 @@
 			.tablesorter({
 				sortList: <?php print( $default_sort ) ; ?>,
 				widgets: ['zebra'],
-				debug: false
+				debug: false,
+				theme: '<?php print( $theme ) ; ?>'
 			})
 // 			.on('sortEnd', function(sorter) {
 // 				// capture the current sort order for the table
