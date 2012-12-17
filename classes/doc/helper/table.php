@@ -323,7 +323,7 @@ class DOC_Helper_Table {
 									$test_result = eval( $test ) ;
 
 									if( $test_result == FALSE ) {
-										$action_str = strip_tags($action_str) ;
+										$action_str = '<span class="action-disabled">'.strip_tags($action_str).'</span>' ;
 									}
 								}
 
