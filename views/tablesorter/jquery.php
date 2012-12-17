@@ -26,7 +26,7 @@
 		$('#<?php print( $table_id ) ; ?>')
 			.tablesorter({
 				sortList: <?php print( $default_sort ) ; ?>,
-				widgets: ['zebra'],
+				widgets: ['zebra','resizable','saveSort'],
 				debug: false,
 				theme: '<?php print( $theme ) ; ?>'
 			})
