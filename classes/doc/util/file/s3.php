@@ -6,7 +6,7 @@
  */
 
 /**
- * Description of s3
+ * Use this to work with files on Amazon S3 and cached on the local file system.
  *
  * @author jorrill
  */
@@ -53,7 +53,7 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		$mime_type = finfo_file( $finfo, $file_path ) ;
 
 		if( $this->is_web_friendly( $mime_type )) {
-			$this->send_headers($mime_type, $new_filename, @filesize($file_path), self::SEND_AS_DISPLAY) ;
+			$this->send_headers($mime_type, $new_filename, $file_path, self::SEND_AS_DISPLAY) ;
 
 			set_time_limit(0) ;
 			@readfile( $file_path ) or die( "file not found" ) ;
@@ -74,7 +74,7 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
 		$mime_type = finfo_file( $finfo, $file_path ) ;
 
-		$this->send_headers($mime_type, $new_filename, @filesize($file_path), self::SEND_AS_DOWNLOAD) ;
+		$this->send_headers($mime_type, $new_filename, $file_path, self::SEND_AS_DOWNLOAD) ;
 
 		set_time_limit(0) ;
 		@readfile( $file_path ) or die( "file not found" ) ;
@@ -108,11 +108,11 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 	}
 
 	private function retrieve_file($root_dir, $filename) {
-		// check the cache for the file and use it if it's 24 hours old or less
+		// check the cache for the file and use it if it's within the cache lifetime
 		$cached_file = $this->aws_config['cache_path'] . $filename ;
 		if( file_exists( $cached_file )) {
 			$stat = stat($cached_file) ;
-			if( $stat['mtime'] >= strtotime('-1 day')) {
+			if( $stat['mtime'] >= strtotime('-'.self::CACHE_LIFETIME)) {
 				return $cached_file ;
 			} else {
 				unlink( $cached_file ) ;

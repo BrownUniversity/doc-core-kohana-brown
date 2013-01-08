@@ -34,7 +34,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 			$mime_type = finfo_file( $finfo, $file_path ) ;
 
 			if( $this->is_web_friendly( $mime_type )) {
-				$this->send_headers($mime_type, $filename, @filesize($file_path), self::SEND_AS_DISPLAY) ;
+				$this->send_headers($mime_type, $filename, $file_path, self::SEND_AS_DISPLAY) ;
 
 				set_time_limit(0) ;
 				@readfile( $file_path ) or die( "file not found" ) ;
@@ -63,7 +63,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 			$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
 			$mime_type = finfo_file( $finfo, $file_path ) ;
 
-			$this->send_headers($mime_type, $new_filename, @filesize($file_path), self::SEND_AS_DOWNLOAD) ;
+			$this->send_headers($mime_type, $new_filename, $file_path, self::SEND_AS_DOWNLOAD) ;
 
 			set_time_limit(0) ;
 			@readfile( $file_path ) or die( "file not found" ) ;

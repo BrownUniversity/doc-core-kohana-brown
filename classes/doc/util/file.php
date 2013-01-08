@@ -17,8 +17,10 @@ abstract class DOC_Util_File {
 	const SEND_AS_DOWNLOAD = 'download' ;
 	const SEND_AS_DISPLAY = 'display' ;
 	const CONFIG_FILE = 'file' ;
-
+	const CACHE_LIFETIME = '1 day' ;
+	
 	protected $file_config ;
+	protected $use_cache = FALSE ;
 
 	public function __construct( $config_file = self::CONFIG_FILE ) {
 		$this->file_config = Kohana::$config->load( $config_file ) ;
@@ -80,6 +82,10 @@ abstract class DOC_Util_File {
 	 */
 	abstract public function get_root_dir( $root_key = NULL, $dir_key = NULL ) ;
 
+
+	public function cache_allowed($new_state) {
+		$this->use_cache = $new_state ;
+	}
 
 	public function get_mime_type( $filepath ) {
 		$finfo = finfo_open(FILEINFO_MIME,$this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
@@ -166,26 +172,44 @@ abstract class DOC_Util_File {
 		return preg_replace('/[^A-Za-z0-9_\.]/','-', $original_filename) ;
 	}
 
-	protected function send_headers( $content_type, $filename, $content_length, $send_as = self::SEND_AS_DOWNLOAD ) {
-
-		// required for IE, otherwise Content-disposition is ignored
+	protected function send_headers( $content_type, $filename, $filepath, $send_as = self::SEND_AS_DOWNLOAD, $headers = array()) {
+		$stat = stat( $filepath ) ;
+		/*
+		 * The common wisdom is that the zlib bit here is "required for IE, otherwise 
+		 * Content-disposition is ignored". However, I tested with this commented 
+		 * out in IE 8 and it worked fine...
+		 */
+		
 		if(ini_get('zlib.output_compression')) {
 			ini_set('zlib.output_compression', 'Off');
 		}
 
 		header("Pragma: public");
-		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // some day in the past
-		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		if( $send_as == self::SEND_AS_DISPLAY && $this->use_cache == TRUE ) {
+			header("Expires: ".gmdate('D, d M Y H:i:s',strtotime('+'.self::CACHE_LIFETIME, $stat['mtime']))." GMT") ;
+			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $stat['mtime']) . " GMT") ;			
+		} else {
+			header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // some day in the past
+			header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		}
+		
 		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 		header("Cache-Control: private",false);
 		header("Content-type: {$content_type}");
+		
 		if( $send_as == self::SEND_AS_DISPLAY ) {
 			header('Content-Disposition: inline; filename="'.$filename.'"');
 		} else {
 			header('Content-Disposition: attachment; filename="'.$filename.'"');
 		}
 		header("Content-Transfer-Encoding: binary");
-		header("Content-Length: {$content_length}");
+		header("Content-Length: {$stat['size']}");
+
+		if( is_array( $headers ) && count( $headers ) > 0 ) {
+			foreach( $headers as $header ) {
+				header( $header ) ;
+			}
+		}
 	}
 
 	/**
