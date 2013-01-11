@@ -48,21 +48,23 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 			$new_filename = $filename ;
 		}
 
-		$file_path = $this->retrieve_file( $root_dir, $filename ) ;
-		$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
-		$mime_type = finfo_file( $finfo, $file_path ) ;
+		try {
+			$file_path = $this->retrieve_file( $root_dir, $filename ) ;
+			$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
+			$mime_type = finfo_file( $finfo, $file_path ) ;
 
-		if( $this->is_web_friendly( $mime_type )) {
-			$this->send_headers($mime_type, $new_filename, $file_path, self::SEND_AS_DISPLAY) ;
+			if( $this->is_web_friendly( $mime_type )) {
+				$this->send_headers($mime_type, $new_filename, $file_path, self::SEND_AS_DISPLAY) ;
 
-			set_time_limit(0) ;
-			@readfile( $file_path ) or die( "file not found" ) ;
+				set_time_limit(0) ;
+				@readfile( $file_path ) or die( "file not found" ) ;
 
-		} else {
-			$this->download( $root_dir, $filename, $new_filename ) ;
+			} else {
+				$this->download( $root_dir, $filename, $new_filename ) ;
+			}			
+		} catch( ErrorException $e ) {
+			throw new HTTP_Exception_404($e->getMessage()) ;
 		}
-
-
 	}
 
 	public function download($root_dir, $filename, $new_filename = NULL) {
@@ -70,14 +72,20 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 			$new_filename = $filename ;
 		}
 
-		$file_path = $this->retrieve_file( $root_dir, $filename ) ;
-		$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
-		$mime_type = finfo_file( $finfo, $file_path ) ;
+		try {
+			$file_path = $this->retrieve_file( $root_dir, $filename ) ;
+			$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
+			$mime_type = finfo_file( $finfo, $file_path ) ;
 
-		$this->send_headers($mime_type, $new_filename, $file_path, self::SEND_AS_DOWNLOAD) ;
+			$this->send_headers($mime_type, $new_filename, $file_path, self::SEND_AS_DOWNLOAD) ;
 
-		set_time_limit(0) ;
-		@readfile( $file_path ) or die( "file not found" ) ;
+			set_time_limit(0) ;
+			@readfile( $file_path ) or die( "file not found" ) ;
+			
+		} catch( ErrorException $e ) {
+			throw new HTTP_Exception_404($e->getMessage()) ;
+		}
+		
 
 	}
 
@@ -86,7 +94,12 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 			$new_filename = $filename ;
 		}
 
-		$local_file = $this->retrieve_file( $root_dir, $filename ) ;
+		try {
+			$local_file = $this->retrieve_file( $root_dir, $filename ) ;
+		} catch( ErrorException $e ) {
+			throw $e ;
+		}
+		
 		return Swift_Attachment::fromPath( $local_file, $this->get_mime_type( $local_file))->setFilename( $new_filename ) ;
 	}
 
@@ -118,13 +131,21 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 				unlink( $cached_file ) ;
 			}
 		}
-		// no valid cache exists, retrieve from AWS. We'll still use the same $cached_file location
+		// No valid cache exists, retrieve from AWS. We'll still use the same $cached_file location.
 		$response = $this->s3->get_object(
 				$root_dir,
 				$filename,
 				array('fileDownload' => $cached_file)
 		) ;
 
+		// Check for failure. Note that the cache file will be created even if the
+		// response indicates a failure. When this happens the file gets the XML
+		// response data instead of the actual file we want, so we need to delete it.
+		if( !$response->isOK()) {
+			unlink( $cached_file ) ;
+			throw new ErrorException('Unable to retrieve file from S3.') ;
+		}
+		
 		return $cached_file ;
 	}
 
