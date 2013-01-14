@@ -1,17 +1,24 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of mail
+ * Methods for sending emails via Swift_Mailer.
  *
  * @author jorrill
  */
 class DOC_Util_Mail {
 
+	/**
+	 * Send the specified Swift_Message with the from, to, etc. as specified in
+	 * the arguments list. Returns the number of successful recipients.
+	 * 
+	 * @param Swift_Message $message
+	 * @param array $recipients
+	 * @param array $cc
+	 * @param string $from
+	 * @param string $reply_to
+	 * @param Swift_FileSpool $spool
+	 * @return int
+	 */
 	public static function send_message($message, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE ) {
 		$_output = FALSE ;
 
@@ -62,7 +69,9 @@ class DOC_Util_Mail {
 	}
 
 	/**
-	 *
+	 * Convenience method to send a message without having to generate a Swift_Message
+	 * first. This just creates the Swift_Message and passes it along to DOC_Util_Mail::send_message().
+	 * 
 	 * @param string $subject
 	 * @param string $body
 	 * @param string $recipients
@@ -76,6 +85,9 @@ class DOC_Util_Mail {
 		return self::send_message($message, $recipients, $cc, $from, $reply_to) ;
 	}
 
+	/**
+	 * Flush the spool of queued messages.
+	 */
 	public static function flush_spool() {
 		$mail_config = Kohana::$config->load('mail') ;
 

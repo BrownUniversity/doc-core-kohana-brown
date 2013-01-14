@@ -29,6 +29,7 @@ class DOC_Helper_Form {
 
 	const UNCHECKED_BLANK = 'unchecked-blank' ;
 	const UNCHECKED_EXPLICIT = 'unchecked-explicit' ;
+	
 	/**
 	 * Given a standard datetime string (such as that returned from MySQL), create
 	 * a set of form fields to edit the data.
@@ -378,6 +379,15 @@ class DOC_Helper_Form {
 		return $body ;
 	}
 
+	/**
+	 * Convenience method to get the value of a checkbox field and default to some
+	 * value if it comes back NULL, which is what happens when checkboxes are not
+	 * selected...
+	 * 
+	 * @param string $checkbox_name Name of the checkbox field in the POST array
+	 * @param mixed $default_value The value to return if the checkbox is not present
+	 * @return type
+	 */
 	public static function checkbox_value( $checkbox_name, $default_value = 0 ) {
 		$_output = $default_value ;
 		if( Request::$current->post( $checkbox_name ) != NULL ) {

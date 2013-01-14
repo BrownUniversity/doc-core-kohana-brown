@@ -1,20 +1,21 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Use this to work with files on the local file system.
  *
  * @author jorrill
- * @todo TEST THIS
+ * @todo test this...
  */
 class DOC_Util_File_Local extends DOC_Util_File {
 
 	const UPLOAD_SUFFIX = '.upload' ;
 
+	/**
+	 * Delete the file.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 */
 	public function delete($root_dir, $filename) {
 		$file_path = $root_dir . $filename ;
 		if( !file_exists( $file_path )) {
@@ -23,6 +24,14 @@ class DOC_Util_File_Local extends DOC_Util_File {
 		unlink( $file_path ) ;
 	}
 
+	/**
+	 * If the file is deemed "web friendly" then sends inline for display in the
+	 * browser, otherwise downloads as a file attachment.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @param string $new_filename
+	 */
 	public function display($root_dir, $filename, $new_filename = NULL) {
 		$file_path = $root_dir . $filename ;
 		if( !file_exists( $file_path )) {
@@ -48,6 +57,13 @@ class DOC_Util_File_Local extends DOC_Util_File {
 		}
 	}
 
+	/**
+	 * Send file as an attachment.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @param string $new_filename
+	 */
 	public function download($root_dir, $filename, $new_filename = NULL) {
 		$file_path = $root_dir . $filename ;
 		if( !file_exists( $file_path )) {
@@ -74,6 +90,14 @@ class DOC_Util_File_Local extends DOC_Util_File {
 
 	}
 
+	/**
+	 * Get file as a Swift_Attachment for sending via email.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @param string $new_filename
+	 * @return Swift_Attachment
+	 */
 	public function get_attachment($root_dir, $filename, $new_filename = NULL) {
 		$file_path = $root_dir . $filename ;
 		if( !file_exists( $file_path )) {
@@ -91,10 +115,25 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	}
 
 
+	/**
+	 * Get the root directory.
+	 * 
+	 * @param string $root_key
+	 * @param string $dir_key
+	 * @return string
+	 */
 	public function get_root_dir($root_key = NULL, $dir_key = NULL) {
 		return $file_config[ 'default' ][ $root_key ] . $file_config[ 'default' ][ $dir_key ] ;
 	}
 
+	/**
+	 * Save file to the local filesystem.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @param string $source_path
+	 * @param array $attributes
+	 */
 	public function save($root_dir, $filename, $source_path, $attributes = NULL) {
 		$file_path = $root_dir . $filename . self::UPLOAD_SUFFIX ;
 

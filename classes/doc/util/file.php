@@ -1,12 +1,7 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of file
+ * Foundation class for file utilities.
  *
  * @author jorrill
  */
@@ -83,10 +78,21 @@ abstract class DOC_Util_File {
 	abstract public function get_root_dir( $root_key = NULL, $dir_key = NULL ) ;
 
 
+	/**
+	 * Sets whether caching should be allowed.
+	 * 
+	 * @param boolean $new_state
+	 */
 	public function cache_allowed($new_state) {
 		$this->use_cache = $new_state ;
 	}
 
+	/**
+	 * Given the filepath, returns the MIME type of the file.
+	 * 
+	 * @param string $filepath
+	 * @return string
+	 */
 	public function get_mime_type( $filepath ) {
 		$finfo = finfo_open(FILEINFO_MIME,$this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
 		$mime_type = finfo_file($finfo, $filepath) ;
@@ -172,6 +178,16 @@ abstract class DOC_Util_File {
 		return preg_replace('/[^A-Za-z0-9_\.]/','-', $original_filename) ;
 	}
 
+	/**
+	 * Given the file specifications provided, send the file either inline or as
+	 * an attachment to be downloaded.
+	 * 
+	 * @param string $content_type
+	 * @param string $filename
+	 * @param string $filepath
+	 * @param string $send_as Either SEND_AS_DISPLAY or SEND_AS_DOWNLOAD
+	 * @param array $headers Additional headers to be sent.
+	 */
 	protected function send_headers( $content_type, $filename, $filepath, $send_as = self::SEND_AS_DOWNLOAD, $headers = array()) {
 		$stat = stat( $filepath ) ;
 		/*
@@ -273,6 +289,14 @@ abstract class DOC_Util_File {
 		return $_out_files;
 	}
 
+	/**
+	 * Check the given MIME type string to see if we have deemed it "web friendly."
+	 * A more appropriate term might be "browser friendly", since that's the context
+	 * this will most likely be used in. 
+	 * 
+	 * @param string $mime_type
+	 * @return boolean
+	 */
 	public function is_web_friendly($mime_type) {
 		$friendly_mime_types = array(
 			'application/pdf',

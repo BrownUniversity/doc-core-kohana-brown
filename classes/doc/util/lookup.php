@@ -12,14 +12,14 @@ class DOC_Util_Lookup {
 	const BY_VAL = 'byVal' ;
 
 	/**
-	 *
+	 * Get a lookup array for the given model and key.
+	 * 
 	 * @param string $model A model name.
 	 * @param string $key A property of the model to be used as the key in the array.
 	 * @param string $mode Use one of the class constants here.
 	 * @param mixed $order The field to order the results by. If a string, will be on that column ascending. If an array, will expect the keys to be column names and the values to all be either 'asc' or 'desc'.
 	 * @param array $wheres An array of arrays, with each matching the arguments that are sent via the where() method.
 	 * @return array
-	 * @todo Look into replacing some of this functionality with Kohana's baked-in as_array() method
 	 */
 	static function get_lut( $model, $key, $mode = self::BY_VAL, $order = NULL, $wheres = NULL) {
 		$_output = array() ;

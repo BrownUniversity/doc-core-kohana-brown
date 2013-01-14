@@ -1,12 +1,8 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of wordhtml
+ * Contains a set of static functions for dealing with Word HTML that may land in
+ * rich text fields.
  *
  * @author jorrill
  */

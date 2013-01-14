@@ -1,12 +1,9 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of orm
+ * Extension of Kohana_ORM to provide functionality not provided by the core code.
+ * This includes updates for performance, property uniqueness and some specialized
+ * functions typically required by DOC apps.
  *
  * @author jorrill
  */
@@ -247,7 +244,7 @@ class DOC_ORM extends Kohana_ORM {
 	}
     
     /**
-	 * @todo Deprecate this. Functionality is duplicated and improved on in the "properties_are_unique" method below.
+	 * @deprecated Use DOC_ORM::properties_are_unique instead.
 	 */
 	public function property_is_unique( $value, $property ) {
 		return ! (bool) DB::select( array( DB::expr('COUNT(id)'), 'total'))

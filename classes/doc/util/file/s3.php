@@ -33,6 +33,13 @@ class DOC_Util_File_S3 extends DOC_Util_File {
         return $this->retrieve_file( $root_dir, $filename );
     }
 
+	/**
+	 * Delete the file both from S3 and from the local cache, if it exists.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @return boolean
+	 */
 	public function delete($root_dir, $filename) {
 		$response = $this->s3->delete_object( $root_dir, $filename ) ;
 		// also delete from the cache
@@ -43,6 +50,15 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		return $response->isOK() ;
 	}
 
+	/**
+	 * Sends the file to the browser. If the file is "web friendly" then sends
+	 * inline, otherwise will send as an attachment for download.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @param string $new_filename
+	 * @throws HTTP_Exception_404
+	 */
 	public function display($root_dir, $filename, $new_filename = NULL) {
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
@@ -67,6 +83,14 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		}
 	}
 
+	/**
+	 * Send file as an attachment for download.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @param string $new_filename
+	 * @throws HTTP_Exception_404
+	 */
 	public function download($root_dir, $filename, $new_filename = NULL) {
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
@@ -89,6 +113,15 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 
 	}
 
+	/**
+	 * Return file as a Swift_Attachment for sending with an email message.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @param string $new_filename
+	 * @return Swift_Attachment
+	 * @throws ErrorException
+	 */
 	public function get_attachment($root_dir, $filename, $new_filename = NULL) {
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
@@ -103,10 +136,27 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		return Swift_Attachment::fromPath( $local_file, $this->get_mime_type( $local_file))->setFilename( $new_filename ) ;
 	}
 
+	/**
+	 * For S3, the root directory will always be the bucket as specified in the 
+	 * config file.
+	 * 
+	 * @param string $root_key
+	 * @param string $dir_key
+	 * @return string
+	 */
 	public function get_root_dir($root_key = NULL, $dir_key = NULL) {
 		return $this->aws_config['bucket'] ;
 	}
 
+	/**
+	 * Save file to S3.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @param string $source_path
+	 * @param array $attributes
+	 * @return boolean
+	 */
 	public function save($root_dir, $filename, $source_path, $attributes = NULL) {
 		if( is_array( $attributes )) {
 			$attributes['fileUpload'] = $source_path ;
@@ -120,6 +170,14 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		return $response->isOK() ;
 	}
 
+	/**
+	 * Pulls a file from S3 into the local cache and returns the local file path.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @return string
+	 * @throws ErrorException
+	 */
 	private function retrieve_file($root_dir, $filename) {
 		// check the cache for the file and use it if it's within the cache lifetime
 		$cached_file = $this->aws_config['cache_path'] . $filename ;
@@ -149,6 +207,11 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 		return $cached_file ;
 	}
 
+	/**
+	 * Get the AmazonS3 property from this object.
+	 * 
+	 * @return AmazonS3
+	 */
 	public function get_s3_object() {
 		return $this->s3 ;
 	}

@@ -1,10 +1,5 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Some static functions for locating and including content in your output. Also
  * relies on the includepaths config file, where you indicate paths and URLs to

@@ -1,12 +1,8 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of tablebuilder
+ * Class to render tabular data with formatting, actions and context-sensitive
+ * output.
  *
  * @author jorrill
  */
@@ -410,7 +406,19 @@ class DOC_Helper_Table {
 		return trim(implode("", $_output)) ;
 	}
 
-
+	/**
+	 * Given an object and relation information, generate a list where a "has many"
+	 * relationship exists.
+	 * 
+	 * @param object $object The object we're starting with.
+	 * @param string $root_key The property of the object we're working with, or empty to use the object itself.
+	 * @param string $relation_name The name of the "has many" relation.
+	 * @param string $property_name The property name in the "has many" relation to display.
+	 * @param string $order_by
+	 * @param string $empty_content Default string if there are no relations.
+	 * @param string $separator The separator to use in output.
+	 * @return string
+	 */
 	protected function format_list( $object, $root_key, $relation_name, $property_name, $order_by = NULL, $empty_content = '--', $separator = '<br />') {
 		$content = array() ;
 
@@ -437,6 +445,14 @@ class DOC_Helper_Table {
 		return implode( $separator, $content ) ;
 	}
 
+	/**
+	 * Create a link, with the result going in a blank browser window.
+	 * 
+	 * @param mixed $object
+	 * @param string $link_text
+	 * @param string $link_url
+	 * @return string
+	 */
 	protected function format_link( $object, $link_text, $link_url ) {
 		$_output = '' ;
 		$url = $this->parse_string($object, $link_url) ;
@@ -451,6 +467,16 @@ class DOC_Helper_Table {
 	}
 
 
+	/**
+	 * Parse the given string and return either a string or an object. The input string
+	 * can be either a simple property or object reference ("foo" or "foo->bar"), 
+	 * or a more elaborate string with object references in curly braces ("foo is equal to {foo}".
+	 * 
+	 * @param mixed $object
+	 * @param string $parseable_string 
+	 * @param boolean $return_as_string Set to FALSE to return an object suitable for further processing instead of a string.
+	 * @return mixed
+	 */
 	protected function parse_string( $object, $parseable_string, $return_as_string = TRUE ) {
 		$_output = $parseable_string ;
 		preg_match_all('/\{(.+?)\}/', $parseable_string, $matches) ;
@@ -466,10 +492,18 @@ class DOC_Helper_Table {
 			}
 		}
 
+		return $_output ;	
+		
+	}
 
-
-		return $_output ;	}
-
+	/**
+	 * Output an array value for the given key, or "--" if the incoming value
+	 * does not exist as a key in the array.
+	 * 
+	 * @param string $value
+	 * @param array $lookup
+	 * @return string
+	 */
 	protected function format_lookup( $value, $lookup ) {
 		$_output = '--' ;
 		if( isset( $lookup[ $value ])) {
@@ -478,6 +512,13 @@ class DOC_Helper_Table {
 		return $_output ; ;
 	}
 
+	/**
+	 * Format the value as a datetime. 
+	 * 
+	 * @param string $value
+	 * @param string $format
+	 * @return string
+	 */
 	protected function format_datetime( $value, $format = 'm/j/Y') {
 		if( !empty( $value )) {
 			$value = date($format, strtotime( $value )) ;
@@ -485,6 +526,14 @@ class DOC_Helper_Table {
 		return $value ;
 	}
 
+	/**
+	 * Format as US dollars, optionally including the dollar sign (defaults to
+	 * TRUE except for Excel output).
+	 * 
+	 * @param float $value
+	 * @param boolean $include_dollar_sign
+	 * @return string
+	 */
 	protected function format_dollars( $value, $include_dollar_sign = TRUE ) {
 		$dollar_sign = '' ;
 		if( $include_dollar_sign ) {
@@ -495,9 +544,16 @@ class DOC_Helper_Table {
 		}
 		return $value ;
 	}
+	
+	/**
+	 * Output as a standard US phone number or an internal 5-digit number. This 
+	 * will generate any one of the following based on the incoming string length:
+	 * #-####, ###-####, (###) ###-####, # (###) ###-####
+	 * 
+	 * @param string $value
+	 * @return string
+	 */
 	protected function format_phone( $value ) {
-		// TODO: this duplicates code I've put in a "Util_Massage" class in the SOURCE app. I'm putting the same code
-		// here to avoid unnecessary dependencies, but it may be desirable to pull that code into the main DOC library at some point.
 
 		if( $value != NULL && $value != '' ) {
 			$pattern = '' ;
@@ -535,6 +591,16 @@ class DOC_Helper_Table {
 		return $value ;
 	}
 
+	/**
+	 * Truncate the string to the specified number of characters. Note that this
+	 * is NOT smart enough to handle HTML or other formatting, so be sure to pass
+	 * this method only plain strings or you run the risk of breaking whatever
+	 * format exists in the original.
+	 * 
+	 * @param string $value
+	 * @param int $chars Number of characters to include in the final string
+	 * @return string
+	 */
 	protected function format_truncate( $value, $chars = 80 ) {
 		if( strlen( $value ) > $chars ) {
 			$value = substr(strip_tags($value), 0, ($chars - 3)) . '...' ;

@@ -6,7 +6,13 @@
  */
 
 /**
- * Description of cron
+ * Generic parent controller for cron jobs. There are actions for time slices from
+ * "minutely" to "monthly". Each application will override one or more of the methods
+ * here. There is a generic cron job defined on lamppub that executes a set of shell
+ * scripts, which should then run one of these tasks as appropriate. The CLI syntax
+ * for a given task is as follows:
+ * 
+ * /path/to/php /path/to/index.php --uri=cron/daily
  *
  * @author jorrill
  */

@@ -181,7 +181,8 @@ class DOC_Controller_REST extends Controller {
 	}
 
 	/**
-	 * Method for authenticating a request. This should call one of the other
+	 * Method for authenticating a request. This calls the method defined in the
+	 * authentication_method property, or fails if none is defined.
 	 *
 	 * @return boolean
 	 */
@@ -204,7 +205,9 @@ class DOC_Controller_REST extends Controller {
 	}
 
 	/**
-	 *
+	 * Authentication using HTTP Basic. The username and password must be defined
+	 * in the database.
+	 * 
 	 * @return boolean
 	 * @todo Update ORM settings to pull from a config variable so that this can be more generic?
 	 */
@@ -397,6 +400,16 @@ class DOC_Controller_REST extends Controller {
 		);
 	}
 
+	/**
+	 * Generate and return the payload based on the content type and view file. 
+	 * Note that the view file used can be in multiple places in the hierarchy, 
+	 * which is organized first by content type and second by controller/action. 
+	 * This will always use the most specific view file it can find.
+	 * 
+	 * @param mixed $data
+	 * @param array $options
+	 * @return string
+	 */
 	protected function get_payload( $data, $options = array() ) {
 		$view_root = 'rest/' ;
 		$mime_path = $this->definitions[ $this->accept_type ] ;

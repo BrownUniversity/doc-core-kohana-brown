@@ -1,10 +1,5 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * A collection of functions to make sure data is structurally sound. This should
  * check things like whether arrays have data, and if we're working with multiple

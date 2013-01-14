@@ -1,7 +1,10 @@
 <?php
 
 /**
- * Description of DOC_Controller_CLI
+ * Generic CLI controller for use with any app that needs such functionality. Tasks
+ * and help content should be defined in application-level classes that extend this
+ * (see $task_map) note. This also includes basic support for a username/password
+ * that is required to execute the function. These are defined in the cli config file.
  *
  * @author jorrill
  */
@@ -57,7 +60,8 @@ class DOC_Controller_CLI extends Controller {
 	}
 
 	/**
-	 * Use the action_index() method to contain all processing required.
+	 * The action_index() method executes the indicated task, or if there is no
+	 * recognizable CLI task if will output help content.
 	 */
 	public function action_index() {
 		if(array_key_exists($this->task_name, $this->task_map)) {
@@ -68,6 +72,15 @@ class DOC_Controller_CLI extends Controller {
 		}
 	}
 
+	/**
+	 * Text display of current progress. The expectation is that this would get called
+	 * once for each iteration of a loop. Outputs a single period ('.') for each 
+	 * iteration, with a periodic line break to prevent output from getting useless.
+	 * 
+	 * @param int $count The current number of iterations
+	 * @param int $total The total number of expected iterations
+	 * @param int $break_at Number at which to output a line break
+	 */
 	protected function show_progress($count, $total, $break_at = 50 ) {
 		print('.') ;
 		if( $count % $break_at == 0 ) {
@@ -75,6 +88,10 @@ class DOC_Controller_CLI extends Controller {
 		}
 	}
 
+	/**
+	 * Prints help output, including task names and help content for each task
+	 * defined.
+	 */
 	protected function show_help() {
 		if( count( $this->task_map ) > 0 ) {
 			print( "\nAvailable tasks:\n\n" ) ;
