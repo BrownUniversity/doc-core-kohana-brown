@@ -32,7 +32,15 @@ class DOC_Controller_Cron extends Controller {
 	public function action_monthly() {
 		Kohana::$log->add(Log::INFO, 'Executing monthly cron script') ;
 	}
-
+    
+    /**
+     * Slight modification to daily cron in that this happens once a day,
+     * but in the evenings rather than the mornings.
+     */
+    public function action_nightly() {
+        Kohana::$log->add(Log::INFO, 'Executing nightly cron script');
+    }
+    
 	public function action_index() {}
 
 }
