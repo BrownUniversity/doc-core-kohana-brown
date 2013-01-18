@@ -312,7 +312,7 @@ class DOC_Helper_Table {
 									$action_class = $action[ 'class' ] ;
 								}
 								$url_fragment = $this->parse_string($object, $action[ 'url_fragment' ]) ;
-								$action_str = "<a href='".Kohana::$base_url."{$url_fragment}{$id}' class='{$action_class}'>{$action[ 'name' ]}</a>" ;
+								$action_str = "<a href='".Kohana::$base_url."{$url_fragment}{$id}' class='{$action_class}'>".str_replace(' ','&nbsp;',$action[ 'name' ])."</a>" ;
 
 								if( isset( $action[ 'conditional' ])) {
 									$test = "return " . $this->parse_string($object, $action[ 'conditional' ]) . ';' ;
@@ -409,7 +409,7 @@ class DOC_Helper_Table {
 	/**
 	 * Given an object and relation information, generate a list where a "has many"
 	 * relationship exists.
-	 * 
+	 *
 	 * @param object $object The object we're starting with.
 	 * @param string $root_key The property of the object we're working with, or empty to use the object itself.
 	 * @param string $relation_name The name of the "has many" relation.
@@ -447,7 +447,7 @@ class DOC_Helper_Table {
 
 	/**
 	 * Create a link, with the result going in a blank browser window.
-	 * 
+	 *
 	 * @param mixed $object
 	 * @param string $link_text
 	 * @param string $link_url
@@ -469,11 +469,11 @@ class DOC_Helper_Table {
 
 	/**
 	 * Parse the given string and return either a string or an object. The input string
-	 * can be either a simple property or object reference ("foo" or "foo->bar"), 
+	 * can be either a simple property or object reference ("foo" or "foo->bar"),
 	 * or a more elaborate string with object references in curly braces ("foo is equal to {foo}".
-	 * 
+	 *
 	 * @param mixed $object
-	 * @param string $parseable_string 
+	 * @param string $parseable_string
 	 * @param boolean $return_as_string Set to FALSE to return an object suitable for further processing instead of a string.
 	 * @return mixed
 	 */
@@ -492,14 +492,14 @@ class DOC_Helper_Table {
 			}
 		}
 
-		return $_output ;	
-		
+		return $_output ;
+
 	}
 
 	/**
 	 * Output an array value for the given key, or "--" if the incoming value
 	 * does not exist as a key in the array.
-	 * 
+	 *
 	 * @param string $value
 	 * @param array $lookup
 	 * @return string
@@ -513,8 +513,8 @@ class DOC_Helper_Table {
 	}
 
 	/**
-	 * Format the value as a datetime. 
-	 * 
+	 * Format the value as a datetime.
+	 *
 	 * @param string $value
 	 * @param string $format
 	 * @return string
@@ -529,7 +529,7 @@ class DOC_Helper_Table {
 	/**
 	 * Format as US dollars, optionally including the dollar sign (defaults to
 	 * TRUE except for Excel output).
-	 * 
+	 *
 	 * @param float $value
 	 * @param boolean $include_dollar_sign
 	 * @return string
@@ -544,12 +544,12 @@ class DOC_Helper_Table {
 		}
 		return $value ;
 	}
-	
+
 	/**
-	 * Output as a standard US phone number or an internal 5-digit number. This 
+	 * Output as a standard US phone number or an internal 5-digit number. This
 	 * will generate any one of the following based on the incoming string length:
 	 * #-####, ###-####, (###) ###-####, # (###) ###-####
-	 * 
+	 *
 	 * @param string $value
 	 * @return string
 	 */
@@ -596,7 +596,7 @@ class DOC_Helper_Table {
 	 * is NOT smart enough to handle HTML or other formatting, so be sure to pass
 	 * this method only plain strings or you run the risk of breaking whatever
 	 * format exists in the original.
-	 * 
+	 *
 	 * @param string $value
 	 * @param int $chars Number of characters to include in the final string
 	 * @return string
