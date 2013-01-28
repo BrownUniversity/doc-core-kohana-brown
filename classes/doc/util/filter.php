@@ -174,74 +174,78 @@ class DOC_Util_Filter {
 				}
 
 				if( isset( $search_filters[ $filter_key ] ) && isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]] )) {
+					if( !empty( $filter_specs[ 'search_val_0' ]) || !empty( $filter_specs[ 'search_val_1' ])) {
+						$replacement_0 = $filter_specs[ 'search_val_0' ] ;
+						$replacement_1 = $filter_specs[ 'search_val_1' ] ;
+						$operator = self::get_operator( $filter_specs[ 'search_operator' ]) ;
 
-					$replacement_0 = $filter_specs[ 'search_val_0' ] ;
-					$replacement_1 = $filter_specs[ 'search_val_1' ] ;
-					$operator = self::get_operator( $filter_specs[ 'search_operator' ]) ;
+						// run the query to get the list of IDs, then add to the where clause
+						$sql = $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'sql' ] ;
 
-					// run the query to get the list of IDs, then add to the where clause
-					$sql = $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'sql' ] ;
+						$sql = str_replace(	array( '{operator}' ), array( $operator ), $sql ) ;
 
-					$sql = str_replace(	array( '{operator}' ), array( $operator ), $sql ) ;
-
-					// do any other replacements based on the substitutions array
-					if( is_array( $substitutions ) && count( $substitutions ) > 0 ) {
-						foreach( $substitutions as $key => $value ) {
-							$sql = str_replace( array( '{'.$key.'}' ), array( $value ), $sql ) ;
-						}
-					}
-
-
-					$query = DB::query( Database::SELECT, $sql ) ;
-
-					if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'date') {
-						if( empty( $replacement_0 )) {
-							$replacement_0 = '2000-01-01 00:00:00' ;
-						} else {
-							if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $replacement_0) == 0 ) {
-								$replacement_0 = Date::formatted_time( $replacement_0 . ' 00:00:00' ) ;
+						// do any other replacements based on the substitutions array
+						if( is_array( $substitutions ) && count( $substitutions ) > 0 ) {
+							foreach( $substitutions as $key => $value ) {
+								$sql = str_replace( array( '{'.$key.'}' ), array( $value ), $sql ) ;
 							}
 						}
 
-						if( empty( $replacement_1 )) {
-							$replacement_1 = '2999-12-31 23:59:59' ; // Y3K bug, FTW!
-						} else {
-							if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $replacement_1) == 0 ) {
-								$replacement_1 = Date::formatted_time( $replacement_1 . ' 00:00:00' ) ;
+
+						$query = DB::query( Database::SELECT, $sql ) ;
+
+						if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'date') {
+							if( empty( $replacement_0 )) {
+								$replacement_0 = '2000-01-01 00:00:00' ;
+							} else {
+								if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $replacement_0) == 0 ) {
+									$replacement_0 = Date::formatted_time( $replacement_0 . ' 00:00:00' ) ;
+								}
 							}
+
+							if( empty( $replacement_1 )) {
+								$replacement_1 = '2999-12-31 23:59:59' ; // Y3K bug, FTW!
+							} else {
+								if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $replacement_1) == 0 ) {
+									$replacement_1 = Date::formatted_time( $replacement_1 . ' 00:00:00' ) ;
+								}
+							}
+
+							$query->parameters( array(
+								':search_val_0' => $replacement_0,
+								':search_val_1' => $replacement_1,
+							)) ;
+						} elseif(isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'numeric') {
+							$query->parameters( array(
+								':search_val_0' => $replacement_0,
+								':search_val_1' => $replacement_1,
+							)) ;
+						} else {
+							$query->parameters( array(
+								':search_val_0' => "%$replacement_0%",
+								':search_val_1' => "%$replacement_1%",
+							)) ;
 						}
 
-						$query->parameters( array(
-							':search_val_0' => $replacement_0,
-							':search_val_1' => $replacement_1,
-						)) ;
-					} elseif(isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'numeric') {
-						$query->parameters( array(
-							':search_val_0' => $replacement_0,
-							':search_val_1' => $replacement_1,
-						)) ;
+						$db = Database::instance() ;
+						if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) && !empty( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ])) {
+							$db = Database::instance($search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) ;
+						}
+	//					DOC_Util_Debug::dump( $query->compile($db), false) ;
+						$result = $query->execute( $db ) ;
+
+						$ids = array() ;
+						$ids[] = -1 ;
+						foreach( $result as $row ) {
+							$ids[] = $row['id'] ;
+						}
+
+						$_output = $_output->$orm_connectors[ $bool_connector ]( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'id_column' ], 'in', $ids ) ;
+
 					} else {
-						$query->parameters( array(
-							':search_val_0' => "%$replacement_0%",
-							':search_val_1' => "%$replacement_1%",
-						)) ;
+						$_output = $_output->$orm_connectors[ $bool_connector ](DB::expr('1'),'=',DB::expr('1')) ;
 					}
-
-					$db = Database::instance() ;
-					if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) && !empty( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ])) {
-						$db = Database::instance($search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) ;
-					}
-//					DOC_Util_Debug::dump( $query->compile($db), false) ;
-					$result = $query->execute( $db ) ;
-
-					$ids = array() ;
-					$ids[] = -1 ;
-					foreach( $result as $row ) {
-						$ids[] = $row['id'] ;
-					}
-
-					$_output = $_output->$orm_connectors[ $bool_connector ]( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'id_column' ], 'in', $ids ) ;
-
+						
 
 				} else {
 					$column_type = self::get_data_type($_output, $filter_specs[ 'filter_column' ]) ;
