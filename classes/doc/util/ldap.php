@@ -24,6 +24,7 @@ class DOC_Util_Ldap
      private $cn;
 
      private $last_result_rc ;
+	 public static $instance = NULL ;
 
     /**
      * Attribute list used when retrieving information about people.
@@ -88,6 +89,8 @@ class DOC_Util_Ldap
 
     /**
      * Class constructor
+	 * @todo make constructor private
+	 * @deprecated use get_instance() instead
      */
     public function __construct()
     {
@@ -97,6 +100,13 @@ class DOC_Util_Ldap
                   $this->ldap_query_bind_password);
     }
 
+	public static function instance() {
+		if( !isset( self::$instance )) {
+			self::$instance = new DOC_Util_Ldap() ;
+		}
+		return self::$instance ;
+	}
+	
     /**
      * Class destructor
      */
@@ -108,6 +118,8 @@ class DOC_Util_Ldap
         ldap_unbind($this->cn);
     }
 
+	
+	
     /**
      * Comparison function for resulting person array
      *
