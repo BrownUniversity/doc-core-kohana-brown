@@ -10,10 +10,11 @@ class DOC_Util_Lookup {
 
 	const BY_KEY = 'byKey' ;
 	const BY_VAL = 'byVal' ;
+	const PRIMARY_KEY_PROP = 'pkProp' ;
 
 	/**
 	 * Get a lookup array for the given model and key.
-	 * 
+	 *
 	 * @param string $model A model name.
 	 * @param string $key A property of the model to be used as the key in the array.
 	 * @param string $mode Use one of the class constants here.
@@ -94,4 +95,41 @@ class DOC_Util_Lookup {
 		return $_output ;
 	}
 
+	/**
+	 * Lookup a single value for the given property value. Leverages cache, if available.
+	 *
+	 * @param string $model
+	 * @param string $prop_key
+	 * @param string $prop_val
+	 * @param string $return_prop The property whose value you want returned. Defaults to the primary key.
+	 * @return mixed
+	 */
+	static function get_single( $model, $prop_key, $prop_val, $return_prop = self::PRIMARY_KEY_PROP ) {
+		$_output = NULL ;
+		$cache = FALSE ;
+		if(array_key_exists('cache', Kohana::modules())) {
+			$cache = Cache::instance() ;
+		}
+		$cache_key = "singlelookup.{$model}.{$prop_key}.{$prop_val}.{$return_prop}" ;
+		if( $cache !== FALSE && !empty( $cache_key )) {
+			$_output = $cache->get($cache_key,'') ;
+		}
+
+		if( empty( $_output )) {
+			$obj = ORM::factory($model)->where($prop_key,'=',$prop_val)->find() ;
+			if( $obj->loaded() ) {
+				if( $return_prop == self::PRIMARY_KEY_PROP ) {
+					$_output = $obj->pk() ;
+				} else {
+					$_output = $obj->$return_prop ;
+				}
+			}
+
+			if( $cache !== FALSE && !empty( $cache_key )) {
+				$cache->set($cache_key,$_output) ;
+			}
+		}
+
+		return $_output ;
+	}
 }
