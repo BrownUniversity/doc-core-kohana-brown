@@ -17,6 +17,7 @@ class DOC_Helper_Table {
 	const TYPE_CHECKBOX = 2 ;
 	const TYPE_ACTION = 3 ;
 	const TYPE_SUPPLEMENTAL = 4 ;
+	const TYPE_ROW_DATA = 5 ;
 
 	const CONTEXT_WEB = 1 ;
 	const CONTEXT_SPREADSHEET = 2 ;
@@ -92,7 +93,7 @@ class DOC_Helper_Table {
 
 
 
-					if( $col_spec[ 'type' ] != self::TYPE_SUPPLEMENTAL ) {
+					if( $col_spec[ 'type' ] != self::TYPE_SUPPLEMENTAL && $col_spec[ 'type' ] != self::TYPE_ROW_DATA ) {
 
 						if( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
 							$header_attributes['class'] = '{sorter: false}' ;
@@ -105,10 +106,12 @@ class DOC_Helper_Table {
 
 						$_output[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
 					} else {
-						if( $this->context == self::CONTEXT_SPREADSHEET ) {
-							$supplemental_column_headers[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
-						} else {
-							$supplemental_column_headers = array("<th".HTML::attributes( array('class' => '{sorter: false}')).">&nbsp;</th>") ;
+						if( $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
+							if( $this->context == self::CONTEXT_SPREADSHEET ) {
+								$supplemental_column_headers[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+							} else {
+								$supplemental_column_headers = array("<th".HTML::attributes( array('class' => '{sorter: false}')).">&nbsp;</th>") ;
+							}
 						}
 					}
 				}
@@ -133,30 +136,31 @@ class DOC_Helper_Table {
 
 			foreach( $this->data as $object ) {
 				$supplemental_data = array() ;
-				$_output[] = "<tr>" ;
+				$row_data = array() ;
 
 				// Supplemental data in the body of the table needs to be handled similarly to our headers.
 				// As we encounter supplemental data for a row, it should be collected into an array.
 				// At the end of the set of rows, we'll then add either a single column (web) with an icon and class to hook into jquery
 				// or we'll create a new set of columns (spreadsheet) with the data we've collected.
 
-
+				$row_cells = array() ;
 				foreach( $this->column_specs as $col_spec ) {
 					if( !isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context ) {
 						$td_attrs = array() ;
 
 
-						// Note that both TYPE_SUPPLEMENTAL and TYPE_DATA will need much of the same processing,
+						// Note that TYPE_SUPPLEMENTAL, TYPE_ROW_DATA and TYPE_DATA will need much of the same processing,
 						// but only TYPE_DATA should be immediately dumped into a column.
 
-						if( $col_spec[ 'type' ] == self::TYPE_DATA || $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
+						if( $col_spec[ 'type' ] == self::TYPE_DATA || $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL || $col_spec[ 'type' ] == self::TYPE_ROW_DATA ) {
 							$value = $this->generate_content($object, $col_spec[ 'property' ]) ;
+							$td_attrs[ 'class' ][] = 'col-' . preg_replace('/[^A-Za-z0-9]+/', '-', $col_spec[ 'property' ]) ;
 
 							if( isset( $col_spec[ 'format' ]) && is_array( $col_spec[ 'format' ]) && count( $col_spec[ 'format' ]) > 0 ) {
 								switch ( $col_spec[ 'format' ][ 'type' ]) {
 									case self::FORMAT_DATE:
 										$value = $this->format_datetime( $value, 'm/j/Y' ) ;
-										$td_attrs[ 'class' ] = 'date' ;
+										$td_attrs[ 'class' ][] = 'date' ;
 										break;
 
 									case self::FORMAT_LOOKUP:
@@ -195,7 +199,7 @@ class DOC_Helper_Table {
 
 									case self::FORMAT_DOLLARS:
 										$value = $this->format_dollars($value, TRUE) ;
-										$td_attrs[ 'class' ] = 'dollars' ;
+										$td_attrs[ 'class' ][] = 'dollars' ;
 										break ;
 
 									case self::FORMAT_TRIM_DECIMAL:
@@ -204,27 +208,27 @@ class DOC_Helper_Table {
 
 									case self::FORMAT_XLS_DOLLARS:
 										$value = $this->format_dollars($value, FALSE) ;
-										$td_attrs[ 'class' ] = 'dollars' ;
+										$td_attrs[ 'class' ][] = 'dollars' ;
 										break ;
 
 									case self::FORMAT_DATETIME:
 										$value = $this->format_datetime( $value, 'M j, Y g:i A' ) ;
-										$td_attrs[ 'class' ] = 'datetime' ;
+										$td_attrs[ 'class' ][] = 'datetime' ;
 										break ;
 
 									case self::FORMAT_DATETIME_SHORT:
 										$value = $this->format_datetime( $value, 'm/d/y g:i A' ) ;
-										$td_attrs[ 'class' ] = 'datetime' ;
+										$td_attrs[ 'class' ][] = 'datetime' ;
 										break ;
 
 									case self::FORMAT_DATETIME_PRECISE:
 										$value = $this->format_datetime( $value, 'M j, Y g:i:s A' ) ;
-										$td_attrs[ 'class' ] = 'datetime' ;
+										$td_attrs[ 'class' ][] = 'datetime' ;
 										break ;
 
 									case self::FORMAT_XLS_DATETIME:
 										$value = $this->format_datetime( $value, 'Y-m-d H:i' ) ;
-										$td_attrs[ 'class' ] = 'datetime' ;
+										$td_attrs[ 'class' ][] = 'datetime' ;
 										break ;
 
 									case self::FORMAT_TRUNCATE:
@@ -284,10 +288,10 @@ class DOC_Helper_Table {
 										$key = $this->parse_string($object, $col_spec[ 'class' ][ 'key' ]) ;
 									}
 									if(array_key_exists( $key , $col_spec[ 'class' ][ 'classes' ])) {
-										$td_attrs[ 'class' ] = $col_spec[ 'class' ][ 'classes' ][ $key ] ;
+										$td_attrs[ 'class' ][] = $col_spec[ 'class' ][ 'classes' ][ $key ] ;
 									}
 								} else {
-									$td_attrs[ 'class' ] = $col_spec[ 'class' ] ;
+									$td_attrs[ 'class' ][] = $col_spec[ 'class' ] ;
 								}
 							}
 
@@ -335,7 +339,7 @@ class DOC_Helper_Table {
 
 							}
 							$value = implode( '&nbsp;|&nbsp;', $actions ) ;
-							$td_attrs[ 'class' ] = 'actions' ;
+							$td_attrs[ 'class' ][] = 'actions' ;
 						} elseif( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
 							$default_id = $object->pk() ;
 							$id = $default_id ;
@@ -350,12 +354,14 @@ class DOC_Helper_Table {
 						}
 
 						if( $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
-							// TODO: Build an array structure containing the header and value pairs.
-							//			We'll turn that into a JSON string and assign it to the "data-supplement" property
-							//			of our supplemental data column.
-							//
-							//			This same structure should also store other attributes created in this loop
-							//			so that we can pass them to the spreadsheet (or web?) for proper formatting.
+							/*
+							 * Build an array structure containing the header and value pairs. 
+							 * We'll turn that into a JSON string and assign it to the 
+							 * "data-supplement" property of our supplemental data column.
+							 * This same structure should also store other attributes created 
+							 * in this loop so that we can pass them to the spreadsheet (or web?) 
+							 * for proper formatting.
+							 */
 
 							$heading = ucwords( $col_spec[ 'property' ]) ;
 							if( isset( $col_spec[ 'heading' ])) {
@@ -369,27 +375,41 @@ class DOC_Helper_Table {
 							) ;
 
 							$value ;
+						} elseif ( $col_spec['type'] == self::TYPE_ROW_DATA ) {
+							$prop = $col_spec[ 'property' ] ;
+							if( isset( $col_spec[ 'heading' ])) {
+								$prop = $col_spec[ 'heading' ] ;
+							}
+							
+							$row_data[ $prop ] = $value ;
+							
 						} else {
-							$_output[] = "<td".HTML::attributes( $td_attrs ).">{$value}</td>" ;
+							$row_cells[] = "<td".HTML::attributes( $this->compiled_attributes($td_attrs) ).">{$value}</td>" ;
 						}
-
-
 					}
 				}
 
 				if( count( $supplemental_data ) > 0 ) {
 					if( $this->context == self::CONTEXT_WEB ) {
 						$supplemental_data_json = json_encode( $supplemental_data ) ;
-						$_output[] = "<td class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></td>" ;
+						$row_cells[] = "<td class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></td>" ;
 
 					} else {
 						foreach( $supplemental_data as $supplement_col ) {
-							$_output[] = "<td".HTML::attributes( $supplement_col['td_attrs'] ).">{$supplement_col['value']}</td>" ;
+							$row_cells[] = "<td".HTML::attributes( $this->compiled_attributes( $supplement_col['td_attrs'] )).">{$supplement_col['value']}</td>" ;
 						}
 					}
 				}
-
-
+				
+				if( count( $row_data ) > 0 && $this->context == self::CONTEXT_WEB ) {
+					
+					$row_data_json = htmlentities( DOC_Helper_JSON::get_json($row_data), ENT_QUOTES ) ;
+					$_output[] = "<tr data-row-data='{$row_data_json}'>" ;
+				} else {
+					$_output[] = "<tr>" ;
+				}
+				
+				$_output[] = implode('',$row_cells) ;
 				$_output[] = "</tr>" ;
 			}
 
@@ -619,23 +639,42 @@ class DOC_Helper_Table {
 	protected function generate_content( $data_root, $key ) {
 		$key_array = explode('->', $key) ;
 
-        if( property_exists($data_root, $key) || $data_root->supports_property( $key_array[0] )) {
-			$_output = @$data_root->{$key_array[0]};
-		} elseif (method_exists($data_root, $key_array[0])) {
-			$_output = @$data_root->{$key_array[0]}() ;
+		if( $key == 'ROOT') {
+			return $data_root ;
 		} else {
-			$_output = 'ERR: unknown data source' ;
-		}
+			if( property_exists($data_root, $key) || $data_root->supports_property( $key_array[0] )) {
+				$_output = @$data_root->{$key_array[0]};
+			} elseif (method_exists($data_root, $key_array[0])) {
+				$_output = @$data_root->{$key_array[0]}() ;
+			} else {
+				$_output = 'ERR: unknown data source' ;
+			}
 
-		if( count( $key_array ) > 1 ) {
-			$key = preg_replace("/^{$key_array[0]}->/", '', $key) ;
-			return $this->generate_content( $_output, $key ) ;
+			if( count( $key_array ) > 1 ) {
+				$key = preg_replace("/^{$key_array[0]}->/", '', $key) ;
+				return $this->generate_content( $_output, $key ) ;
+			}
 		}
+		
+		
+			
 
 		return $_output ;
 
 	}
 
+	protected function compiled_attributes( $attrs ) {
+		$_output = $attrs ;
+		if( is_array( $attrs ) && count( $attrs ) > 0 ) {
+			foreach( $attrs as $key => $value ) {
+				if( is_array( $value )) {
+					$_output[ $key ] = implode(' ', $value) ;
+				}
+			}
+		} 
+		
+		return $_output ;
+	}
 
 
 
