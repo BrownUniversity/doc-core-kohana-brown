@@ -456,7 +456,7 @@ class DOC_Helper_Table {
 
 		if( $data->count() > 0 ) {
 			foreach( $data as $item ) {
-				$content[] = $item->$property_name ;
+				$content[] = $this->generate_content( $item, $property_name ) ;
 			}
 		} else {
 			$content[] = "<em>{$empty_content}</em>" ;
