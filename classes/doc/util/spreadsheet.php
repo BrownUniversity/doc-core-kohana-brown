@@ -150,31 +150,33 @@ class DOC_Util_Spreadsheet {
 			$filename = preg_replace('/\W/', '_', Request::detect_uri()) ;
 			$filename .= '_'. date('Y-m-d_H:i') ;
 		}
-
+		
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // some day in the past
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header( "Cache-Control: no-store, no-cache, must-revalidate, max-age=0" );
+		header( "Cache-Control: post-check=0, pre-check=0", false);
+		header( "Pragma: no-cache" );
+		
 		switch( $file_type ) {
 			case self::FILETYPE_EXCEL:
 				header( 'Content-Type: application/vnd.ms-excel' ) ;
 				header( 'Content-Disposition: attachment;filename="'.$filename.'.xls"' ) ;
-				header( 'Cache-Control: max-age=0' ) ;
 
 				break ;
 			case self::FILETYPE_EXCEL_2007:
 				header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 				header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"') ;
-				header('Cache-Control: max-age=0');
 				break ;
 
 			case self::FILETYPE_PDF:
 				header( 'Content-Type: application/pdf' ) ;
 				header( 'Content-Disposition: attachment;filename="'.$filename.'.pdf"' ) ;
-				header( 'Cache-Control: max-age=0' ) ;
 
 				break ;
 
 			case self::FILETYPE_HTML:
 				header( 'Content-Type: text/html' ) ;
 				header( 'Content-Disposition: attachment;filename="'.$filename.'.html"' ) ;
-				header( 'Cache-Control: max-age=0' ) ;
 
 				break ;
 			default:
