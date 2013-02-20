@@ -61,7 +61,9 @@ class DOC_Util_Mail {
 				$message->setCc($cc) ;
 			}
 		}
-
+		
+		Kohana::$log->add(Log::DEBUG, "Message sent with subject '".$message->getSubject()."' at ".date('Y-m-d H:i:s')) ;
+		
 		$_output = $mailer->send($message) ;
 
 		return $_output ;
