@@ -13,12 +13,14 @@ abstract class DOC_Util_File {
 	const SEND_AS_DISPLAY = 'display' ;
 	const CONFIG_FILE = 'file' ;
 	const CACHE_LIFETIME = '1 day' ;
-	
+
 	protected $file_config ;
 	protected $use_cache = FALSE ;
+	protected $allowed_file_types = array() ;
 
 	public function __construct( $config_file = self::CONFIG_FILE ) {
 		$this->file_config = Kohana::$config->load( $config_file ) ;
+		$this->allowed_file_types = $this->file_config[ 'default' ][ 'allowed_file_types' ] ;
 	}
 
 	/**
@@ -80,7 +82,7 @@ abstract class DOC_Util_File {
 
 	/**
 	 * Sets whether caching should be allowed.
-	 * 
+	 *
 	 * @param boolean $new_state
 	 */
 	public function cache_allowed($new_state) {
@@ -89,7 +91,7 @@ abstract class DOC_Util_File {
 
 	/**
 	 * Given the filepath, returns the MIME type of the file.
-	 * 
+	 *
 	 * @param string $filepath
 	 * @return string
 	 */
@@ -108,12 +110,21 @@ abstract class DOC_Util_File {
 	 */
 	public function file_type_allowed( $filepath ) {
 
-		if( count( $this->file_config[ 'default' ][ 'allowed_file_types' ] ) == 0 ) {
+		if( count( $this->allowed_file_types ) == 0 ) {
 			return TRUE ;
 		}
 		$mime_type = $this->get_mime_type( $filepath ) ;
 
-		return in_array($mime_type, $this->file_config[ 'default' ][ 'allowed_file_types' ]) ;
+		return in_array($mime_type, $this->allowed_file_types) ;
+	}
+
+	/**
+	 * Override the file types allowed.
+	 *
+	 * @param array $allowed_file_types array in the format 'extension' => 'MIME type' (i.e. 'gif' => 'image/gif')
+	 */
+	public function set_allowed_file_types( $allowed_file_types ) {
+		$this->allowed_file_types = $allowed_file_types ;
 	}
 
 	/**
@@ -123,10 +134,10 @@ abstract class DOC_Util_File {
 	 * @return array An array of either extensions or MIME types.
 	 */
 	public function get_allowable_file_types( $list_by = self::TYPE_BY_FILE_EXTENSION ) {
-		$_output = array_keys( $this->file_config[ 'default' ][ 'allowed_file_types' ]) ;
+		$_output = array_keys( $this->allowed_file_types ) ;
 
 		if( $list_by == self::TYPE_BY_MIME ) {
-			$_output = array_unique($this->file_config[ 'default' ][ 'allowed_file_types' ]) ;
+			$_output = array_unique($this->allowed_file_types) ;
 		}
 
 		return $_output ;
@@ -181,7 +192,7 @@ abstract class DOC_Util_File {
 	/**
 	 * Given the file specifications provided, send the file either inline or as
 	 * an attachment to be downloaded.
-	 * 
+	 *
 	 * @param string $content_type
 	 * @param string $filename
 	 * @param string $filepath
@@ -191,11 +202,11 @@ abstract class DOC_Util_File {
 	protected function send_headers( $content_type, $filename, $filepath, $send_as = self::SEND_AS_DOWNLOAD, $headers = array()) {
 		$stat = stat( $filepath ) ;
 		/*
-		 * The common wisdom is that the zlib bit here is "required for IE, otherwise 
-		 * Content-disposition is ignored". However, I tested with this commented 
+		 * The common wisdom is that the zlib bit here is "required for IE, otherwise
+		 * Content-disposition is ignored". However, I tested with this commented
 		 * out in IE 8 and it worked fine...
 		 */
-		
+
 		if(ini_get('zlib.output_compression')) {
 			ini_set('zlib.output_compression', 'Off');
 		}
@@ -203,16 +214,16 @@ abstract class DOC_Util_File {
 		header("Pragma: public");
 		if( $send_as == self::SEND_AS_DISPLAY && $this->use_cache == TRUE ) {
 			header("Expires: ".gmdate('D, d M Y H:i:s',strtotime('+'.self::CACHE_LIFETIME, $stat['mtime']))." GMT") ;
-			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $stat['mtime']) . " GMT") ;			
+			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $stat['mtime']) . " GMT") ;
 		} else {
 			header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // some day in the past
 			header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 		}
-		
+
 		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 		header("Cache-Control: private",false);
 		header("Content-type: {$content_type}");
-		
+
 		if( $send_as == self::SEND_AS_DISPLAY ) {
 			header('Content-Disposition: inline; filename="'.$filename.'"');
 		} else {
@@ -292,8 +303,8 @@ abstract class DOC_Util_File {
 	/**
 	 * Check the given MIME type string to see if we have deemed it "web friendly."
 	 * A more appropriate term might be "browser friendly", since that's the context
-	 * this will most likely be used in. 
-	 * 
+	 * this will most likely be used in.
+	 *
 	 * @param string $mime_type
 	 * @return boolean
 	 */
