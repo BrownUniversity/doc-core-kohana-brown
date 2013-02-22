@@ -199,23 +199,35 @@ class DOC_Helper_Form {
 	 * @param string $value_key
 	 * @param string $field_name
 	 * @param string $mode Use one of the MODE_* class constants
+	 * @param boolean $is_removable_key key in the data array to indicate whether a given item should be removable or not.
 	 * @return string
 	 */
-	public static function related_items( $data, $label_key, $value_key, $field_name, $mode = self::MODE_EDITABLE ) {
+	public static function related_items( $data, $label_key, $value_key, $field_name, $mode = self::MODE_EDITABLE, $is_removable_key = NULL ) {
 		$_output = '' ;
 		foreach( $data as $item ) {
+			$removable = TRUE ;
 			if( is_array( $item )) {
 				$label = $item[ $label_key ] ;
 				$value = $item[ $value_key ] ;
+				if( !empty( $is_removable_key )) {
+					$removable = $item[ $is_removable_key ] ;
+				}
 			} else {
 				$label = $item->$label_key ;
 				$value = $item->$value_key ;
+				if( !empty( $is_removable_key )) {
+					$removable = $item->$is_removable_key ;
+				}
 			}
 
 			$_output .= '<div class="related-item">' ;
 			$_output .= '<span class="related-item-label">'.$label.'</span>' ;
 			if( $mode == self::MODE_EDITABLE ) {
-				$_output .= '<span class="related-item-link">(<a class="removal-link">remove</a>)</span>' ;
+				if( $removable ) {
+					$_output .= '<span class="related-item-link">(<a class="removal-link">remove</a>)</span>' ;
+				} else {
+					$_output .= '<span class="related-item-link">(<a class="disabled">remove</a>)</span>' ;
+				}
 				$_output .= '<input type="hidden" name="'.$field_name.'[]" value="'.$value.'" />' ;
 			}
 			$_output .= "</div>" ;
