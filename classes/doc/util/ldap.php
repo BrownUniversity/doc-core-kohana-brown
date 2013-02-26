@@ -625,13 +625,23 @@ class DOC_Util_Ldap
     		);
     	}
 
-    	return array(
-    		'status' => array(
-    			'ok' => true,
-    			'message' => null,
-    		),
-    		'info' => $this->parse_result_array($this->course_attributes, $find_result[0]),
-    	);
+		if( $find_result['count'] > 0 ) {
+			return array(
+				'status' => array(
+					'ok' => true,
+					'message' => null,
+				),
+				'info' => $this->parse_result_array($this->course_attributes, $find_result[0]),
+			);
+		} else {
+			return array(
+				'status' => array(
+					'ok' => false,
+					'message' => 'Empty record'
+				)
+			) ;
+		}
+			
     }
 
 	public function count_last() {
