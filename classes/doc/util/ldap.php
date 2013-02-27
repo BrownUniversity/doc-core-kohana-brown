@@ -644,6 +644,60 @@ class DOC_Util_Ldap
 			
     }
 
+    /**
+     * Normalize enrollment data by combining non-S** sections so that there is
+     * only one listing for the course.
+     * 
+     * @param type $input result of DOC_Util_LDAP::get_person_enrollment
+     * @return array
+     */
+    public static function normalize_enrollment($input) {
+        $_output = array();
+        
+        if (($input['status']['ok']) && (count($input['courses']) > 0)) {
+            /**
+             * Process once for all S** enrollments
+             */
+            foreach ($input['courses'] as $key => $course) {
+                $key_parts = explode(':', $key);
+                
+                if ((isset($key_parts[3])) && (strtoupper(substr($key_parts[3],0,1)) == 'S')) {
+                    $_output[$key] = $course;
+                    $_output[$key]['additional_sections'] = array();
+                } 
+            }
+            
+            /**
+             * Process again for all other enrollments
+             */
+            foreach ($input['courses'] as $key => $course) {
+                $key_parts = explode(':', $key);
+                $search_key = "{$key_parts[0]}:{$key_parts[1]}:{$key_parts[2]}";
+                
+                if ((isset($key_parts[3])) && (strtoupper(substr($key_parts[3], 0, 1)) != 'S' )) {
+                    $match_found = FALSE;
+                    
+                    /**
+                     * Use by reference for key => value to be able to 
+                     * modify the array in the loop
+                     */
+                    foreach ($_output as $_output_key => &$_output_course) {
+                        if (stripos($_output_key, $search_key) !== FALSE) {
+                            $match_found = TRUE;
+                            $_output_course['additional_sections'][] = $key_parts[3];
+                        }
+                    }
+                    
+                    if ( ! $match_found) {
+                        $_output[$key] = $course;
+                        $_output[$key]['additional_sections'] = array();
+                    }
+                }
+            }
+        }
+        return $_output;
+    }
+    
 	public function count_last() {
 		if ( !$this->last_result_rc ) {
 			return false;
