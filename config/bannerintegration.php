@@ -1,7 +1,7 @@
-<?php 
+<?php
 /**
  * Banner Integration Configuration File
- * 
+ *
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  * @package DOC Core Module
  */
@@ -12,6 +12,13 @@ if( file_exists( dirname( __FILE__ ) . '/myConfig.php' )) include_once( dirname(
 defined('FTPS_SERVER') or define('FTPS_SERVER', 'ftps.example.edu');
 defined('FTPS_PATH') or define('FTPS_PATH', '/path/to/files/');
 
+defined('BANNERINTEGRATION_APIS_IAR_SECRET') or define('BANNERINTEGRATION_APIS_IAR_SECRET', '***REMOVED***');
+defined('BANNERINTEGRATION_APIS_IAR_URL') or define('BANNERINTEGRATION_APIS_IAR_URL', '***REMOVED***');
+defined('BANNERINTEGRATION_APIS_PHOTO_SECRET') or define('BANNERINTEGRATION_APIS_PHOTO_SECRET', '***REMOVED***');
+//defined('BANNERINTEGRATION_APIS_PHOTO_URL') or define('BANNERINTEGRATION_APIS_PHOTO_URL', '***REMOVED***');
+defined('BANNERINTEGRATION_APIS_PHOTO_URL') or define('BANNERINTEGRATION_APIS_PHOTO_URL', '***REMOVED***');
+
+
 return array(
     'server'   => FTPS_SERVER,
     'path'     => FTPS_PATH,
@@ -19,28 +26,40 @@ return array(
     'password' => '***REMOVED***',
     'imports'  => array(
         'cohorts'		=> array(
-                'filename' => 'ask_cohort.dat', 
+                'filename' => 'ask_cohort.dat',
                 'regex' => '#\{\s*"cohort_code"\s*:\s*"[^"]*"\s*,\s*"cohort_description"\s*:\s*"[^"]*"\s*\}#'
         ),
         'courses'		=> array(
-                'filename' => 'ask_courses.dat', 
+                'filename' => 'ask_courses.dat',
                 'regex' => '#\{\s*"subject_code"\s*:\s*"[^"]*"\s*,\s*"subject_description"\s*:\s*"[^"]*"\s*,\s*"course_number"\s*:\s*"[^"]*"\s*,\s*"start_term"\s*:\s*"[^"]*"\s*,\s*"end_term"\s*:\s*"[^"]*"\s*,\s*"status"\s*:\s*"[^"]*"\s*,\s*"short_title"\s*:\s*"[^"]*"\s*,\s*"long_title"\s*:\s*"[^"]*"\s*\}#'
         ),
         'instructors'	=> array(
-                'filename' => 'ask_instructors.dat', 
+                'filename' => 'ask_instructors.dat',
                 'regex' => '#\{\s*"Term"\s*:\s*"[^"]*"\s*,\s*"CRN"\s*:\s*"[^"]*"\s*,\s*"LDAP_ID"\s*:\s*"[^"]*"\s*,\s*"Primary_Ind"\s*:\s*"[^"]*"\s*\}#'
         ),
         'students'		=> array(
-                'filename' => 'ask_student.dat', 
+                'filename' => 'ask_student.dat',
                 'regex' => '#\{\s*"Brown_ID"(.*?)"Cohorts"\s*:\s*\[(.*?)\]\s*,\s*"Attributes"\s*:\s*\[(.*?)\]\s*,\s*"Advisors"\s*:\s*\[(.*?)\]\s*,\s*"Programs"\s*:\s*\[(.*?)\]\s*,\s*"Transfer_Work"\s*:\s*\[(.*?)\]\s*,\s*"Courses"\s*:\s*\[(.*?)\]\s*\}#'
         ),
     ),
     'exports' => array(
         'writing'		=> array(
-            'filename' => 'banner_writing.dat', 
+            'filename' => 'banner_writing.dat',
             'regex' => ''
         ),
     ),
+    'apis' => array(
+    	'iar' => array(
+    		'secret' => BANNERINTEGRATION_APIS_IAR_SECRET,
+    		'url' => BANNERINTEGRATION_APIS_IAR_URL,
+    		'contact' => 'Christopher_Keith@brown.edu'
+    	),
+    	'photo' => array(
+    		'secret' => BANNERINTEGRATION_APIS_PHOTO_SECRET,
+    		'url' => BANNERINTEGRATION_APIS_PHOTO_URL,
+    		'contact' => 'Christopher_Keith@brown.edu'
+    	)
+    )
 );
 
 // End Banner Integration Configuration File
