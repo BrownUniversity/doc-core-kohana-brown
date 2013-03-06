@@ -12,6 +12,7 @@ class DOC_Helper_Table {
 	protected $column_specs ;
 	protected $table_attrs ;
 	protected $context ;
+	protected $render_tags ;
 
 	const TYPE_DATA = 1 ;
 	const TYPE_CHECKBOX = 2 ;
@@ -41,11 +42,28 @@ class DOC_Helper_Table {
 	const FORMAT_DEFAULT = 'default' ;
 	const FORMAT_CALLBACK = 'callback' ;
 
+	const RENDER_AS_TABLE = 'table' ;
+	const RENDER_AS_GRID = 'grid' ;
+
 	public function __construct( $data, $column_specs, $table_attrs = array(), $context = self::CONTEXT_WEB) {
 		$this->data = $data ;
 		$this->column_specs = $column_specs ;
 		$this->table_attrs = $table_attrs ;
 		$this->context = $context ;
+
+		$this->render_tags = array(
+			self::RENDER_AS_GRID => array(
+				'container' => 'div',
+				'row' => 'div',
+				'cell' => 'div'
+			),
+			self::RENDER_AS_TABLE => array(
+				'container' => 'table',
+				'row' => 'tr',
+				'cell' => 'td'
+			)
+		) ;
+
 	}
 
 	/**
@@ -53,86 +71,91 @@ class DOC_Helper_Table {
 	 *
 	 * @return string
 	 */
-	public function render() {
+	public function render($render_as = self::RENDER_AS_TABLE) {
 		$_output = array() ;
 		$supplemental_column_headers = array() ;
 
 		if( count( $this->data ) > 0 ) {
-			$_output[] = "<table" . HTML::attributes($this->table_attrs) . ">" ;
+			$_output[] = "<{$this->render_tags[$render_as]['container']}" . HTML::attributes($this->table_attrs) . ">" ;
 
 			/*
-			 * Table Header
+			 * Table Header, not necessary for grid render
 			 */
 
+			if( $render_as == self::RENDER_AS_TABLE ) {
+				$_output[] = "<thead>" ;
+				$_output[] = "<tr>" ;
 
-			$_output[] = "<thead>" ;
-			$_output[] = "<tr>" ;
+				foreach( $this->column_specs as $col_spec ) {
 
-			foreach( $this->column_specs as $col_spec ) {
+					if( !isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context ) {
 
-				if( !isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context ) {
+						// TODO: This should only create columns for data that is NOT TYPE_SUPPLEMENTAL.
+						// Anything else should be ignored here except for creating a flag to indicate that
+						// supplemental data exists.
 
-					// TODO: This should only create columns for data that is NOT TYPE_SUPPLEMENTAL.
-					// Anything else should be ignored here except for creating a flag to indicate that
-					// supplemental data exists.
-
-					$property = '' ;
-					if( isset( $col_spec[ 'property' ] )) {
-						$property = $col_spec[ 'property' ] ;
-					}
-
-					$heading = ucwords( $property ) ;
-					if( isset( $col_spec[ 'heading' ])) {
-						$heading = $col_spec[ 'heading' ] ;
-					}
-
-					$header_attributes = array() ;
-					if( isset( $col_spec[ 'attributes' ] ) && is_array( $col_spec[ 'attributes' ] )) {
-						$header_attributes = $col_spec[ 'attributes' ] ;
-					}
-
-
-
-					if( $col_spec[ 'type' ] != self::TYPE_SUPPLEMENTAL && $col_spec[ 'type' ] != self::TYPE_ROW_DATA ) {
-
-						if( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
-							$header_attributes['class'] = '{sorter: false}' ;
+						$property = '' ;
+						if( isset( $col_spec[ 'property' ] )) {
+							$property = $col_spec[ 'property' ] ;
 						}
 
-						if( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
-							$heading = "<input type='checkbox' name='_id' class='check_all' />" ;
-							$header_attributes[ 'class' ] = '{sorter: false} checkbox-column' ;
+						$heading = ucwords( $property ) ;
+						if( isset( $col_spec[ 'heading' ])) {
+							$heading = $col_spec[ 'heading' ] ;
 						}
 
-						$_output[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
-					} else {
-						if( $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
-							if( $this->context == self::CONTEXT_SPREADSHEET ) {
-								$supplemental_column_headers[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
-							} else {
-								$supplemental_column_headers = array("<th".HTML::attributes( array('class' => '{sorter: false}')).">&nbsp;</th>") ;
+						$header_attributes = array() ;
+						if( isset( $col_spec[ 'attributes' ] ) && is_array( $col_spec[ 'attributes' ] )) {
+							$header_attributes = $col_spec[ 'attributes' ] ;
+						}
+
+
+
+						if( $col_spec[ 'type' ] != self::TYPE_SUPPLEMENTAL && $col_spec[ 'type' ] != self::TYPE_ROW_DATA ) {
+
+							if( $col_spec[ 'type' ] == self::TYPE_ACTION ) {
+								$header_attributes['class'] = '{sorter: false}' ;
+							}
+
+							if( $col_spec[ 'type' ] == self::TYPE_CHECKBOX ) {
+								$heading = "<input type='checkbox' name='_id' class='check_all' />" ;
+								$header_attributes[ 'class' ] = '{sorter: false} checkbox-column' ;
+							}
+
+							$_output[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+						} else {
+							if( $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
+								if( $this->context == self::CONTEXT_SPREADSHEET ) {
+									$supplemental_column_headers[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+								} else {
+									$supplemental_column_headers = array("<th".HTML::attributes( array('class' => '{sorter: false}')).">&nbsp;</th>") ;
+								}
 							}
 						}
 					}
 				}
+
+				// output supplemental headers, if they exist
+
+				if( count( $supplemental_column_headers ) > 0 ) {
+					$_output[] = implode("\n", $supplemental_column_headers) ;
+				}
+
+
+				$_output[] = "</tr>" ;
+				$_output[] = "</thead>" ;
 			}
 
-			// output supplemental headers, if they exist
 
-			if( count( $supplemental_column_headers ) > 0 ) {
-				$_output[] = implode("\n", $supplemental_column_headers) ;
-			}
-
-
-			$_output[] = "</tr>" ;
-			$_output[] = "</thead>" ;
 
 			/*
 			 * Table Body
 			 */
 
+			if( $render_as == self::RENDER_AS_TABLE ) {
+				$_output[] = "<tbody>" ;
+			}
 
-			$_output[] = "<tbody>" ;
 
 			foreach( $this->data as $object ) {
 				$supplemental_data = array() ;
@@ -355,11 +378,11 @@ class DOC_Helper_Table {
 
 						if( $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
 							/*
-							 * Build an array structure containing the header and value pairs. 
-							 * We'll turn that into a JSON string and assign it to the 
+							 * Build an array structure containing the header and value pairs.
+							 * We'll turn that into a JSON string and assign it to the
 							 * "data-supplement" property of our supplemental data column.
-							 * This same structure should also store other attributes created 
-							 * in this loop so that we can pass them to the spreadsheet (or web?) 
+							 * This same structure should also store other attributes created
+							 * in this loop so that we can pass them to the spreadsheet (or web?)
 							 * for proper formatting.
 							 */
 
@@ -380,11 +403,11 @@ class DOC_Helper_Table {
 							if( isset( $col_spec[ 'heading' ])) {
 								$prop = $col_spec[ 'heading' ] ;
 							}
-							
+
 							$row_data[ $prop ] = $value ;
-							
+
 						} else {
-							$row_cells[] = "<td".HTML::attributes( $this->compiled_attributes($td_attrs) ).">{$value}</td>" ;
+							$row_cells[] = "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes($td_attrs) ).">{$value}</{$this->render_tags[$render_as]['cell']}>" ;
 						}
 					}
 				}
@@ -392,30 +415,33 @@ class DOC_Helper_Table {
 				if( count( $supplemental_data ) > 0 ) {
 					if( $this->context == self::CONTEXT_WEB ) {
 						$supplemental_data_json = json_encode( $supplemental_data ) ;
-						$row_cells[] = "<td class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></td>" ;
+						$row_cells[] = "<{$this->render_tags[$render_as]['cell']} class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></td>" ;
 
 					} else {
 						foreach( $supplemental_data as $supplement_col ) {
-							$row_cells[] = "<td".HTML::attributes( $this->compiled_attributes( $supplement_col['td_attrs'] )).">{$supplement_col['value']}</td>" ;
+							$row_cells[] = "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes( $supplement_col['td_attrs'] )).">{$supplement_col['value']}</td>" ;
 						}
 					}
 				}
-				
+
 				if( count( $row_data ) > 0 && $this->context == self::CONTEXT_WEB ) {
-					
+
 					$row_data_json = htmlentities( DOC_Helper_JSON::get_json($row_data), ENT_QUOTES ) ;
-					$_output[] = "<tr data-row-data='{$row_data_json}'>" ;
+					$_output[] = "<{$this->render_tags[$render_as]['row']} data-row-data='{$row_data_json}'>" ;
 				} else {
-					$_output[] = "<tr>" ;
+					$_output[] = "<{$this->render_tags[$render_as]['row']}>" ;
 				}
-				
+
 				$_output[] = implode('',$row_cells) ;
-				$_output[] = "</tr>" ;
+				$_output[] = "</{$this->render_tags[$render_as]['row']}>" ;
 			}
 
-			$_output[] = "</tbody>" ;
+			if( $render_as == self::RENDER_AS_TABLE ) {
+				$_output[] = "</tbody>" ;
+			}
 
-			$_output[] = "</table>" ;
+
+			$_output[] = "</".$this->render_tags[$render_as]['container'].">" ;
 
 		} else {
 			$_output[] = '<div class="no-data">Nothing to display</div>' ;
@@ -655,9 +681,9 @@ class DOC_Helper_Table {
 				return $this->generate_content( $_output, $key ) ;
 			}
 		}
-		
-		
-			
+
+
+
 
 		return $_output ;
 
@@ -671,8 +697,8 @@ class DOC_Helper_Table {
 					$_output[ $key ] = implode(' ', $value) ;
 				}
 			}
-		} 
-		
+		}
+
 		return $_output ;
 	}
 
