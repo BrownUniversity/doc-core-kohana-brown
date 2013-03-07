@@ -160,7 +160,7 @@ class DOC_Util_Filter {
 					'boolean_connector' => $boolean_connector
 				) ;
 			}
-
+            
             $session->set( $filter_key, $filter_specs_arr ) ;
 			$session->write() ;
 		}
@@ -173,8 +173,9 @@ class DOC_Util_Filter {
 					$bool_connector = $filter_specs[ 'boolean_connector' ] ;
 				}
 
-				if( isset( $search_filters[ $filter_key ] ) && isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]] )) {
-					if( !empty( $filter_specs[ 'search_val_0' ]) || !empty( $filter_specs[ 'search_val_1' ])) {
+                if( isset( $search_filters[ $filter_key ] ) && isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]] )) {
+					if(($filter_specs[ 'search_val_0' ] != '') || ( $filter_specs[ 'search_val_1' ] != '')) {
+                    
 						$replacement_0 = $filter_specs[ 'search_val_0' ] ;
 						$replacement_1 = $filter_specs[ 'search_val_1' ] ;
 						$operator = self::get_operator( $filter_specs[ 'search_operator' ]) ;
@@ -183,17 +184,17 @@ class DOC_Util_Filter {
 						$sql = $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'sql' ] ;
 
 						$sql = str_replace(	array( '{operator}' ), array( $operator ), $sql ) ;
-
-						// do any other replacements based on the substitutions array
+                        
+                        // do any other replacements based on the substitutions array
 						if( is_array( $substitutions ) && count( $substitutions ) > 0 ) {
 							foreach( $substitutions as $key => $value ) {
 								$sql = str_replace( array( '{'.$key.'}' ), array( $value ), $sql ) ;
 							}
 						}
 
-
-						$query = DB::query( Database::SELECT, $sql ) ;
-
+                        
+                        $query = DB::query( Database::SELECT, $sql ) ;
+                        
 						if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'date') {
 							if( empty( $replacement_0 )) {
 								$replacement_0 = '2000-01-01 00:00:00' ;
