@@ -23,6 +23,9 @@
 	if( !isset( $table_attributes )) {
 		$table_attributes = NULL ;
 	}
+	if( !isset( $render_as )) {
+		$render_as = DOC_Helper_Table::RENDER_AS_TABLE ;
+	}
 	if( !isset( $theme )) {
 		if( defined( 'JQUERY_TABLESORTER_THEME' )) {
 			$theme = JQUERY_TABLESORTER_THEME ;
@@ -58,7 +61,7 @@
 	$table = new DOC_Helper_Table( $data, $column_specs, $table_attributes, $context ) ;
 
 	print( "<div id='{$div_id}' class='{$div_class}'>" ) ;
-	print( $table->render() ) ;
+	print( $table->render($render_as) ) ;
 	print( '<div id="supplemental-'.$table_id.'" class="supplemental-table"></div>' ) ;
 	print( "</div>" ) ;
 
@@ -67,12 +70,14 @@
 			if( $no_pager == FALSE ) {
 				$pager = View::factory('tablesorter/pager') ;
 				$pager->pager_id = $pager_id ;
+				$pager->show_all_size = count( $data ) ;
 				print( $pager->render() ) ;
 			}
 			$jquery = View::factory('tablesorter/jquery') ;
 			$jquery->table_id = $table_id ;
 			$jquery->pager_id = $pager_id ;
 			$jquery->no_pager = $no_pager ;
+			$jquery->render_as = $render_as ;
 			$jquery->default_sort = $default_sort ;
 			$jquery->theme = $theme ;
 			print( $jquery->render() ) ;

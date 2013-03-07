@@ -427,9 +427,9 @@ class DOC_Helper_Table {
 				if( count( $row_data ) > 0 && $this->context == self::CONTEXT_WEB ) {
 
 					$row_data_json = htmlentities( DOC_Helper_JSON::get_json($row_data), ENT_QUOTES ) ;
-					$_output[] = "<{$this->render_tags[$render_as]['row']} data-row-data='{$row_data_json}'>" ;
+					$_output[] = "<{$this->render_tags[$render_as]['row']} class='row-equiv' data-row-data='{$row_data_json}'>" ;
 				} else {
-					$_output[] = "<{$this->render_tags[$render_as]['row']}>" ;
+					$_output[] = "<{$this->render_tags[$render_as]['row']} class='row-equiv'>" ;
 				}
 
 				$_output[] = implode('',$row_cells) ;

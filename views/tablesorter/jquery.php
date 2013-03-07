@@ -8,6 +8,9 @@
 	if( !isset( $no_pager )) {
 		$no_pager = FALSE ;
 	}
+	if( !isset( $render_as )) {
+		$render_as = DOC_Helper_Table::RENDER_AS_TABLE ;
+	}
 	if( !isset( $default_sort )) {
 		$default_sort = '[[0,0]]' ;
 	}
@@ -24,27 +27,37 @@
 
 	$(document).ready( function() {
 		$('#<?php print( $table_id ) ; ?>')
-			.tablesorter({
-				sortList: <?php print( $default_sort ) ; ?>,
-				widgets: ['zebra','resizable','saveSort'],
-				debug: false,
-				theme: '<?php print( $theme ) ; ?>'
-			})
-// 			.on('sortEnd', function(sorter) {
-// 				// capture the current sort order for the table
-// 				_APP.currentSort = sorter.target.config.sortList ;
-// 			})
-			<?php if( $no_pager == FALSE ) { ?>
+		<?php if( $render_as == DOC_Helper_Table::RENDER_AS_TABLE ) { ?>
+					.tablesorter({
+						sortList: <?php print( $default_sort ) ; ?>,
+						widgets: ['zebra','resizable','saveSort'],
+						debug: false,
+						theme: '<?php print( $theme ) ; ?>'
+					})
 
-				.tablesorterPager({
-					container: $('#<?php print( $pager_id ) ; ?>'),
-					positionFixed: false,
-					size: 50,
-					output: "{startRow} to {endRow} ({totalRows})",
-					pagerArrows: true
-				})
+		// 			.on('sortEnd', function(sorter) {
+		// 				// capture the current sort order for the table
+		// 				_APP.currentSort = sorter.target.config.sortList ;
+		// 			})
+					<?php if( $no_pager == FALSE ) { ?>
 
-			<? } ?>
+						.tablesorterPager({
+							container: $('#<?php print( $pager_id ) ; ?>'),
+							positionFixed: false,
+							size: 50,
+							output: "{startRow} to {endRow} ({totalRows})",
+							pagerArrows: true
+						})
+
+					<? } ?>
+
+		<?php } else { ?>
+					.pager({
+						data_selector:'.row-equiv',
+						pager_container: $('#<?php print($pager_id); ?>')
+					})
+		<?php } ?>
+
 			;
 	/*
 	 * Handle the "Check All" checkbox.
