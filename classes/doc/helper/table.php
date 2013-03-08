@@ -88,7 +88,7 @@ class DOC_Helper_Table {
 
 				foreach( $this->column_specs as $col_spec ) {
 
-					if( !isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context ) {
+					if( (!isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context) && (!isset( $col_spec[ 'render_type' ]) || $col_spec[ 'render_type' ] == $render_as) ) {
 
 						// TODO: This should only create columns for data that is NOT TYPE_SUPPLEMENTAL.
 						// Anything else should be ignored here except for creating a flag to indicate that
@@ -168,7 +168,7 @@ class DOC_Helper_Table {
 
 				$row_cells = array() ;
 				foreach( $this->column_specs as $col_spec ) {
-					if( !isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context ) {
+					if( (!isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context)  && (!isset( $col_spec[ 'render_type' ]) || $col_spec[ 'render_type' ] == $render_as)) {
 						$td_attrs = array() ;
 
 
