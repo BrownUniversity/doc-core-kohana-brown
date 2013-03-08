@@ -97,7 +97,7 @@
 					if( filter_form.length == 1 ) {
 						filter_form.submit() ;
 					} else {
-						window.document.reload() ;
+						location.reload() ;
 					}
 				}
 			}) ;
