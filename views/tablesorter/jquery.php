@@ -21,6 +21,9 @@
 			$theme = 'default' ;
 		}
 	}
+	if( !isset( $include_render_options )) {
+		$include_render_options = FALSE ;
+	}
 ?>
 
 <script language="javascript">
@@ -68,6 +71,40 @@
 			 var checkbox_name = $(this).attr('name').replace(/^_/,'') + '[]' ;
 			 container.find('input[name="' + checkbox_name + '"]').prop('checked', $(this).prop('checked')) ;
 		 }) ;
+
+	<?php if( $include_render_options ) { ?>
+		/*
+		 * Need to include handlers here to set the render options and refresh the page.
+		 * We'll need to look for the presence of our standard search filter interface and
+		 * trigger a submit if we find it, otherwise just refresh the page...
+		 */
+		 $('.render-selector').on('click',function(){
+		 	var filter_form = $('form#filter') ;
+		 	var data = {} ;
+		 	data.uri = '<?php print(Request::detect_uri()); ?>' ;
+		 	if( $(this).hasClass('render-table')) {
+		 		data.render_as = '<?php print( DOC_Helper_Table::RENDER_AS_TABLE ) ; ?>' ;
+		 	} else {
+		 		data.render_as = '<?php print( DOC_Helper_Table::RENDER_AS_GRID ) ; ?>' ;
+		 	}
+		 	$.ajax({
+				type: 'POST',
+				url: _APP.approot + 'rest/render/set',
+				cache: false,
+				data: data,
+				dataType: 'json',
+				success: function() {
+					if( filter_form.length == 1 ) {
+						filter_form.submit() ;
+					} else {
+						window.document.reload() ;
+					}
+				}
+			}) ;
+		 });
+	
+	
+	<?php } ?>
 
 	}) ;
 
