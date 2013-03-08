@@ -213,7 +213,7 @@ abstract class DOC_Util_File {
 
 		header("Pragma: public");
 		if( $send_as == self::SEND_AS_DISPLAY && $this->use_cache == TRUE ) {
-			header("Expires: ".gmdate('D, d M Y H:i:s',strtotime('+'.self::CACHE_LIFETIME, $stat['mtime']))." GMT") ;
+			header("Expires: ".gmdate('D, d M Y H:i:s',strtotime('+'.self::CACHE_LIFETIME))." GMT") ;
 			header("Last-Modified: " . gmdate("D, d M Y H:i:s", $stat['mtime']) . " GMT") ;
 		} else {
 			header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // some day in the past
