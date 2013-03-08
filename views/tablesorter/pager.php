@@ -12,7 +12,7 @@
 			'100' => '100',
 			'250' => '250'
 		) ;
-		if( !empty( $show_all_size ) && $show_all_size > max($page_sizes)) {
+		if( isset( $show_all_size ) && !empty( $show_all_size ) && $show_all_size > max($page_sizes)) {
 			$page_sizes[$show_all_size] = 'Show All' ;
 		}
 	}

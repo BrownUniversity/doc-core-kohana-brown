@@ -26,6 +26,23 @@
 	if( !isset( $render_as )) {
 		$render_as = DOC_Helper_Table::RENDER_AS_TABLE ;
 	}
+	if( !isset( $page_sizes )) {
+		if( $render_as == DOC_Helper_Table::RENDER_AS_TABLE ) {
+			$page_sizes = array(
+				'25' => '25',
+				'50*' => '50',
+				'100' => '100',
+				'250' => '250'
+			) ;
+		} else {
+			$page_sizes = array(
+				'20*' => '20',
+				'50' => '50',
+				'100' => '100',
+				'250' => '250'
+			) ;		
+		}
+	}
 	if( !isset( $theme )) {
 		if( defined( 'JQUERY_TABLESORTER_THEME' )) {
 			$theme = JQUERY_TABLESORTER_THEME ;
@@ -70,6 +87,7 @@
 			if( $no_pager == FALSE ) {
 				$pager = View::factory('tablesorter/pager') ;
 				$pager->pager_id = $pager_id ;
+				$pager->page_sizes = $page_sizes ;
 				$pager->show_all_size = count( $data ) ;
 				print( $pager->render() ) ;
 			}
