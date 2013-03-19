@@ -42,18 +42,27 @@
         * @param  string $word Word to stem
         * @return string       Stemmed word
         */
-        public static function Stem($word)
+        public static function Stem($word, $entire_phrase = TRUE)
         {
             if (strlen($word) <= 2) {
                 return $word;
             }
-
-            $word = self::step1ab($word);
-            $word = self::step1c($word);
-            $word = self::step2($word);
-            $word = self::step3($word);
-            $word = self::step4($word);
-            $word = self::step5($word);
+			
+			$words = preg_split('/\s+/', $word) ;
+			if( $entire_phrase == TRUE && count( $words ) > 1 ) {
+				$stemmed_words = array() ;
+				foreach( $words as $w ) {
+					$stemmed_words[] = self::Stem($w) ;
+				}
+				$word = implode(' ', $stemmed_words);
+			} else {
+				$word = self::step1ab($word);
+				$word = self::step1c($word);
+				$word = self::step2($word);
+				$word = self::step3($word);
+				$word = self::step4($word);
+				$word = self::step5($word);
+			}
 
             return $word;
         }
