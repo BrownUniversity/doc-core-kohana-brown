@@ -12,14 +12,16 @@
 			'100' => '100',
 			'250' => '250'
 		) ;
-		if( isset( $show_all_size ) && !empty( $show_all_size ) && $show_all_size > max($page_sizes)) {
-			$page_sizes[$show_all_size] = 'Show All' ;
-		}
 	}
+
+	if( isset( $show_all_size ) && !empty( $show_all_size ) && $show_all_size > max($page_sizes)) {
+		$page_sizes[$show_all_size] = 'Show All' ;
+	}
+	
 ?>
 
 <div id="<?php print( $pager_id ) ; ?>" class="pager">
-	<form>
+	<form>			
 		<a class="first">|&lt;</a>
 		<a class="prev">&lt;</a>
 		<span class="pagedisplay"></span>
