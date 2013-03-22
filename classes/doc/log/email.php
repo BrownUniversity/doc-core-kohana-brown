@@ -83,7 +83,7 @@ class DOC_Log_Email extends Log_Writer {
             $recipients = $this->addresses[$message['level']];
             foreach ($recipients as $recipient) {
                 $subject = "[ {$this->environment} | {$this->application} ] -  " . self::$levels[$message['level']];
-                $body = $message['body'];
+                $body = text::auto_p($message['body']);
                 $result = DOC_Util_Mail::send($subject, $body, $recipients);
             }
         }
