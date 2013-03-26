@@ -11,12 +11,12 @@
 		var supplemental_id = 'supplemental-' + table_id ;
 
 		$('#' + table_id).on('click','.supplement-view',function(){
-			var row = $(this).closest('tr') ;
+			var row = $(this).closest('.row-equiv') ;
 			if( row.hasClass('supplemental-highlight')) {
 				$('#' + supplemental_id).hide() ;
 				row.removeClass('supplemental-highlight') ;
 			} else {
-				var supplemental_data = $(this).closest('td').data('supplement') ;
+				var supplemental_data = $(this).closest('.supplement-column').data('supplement') ;
 				var supplemental_data_value ;
 				$(this).closest('table').find('tr').removeClass('supplemental-highlight') ;
 

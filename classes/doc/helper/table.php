@@ -415,11 +415,11 @@ class DOC_Helper_Table {
 				if( count( $supplemental_data ) > 0 ) {
 					if( $this->context == self::CONTEXT_WEB ) {
 						$supplemental_data_json = json_encode( $supplemental_data ) ;
-						$row_cells[] = "<{$this->render_tags[$render_as]['cell']} class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></td>" ;
+						$row_cells[] = "<{$this->render_tags[$render_as]['cell']} class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></{$this->render_tags[$render_as]['cell']}>" ;
 
 					} else {
 						foreach( $supplemental_data as $supplement_col ) {
-							$row_cells[] = "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes( $supplement_col['td_attrs'] )).">{$supplement_col['value']}</td>" ;
+							$row_cells[] = "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes( $supplement_col['td_attrs'] )).">{$supplement_col['value']}</{$this->render_tags[$render_as]['cell']}>" ;
 						}
 					}
 				}

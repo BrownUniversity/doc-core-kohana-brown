@@ -133,7 +133,7 @@ class DOC_Util_LaTeX {
 	 * Given a LaTeX string, render a pdf file and return the file information
 	 * so that it can be further processed or downloaded.
 	 * 
-         * @throws Kohana_Exception
+     * @throws Kohana_Exception
 	 * @param string $latex_str LaTeX string ready to be rendered.
 	 * @param string $filename Desired pdf filename. Extension is not required.
 	 * @return array File description array, matching what we get from php's $_FILES
