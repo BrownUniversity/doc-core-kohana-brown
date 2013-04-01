@@ -37,13 +37,16 @@ class DOC_Util_File_Local extends DOC_Util_File {
 		if( !file_exists( $file_path )) {
 			$file_path .= self::UPLOAD_SUFFIX ;
 		}
+		if( empty( $new_filename )) {
+			$new_filename = $filename ;
+		}
 
 		if( file_exists( $file_path )) {
 			$finfo = finfo_open( FILEINFO_MIME, $this->file_config[ 'default' ][ 'mime_magic_file' ]) ;
 			$mime_type = finfo_file( $finfo, $file_path ) ;
 
 			if( $this->is_web_friendly( $mime_type )) {
-				$this->send_headers($mime_type, $filename, $file_path, self::SEND_AS_DISPLAY) ;
+				$this->send_headers($mime_type, $new_filename, $file_path, self::SEND_AS_DISPLAY) ;
 
 				set_time_limit(0) ;
 				@readfile( $file_path ) or die( "file not found" ) ;
