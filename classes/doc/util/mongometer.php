@@ -96,7 +96,7 @@ class DOC_Util_MongoMeter {
         
         $filter = array(
             '$match' => array(
-                'timestamp' => array('$gt' => $date),
+                'timestamp' => array('$lte' => $date),
             ),
         );
         
@@ -157,6 +157,11 @@ class DOC_Util_MongoMeter {
      * @param Model_Qore_User $user
      */
     public static function log_request($app, $request, $user) {
+        
+        /**
+         * Remove when resuming work
+         */
+        return NULL;
         
         self::init();
         
