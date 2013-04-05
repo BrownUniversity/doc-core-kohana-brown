@@ -20,7 +20,7 @@
 	
 ?>
 
-<div id="<?php print( $pager_id ) ; ?>" class="pager">
+<div id="<?php print( $pager_id ) ; ?>" class="pager tablesorter-pager">
 	<form>			
 		<a class="first">|&lt;</a>
 		<a class="prev">&lt;</a>
