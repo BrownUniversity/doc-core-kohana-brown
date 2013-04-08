@@ -96,7 +96,7 @@ class DOC_Util_MongoMeter {
         
         $filter = array(
             '$match' => array(
-                'timestamp' => array('$lte' => $date),
+                'timestamp' => array('$gte' => $date),
             ),
         );
         
@@ -112,6 +112,19 @@ class DOC_Util_MongoMeter {
         
         $app_stats = self::$mongo_collection_realtime->aggregate($application_ops);
         
+        $app_user_ops = array(
+            $filter,
+            array(
+                '$group' => array(
+                    '_id' => array('application' => '$application'),
+                    'count' => array('$sum' => 1),
+                    
+                ),
+            ),
+        );
+        
+        $app_user_stats = self::$mongo_collection_realtime->aggregate($app_user_ops);
+        
         $user_ops = array(
             $filter,
             array(
@@ -119,13 +132,17 @@ class DOC_Util_MongoMeter {
                     '_id' => array('name' => '$user.name'),
                     'count' => array('$sum' => 1),
                 ),
+                
             ),
+            array('$sort' => array('count' => -1)),
+            array('$limit' => 10),
         );
         
         $user_stats = self::$mongo_collection_realtime->aggregate($user_ops);
         
         return array(
             'applications' => $app_stats,
+            'app_users' => $app_user_stats,
             'users' => $user_stats,
         );
         
@@ -157,11 +174,6 @@ class DOC_Util_MongoMeter {
      * @param Model_Qore_User $user
      */
     public static function log_request($app, $request, $user) {
-        
-        /**
-         * Remove when resuming work
-         */
-        return NULL;
         
         self::init();
         
