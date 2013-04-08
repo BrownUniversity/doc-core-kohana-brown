@@ -59,30 +59,22 @@ class DOC_Util_MongoMeter {
     /**
      * Compile individual requests into a daily statistical entry
      */
-    public static function compile_daily() {
-        
-    }
+    public static function compile_daily() {}
     
     /**
      * Compile individual requests into an hourly statistics entry
      */
-    public static function compile_hourly() {
-        
-    }
+    public static function compile_hourly() {}
     
     /**
      * Get daily statistics entries
      */
-    public static function get_daily () {
-        
-    }
+    public static function get_daily() {}
     
     /**
      * Get hourly statistics entries
      */
-    public static function get_hourly() {
-        
-    }
+    public static function get_hourly() {}
     
     /**
      * Get realtime statistics entries
@@ -90,80 +82,7 @@ class DOC_Util_MongoMeter {
      * @param int $interval how many minutes of data to fetch
      * @return array
      */
-    public static function get_realtime($interval = 5) {
-        
-        $interval = 0;
-        
-        $date = new MongoDate(time() - $interval * 60);
-        
-        $filter = array(
-            '$match' => array(
-                'timestamp' => array('$lte' => $date),
-            ),
-        );
-        
-        $application_ops = array(
-            $filter,
-            array(
-                '$group' => array(
-                    '_id' => array('application' => '$application'),
-                    'count' => array('$sum' => 1),
-                ),
-            ),
-            array(
-                '$sort' => array(
-                    '_id.application' => 1,
-                ),
-            ),
-        );
-        
-        $app_stats = self::$mongo_collection_realtime->aggregate($application_ops);
-        
-        $app_user_ops = array(
-            $filter,
-            array(
-                '$group' => array(
-                    '_id' => array('application' => '$application', 'user' => '$user.name'),
-                ),
-            ),
-            array(
-                '$group' => array(
-                    '_id' => array('application' => '$_id.application'),
-                    'count' => array('$sum' => 1),
-                ),
-            ),
-            array(
-                '$sort' => array(
-                    '_id.application' => 1,
-                ),
-            ),
-        );
-        
-        $app_user_stats = self::$mongo_collection_realtime->aggregate($app_user_ops);
-        
-        $user_ops = array(
-            $filter,
-            array(
-                '$group' => array(
-                    '_id' => array('name' => '$user.name'),
-                    'count' => array('$sum' => 1),
-                ),
-                
-            ),
-            array('$sort' => array('count' => -1)),
-            array('$limit' => 10),
-        );
-        
-        $user_stats = self::$mongo_collection_realtime->aggregate($user_ops);
-        
-        return array(
-            'applications' => $app_stats,
-            'app_users' => $app_user_stats,
-            'users' => $user_stats,
-        );
-        
-        
-    }
+    public static function get_realtime($interval = 5) {}
     
     /**
      * Performance neccesary class initialization
