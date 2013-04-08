@@ -92,11 +92,13 @@ class DOC_Util_MongoMeter {
      */
     public static function get_realtime($interval = 5) {
         
+        $interval = 0;
+        
         $date = new MongoDate(time() - $interval * 60);
         
         $filter = array(
             '$match' => array(
-                'timestamp' => array('$gte' => $date),
+                'timestamp' => array('$lte' => $date),
             ),
         );
         
@@ -108,6 +110,11 @@ class DOC_Util_MongoMeter {
                     'count' => array('$sum' => 1),
                 ),
             ),
+            array(
+                '$sort' => array(
+                    '_id.application' => 1,
+                ),
+            ),
         );
         
         $app_stats = self::$mongo_collection_realtime->aggregate($application_ops);
@@ -116,9 +123,18 @@ class DOC_Util_MongoMeter {
             $filter,
             array(
                 '$group' => array(
-                    '_id' => array('application' => '$application'),
+                    '_id' => array('application' => '$application', 'user' => '$user.name'),
+                ),
+            ),
+            array(
+                '$group' => array(
+                    '_id' => array('application' => '$_id.application'),
                     'count' => array('$sum' => 1),
-                    
+                ),
+            ),
+            array(
+                '$sort' => array(
+                    '_id.application' => 1,
                 ),
             ),
         );
