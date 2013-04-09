@@ -90,10 +90,14 @@ class DOC_Util_MongoMeter {
     public static function init() {
         if ( ! self::$initialized) {
             $config = Kohana::$config->load('mongometer');
-            $host = $config->host;
-            $port = $config->port;
-            
-            self::$mongo_client = new MongoClient("mongodb://{$host}:{$port}");
+            self::$mongo_client = new MongoClient(
+                "mongodb://{$config->host}:{$config->port}", 
+                array(
+                    'username' => $config->user, 
+                    'password' => $config->password, 
+                    'db' => $config->database
+                )
+            );
             self::$mongo_database = self::$mongo_client->selectDB($config->database);
             self::$mongo_collection_realtime = self::$mongo_database->selectCollection($config->collections['realtime']);
             self::$mongo_collection_daily = self::$mongo_database->selectCollection($config->collections['daily']);
