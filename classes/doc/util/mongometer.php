@@ -19,62 +19,62 @@ class DOC_Util_MongoMeter {
      * 
      * @var boolean
      */
-    public static $initialized = FALSE;
+    private static $initialized = FALSE;
     
     /**
      * Client class for connecting to MongoDB
      * 
      * @var MongoClient
      */
-    public static $mongo_client = NULL;
+    protected static $mongo_client = NULL;
     
     /**
      * Database in which performance data are stored
      * 
      * @var MongoDB
      */
-    public static $mongo_database = NULL;
+    protected static $mongo_database = NULL;
     
     /**
      * Name of the collection that stores daily data
      * 
      * @var string
      */
-    public static $mongo_collection_daily = NULL;
+    protected static $mongo_collection_daily = NULL;
     
     /**
      * Name of the collection that stores hourly data
      * 
      * @var string
      */
-    public static $mongo_collection_hourly = NULL;
+    protected static $mongo_collection_hourly = NULL;
     
     /**
      * Name of the collection that stores realtime data
      * 
      * @var string
      */
-    public static $mongo_collection_realtime = NULL;
+    protected static $mongo_collection_realtime = NULL;
     
     /**
      * Compile individual requests into a daily statistical entry
      */
-    public static function compile_daily() {}
+    protected static function compile_daily() {}
     
     /**
      * Compile individual requests into an hourly statistics entry
      */
-    public static function compile_hourly() {}
+    protected static function compile_hourly() {}
     
     /**
      * Get daily statistics entries
      */
-    public static function get_daily() {}
+    protected static function get_daily() {}
     
     /**
      * Get hourly statistics entries
      */
-    public static function get_hourly() {}
+    protected static function get_hourly() {}
     
     /**
      * Get realtime statistics entries
@@ -82,12 +82,12 @@ class DOC_Util_MongoMeter {
      * @param int $interval how many minutes of data to fetch
      * @return array
      */
-    public static function get_realtime($interval = 5) {}
+    protected static function get_realtime($interval = 5) {}
     
     /**
      * Performance neccesary class initialization
      */
-    public static function init() {
+    protected static function init() {
         if ( ! self::$initialized) {
             $config = Kohana::$config->load('mongometer');
             self::$mongo_client = new MongoClient(

@@ -42,6 +42,19 @@ class DOC_Controller_Cron extends Controller {
     }
     
 	public function action_index() {}
+    
+    /**
+     * Class Kohana psuedo-constructor
+     */
+    public function before() {
+        
+        /**
+         * Ensure the request is actually coming from the command line
+         */
+        if ( ! Kohana::$is_cli) {
+            throw new Kohana_Exception('Attempting to execute CRON view a web-browser.');
+        }
+    }
 
 }
 

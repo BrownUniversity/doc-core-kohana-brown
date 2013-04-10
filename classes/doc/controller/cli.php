@@ -22,7 +22,14 @@ class DOC_Controller_CLI extends Controller {
 
 	public function before() {
 		parent::before() ;
-
+        
+        /**
+         * Ensure the request is actually coming from the command line
+         */
+        if ( ! Kohana::$is_cli) {
+            throw new Kohana_Exception('Attempting to execute CLI view a web-browser.');
+        }
+        
 		ob_implicit_flush(TRUE) ;
 		ob_end_flush() ;
 
