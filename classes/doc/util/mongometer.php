@@ -142,7 +142,7 @@ class DOC_Util_MongoMeter {
             'user' => $user_array,
         );
         
-        self::$mongo_collection_realtime->insert($data);
+        self::$mongo_collection_realtime->insert($data, array('w' => 0));
     }
 }
 
