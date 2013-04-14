@@ -78,12 +78,21 @@ class DOC_Log_Email extends Log_Writer {
      */
     public function write(array $messages) {
         
+        // Add supplemental information to the error text
+		$supp_info = Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
+		$error_prefix = "IP Address: " . Request::$client_ip;
+		$error_prefix .= "\nBrowser: " . $supp_info['browser'];
+		$error_prefix .= "\nVersion: " . $supp_info['version'];
+		$error_prefix .= "\nPlatform: " . $supp_info['platform'];
+		$error_prefix .= "\nMobile: " . $supp_info['mobile'];
+		$error_prefix .= "\nRobot: " . $supp_info['robot'];
+			
         foreach ($messages as $message) {
             
             $recipients = $this->addresses[$message['level']];
             foreach ($recipients as $recipient) {
                 $subject = "[ {$this->environment} | {$this->application} ] -  " . self::$levels[$message['level']];
-                $body = text::auto_p($message['body']);
+                $body = text::auto_p($error_prefix) . text::auto_p($message['body']);
                 $result = DOC_Util_Mail::send($subject, $body, $recipients);
             }
         }

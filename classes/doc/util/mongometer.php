@@ -129,6 +129,7 @@ class DOC_Util_MongoMeter {
                 'affiliation' => '',
             );
         }
+        $supp_info = Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
         $data = array(
             'timestamp' => new MongoDate(),
             'application' => $app,
@@ -140,6 +141,14 @@ class DOC_Util_MongoMeter {
                 'type' => $request->is_ajax() ? 'AJAX' : 'HTTP',
             ),
             'user' => $user_array,
+            'user_agent' => array(
+            	'ip_address' => Request::$client_ip,
+            	'browser' => $supp_info['browser'],
+            	'version' => $supp_info['version'],
+            	'robot' => $supp_info['robot'],
+            	'mobile' => $supp_info['mobile'],
+            	'platform' => $supp_info['platform'],
+            ),
         );
         
         self::$mongo_collection_realtime->insert($data, array('w' => 0));
