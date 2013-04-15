@@ -128,7 +128,7 @@ class DOC_Log_Mongo extends Log_Writer {
             		'browser' => $supp_info['browser'],
             		'version' => $supp_info['version'],
             		'robot' => $supp_info['robot'],
-            		'mobile' => $supp_info['moblie'],
+            		'mobile' => $supp_info['mobile'],
             		'platform' => $supp_info['platform'],
             	),
             );
