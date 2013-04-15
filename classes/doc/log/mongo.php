@@ -79,8 +79,8 @@ class DOC_Log_Mongo extends Log_Writer {
                 'password' => $config->password, 
                 'db' => $config->database,
                 'connect' => FALSE,
-                'connectTimeoutMS' => 100,
-                'socketTimeoutMS' => 100,
+                'connectTimeoutMS' => 300,
+                'socketTimeoutMS' => 300,
             )
         );
         self::$db = self::$client->selectDB($config->database);
@@ -93,16 +93,40 @@ class DOC_Log_Mongo extends Log_Writer {
      * @param array $limit additional criteria
      * @return MongoCursor
      */
-    public static function read($limit = 10, $filters = array()) {
+    public static function read($limit = 100, $filters = array()) {
     	
         if ( ! self::$client->connected) {
             self::$client->connect();
         }
         
     	$cursor = self::$collection->find();
-    	$cursor->sort(array('timestamp' => -1));
     	$cursor->limit($limit);
+    	$cursor->sort(array('timestamp' => -1));
     	return $cursor;
+    }
+    
+    /**
+     * Get one specific Mongo Entry
+     * 
+     * @param type $id
+     * @return array
+     */
+    public static function read_one($id) {
+        if ( ! self::$client->connected) {
+            self::$client->connect();
+        }
+        
+        try {
+            $output = self::$collection->findOne(
+                array(
+                    '_id' => $id
+                )
+            );
+        } catch (Exception $e) {
+            $output = array();
+        }
+        
+        return $output;
     }
     
     /**
