@@ -77,7 +77,10 @@ class DOC_Log_Mongo extends Log_Writer {
             array(
                 'username' => $config->user, 
                 'password' => $config->password, 
-                'db' => $config->database
+                'db' => $config->database,
+                'connect' => FALSE,
+                'connectTimeoutMS' => 100,
+                'socketTimeoutMS' => 100,
             )
         );
         self::$db = self::$client->selectDB($config->database);
@@ -92,6 +95,10 @@ class DOC_Log_Mongo extends Log_Writer {
      */
     public static function read($limit = 10, $filters = array()) {
     	
+        if ( ! self::$client->connected) {
+            self::$client->connect();
+        }
+        
     	$cursor = self::$collection->find();
     	$cursor->sort(array('timestamp' => -1));
     	$cursor->limit($limit);
@@ -127,6 +134,9 @@ class DOC_Log_Mongo extends Log_Writer {
             );
             
             try {
+                if ( ! self::$client->connected) {
+                    self::$client->connect();
+                }
             	self::$collection->insert($entry, array('w' => 0));
             } catch (Exception $e) {
             	// Log an error in a log writer?  Nah... we'll just ignore

@@ -85,6 +85,15 @@ class DOC_Util_MongoMeter {
     protected static function get_realtime($interval = 5) {}
     
     /**
+     * Ensure MongoDB client is connected
+     */
+    private static function connect() {
+        if ( ! self::$mongo_client->connected) {
+            self::$mongo_client->connect();
+        }
+    }
+    
+    /**
      * Performance neccesary class initialization
      */
     protected static function init() {
@@ -95,7 +104,10 @@ class DOC_Util_MongoMeter {
                 array(
                     'username' => $config->user, 
                     'password' => $config->password, 
-                    'db' => $config->database
+                    'db' => $config->database,
+                    'connect' => FALSE,
+                    'connectTimeoutMS' => 100,
+                    'socketTimeoutMS' => 100,
                 )
             );
             self::$mongo_database = self::$mongo_client->selectDB($config->database);
@@ -103,6 +115,8 @@ class DOC_Util_MongoMeter {
             self::$mongo_collection_daily = self::$mongo_database->selectCollection($config->collections['daily']);
             self::$mongo_collection_hourly = self::$mongo_database->selectCollection($config->collections['hourly']);
         }
+        
+        self::connect();
     }
     
     /**
@@ -115,7 +129,7 @@ class DOC_Util_MongoMeter {
     public static function log_request($app, $request, $user) {
         
         self::init();
-        
+      
         if (($user instanceof Model_Qore_User) && ($user->loaded())) {
             $user_array = array(
                 'id' => $user->id,
