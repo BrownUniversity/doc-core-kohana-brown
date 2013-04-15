@@ -126,7 +126,11 @@ class DOC_Log_Mongo extends Log_Writer {
             	),
             );
             
-            self::$collection->insert($entry, array('w' => 0));
+            try {
+            	self::$collection->insert($entry, array('w' => 0));
+            } catch (Exception $e) {
+            	// Log an error in a log writer?  Nah... we'll just ignore
+            }
         }
     }
     
