@@ -100,9 +100,10 @@ class DOC_Log_Mongo extends Log_Writer {
         }
         
     	$cursor = self::$collection->find();
-    	$cursor->limit($limit);
     	$cursor->sort(array('timestamp' => -1));
-    	return $cursor;
+    	$cursor->limit($limit);
+    	
+        return $cursor;
     }
     
     /**
