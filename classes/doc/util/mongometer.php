@@ -114,6 +114,7 @@ class DOC_Util_MongoMeter {
             self::$mongo_collection_realtime = self::$mongo_database->selectCollection($config->collections['realtime']);
             self::$mongo_collection_daily = self::$mongo_database->selectCollection($config->collections['daily']);
             self::$mongo_collection_hourly = self::$mongo_database->selectCollection($config->collections['hourly']);
+            self::$initialized = TRUE;
         }
         
         self::connect();
