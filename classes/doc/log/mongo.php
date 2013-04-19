@@ -79,8 +79,8 @@ class DOC_Log_Mongo extends Log_Writer {
                 'password' => $config->password, 
                 'db' => $config->database,
                 'connect' => FALSE,
-                'connectTimeoutMS' => 300,
-                'socketTimeoutMS' => 300,
+                'connectTimeoutMS' => $config->timeout,
+                'socketTimeoutMS' => $config->timeout,
             )
         );
         self::$db = self::$client->selectDB($config->database);
