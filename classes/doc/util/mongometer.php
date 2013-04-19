@@ -106,8 +106,8 @@ class DOC_Util_MongoMeter {
                     'password' => $config->password, 
                     'db' => $config->database,
                     'connect' => FALSE,
-                    'connectTimeoutMS' => 300,
-                    'socketTimeoutMS' => 300,
+                    'connectTimeoutMS' => $config->timeout,
+                    'socketTimeoutMS' => $config->timeout,
                 )
             );
             self::$mongo_database = self::$mongo_client->selectDB($config->database);
