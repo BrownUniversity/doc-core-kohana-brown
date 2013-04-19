@@ -124,25 +124,12 @@ class DOC_Util_MongoMeter {
      * 
      * @param string $app application abbreviation
      * @param Kohana_Request $request
-     * @param Model_Qore_User $user
+     * @param array $supplemental_data
      */
-    public static function log_request($app, $request, $user) {
+    public static function log_request($app, $request, $supplemental_data = array()) {
         
         self::init();
       
-        if (($user instanceof Model_Qore_User) && ($user->loaded())) {
-            $user_array = array(
-                'id' => $user->id,
-                'name' => $user->name(FALSE),
-                'affiliation' => $user->primary_affiliation,
-            );
-        } else {
-            $user_array = array(
-                'id' => '',
-                'name' => '',
-                'affiliation' => '',
-            );
-        }
         $supp_info = Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
         $data = array(
             'timestamp' => new MongoDate(),
@@ -154,7 +141,6 @@ class DOC_Util_MongoMeter {
                 'method' => $request->method(),
                 'type' => $request->is_ajax() ? 'AJAX' : 'HTTP',
             ),
-            'user' => $user_array,
             'user_agent' => array(
             	'ip_address' => Request::$client_ip,
             	'browser' => $supp_info['browser'],
@@ -165,7 +151,19 @@ class DOC_Util_MongoMeter {
             ),
         );
         
-        self::$mongo_collection_realtime->insert($data, array('w' => 0));
+        /**
+         * Add supplemental data to document
+         */
+        foreach ($supplemental_data as $key => $value) {
+            $data[$key] = $value;
+        }
+        
+        try {
+            self::$mongo_collection_realtime->insert($data, array('w' => 0));
+        } catch (Exception $e) {
+            $connected = (self::$mongo_client->connected) ? 'is connected' : 'is not connected';
+            Kohana::$log->add(Log::ERROR, 'MongoMetrics failed:' . $e->getMessage() . '<hr />Client ' . $connected);
+        }
     }
 }
 
