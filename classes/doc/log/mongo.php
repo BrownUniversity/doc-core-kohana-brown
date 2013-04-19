@@ -93,14 +93,14 @@ class DOC_Log_Mongo extends Log_Writer {
      * @param array $limit additional criteria
      * @return MongoCursor
      */
-    public static function read($limit = 100, $filters = array()) {
+    public static function read($limit = 50, $filters = array('level' => 'ERROR')) {
     	
         if ( ! self::$client->connected) {
             self::$client->connect();
         }
         
-    	$cursor = self::$collection->find();
-    	$cursor->sort(array('timestamp' => -1));
+        $cursor = self::$collection->find($filters);
+        $cursor->sort(array('timestamp' => -1));
     	$cursor->limit($limit);
     	
         return $cursor;
