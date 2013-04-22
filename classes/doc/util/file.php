@@ -326,5 +326,23 @@ abstract class DOC_Util_File {
 
 		return in_array($mime_type, $friendly_mime_types) ;
 	}
+	
+	/**
+	 * Check the given MIME type string to see if it's a valid image file.
+	 *
+	 * @param string $mime_type
+	 * @return boolean
+	 */
+	public function is_image( $mime_type ) {
+		$valid_mime_types = array(
+			'image/jpeg',
+			'video/jpeg',
+			'image/gif',
+			'image/png',
+			'image/tiff'
+		) ;
+
+		return in_array($mime_type, $valid_mime_types) ;
+	}
 }
 
