@@ -67,7 +67,14 @@ class DOC_Util_Ldap
     	'alt_course_assignments' => 'brownalternatecourseassignments',
     	'alt_course_description' => 'brownalternatecoursedescription',
     );
-
+    
+    /**
+     * Attribute list used when retrieving full course metadata
+     */
+    protected $course_meeting_attributes = array(
+        'section_period' => 'brownsectionperiod',
+    );
+            
     /**
      * Roles by which a person can be associated with a course
      */
@@ -644,6 +651,30 @@ class DOC_Util_Ldap
 			
     }
 
+    /**
+     * Get meeting periods for a given course
+     * 
+     * @param string $coursespec
+     * @return array 
+     */
+    public function get_course_meeting_periods($coursespec) {
+        $base = "ou=Courses,dc=brown,dc=edu";
+        $filter = "(&(brownCourseRDN={$coursespec})(objectClass=brownSection))";
+        
+        //var_dump($attributes);
+        try {
+            $find_result = $this->run_search($base, $filter, array_values($this->course_meeting_attributes));
+            var_dump($find_result);
+        } catch (Exception $e) {
+            return array(
+                'status' => array(
+                    'ok' => false,
+                    'message' => $e->getMessage(),
+                )
+            );
+        }
+    }
+    
     /**
      * Normalize enrollment data by combining non-S** sections so that there is
      * only one listing for the course.
