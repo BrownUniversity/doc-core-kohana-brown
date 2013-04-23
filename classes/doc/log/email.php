@@ -88,13 +88,10 @@ class DOC_Log_Email extends Log_Writer {
 		$error_prefix .= "\nRobot: " . $supp_info['robot'];
 			
         foreach ($messages as $message) {
-            
-            $recipients = $this->addresses[$message['level']];
-            foreach ($recipients as $recipient) {
-                $subject = "[ {$this->environment} | {$this->application} ] -  " . self::$levels[$message['level']];
-                $body = text::auto_p($error_prefix) . text::auto_p($message['body']);
-                $result = DOC_Util_Mail::send($subject, $body, $recipients);
-            }
+            $recipients = $this->addresses[ self::$levels[ $message[ 'level' ]]];
+			$subject = "[ {$this->environment} | {$this->application} ] -  " . self::$levels[$message['level']];
+			$body = text::auto_p($error_prefix) . text::auto_p($message['body']);
+			$result = DOC_Util_Mail::send($subject, $body, $recipients, NULL, $this->from);
         }
     }
     
