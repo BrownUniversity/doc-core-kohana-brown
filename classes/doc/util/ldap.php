@@ -74,7 +74,32 @@ class DOC_Util_Ldap
     protected $course_meeting_attributes = array(
         'section_period' => 'brownsectionperiod',
     );
-            
+    
+    /**
+     * Attribute list used when retrieving meeting period information
+     * 
+     * @var array
+     */
+    protected $meeting_period_attributes = array(
+        'period_start_date' => 'brownsectionperiodstartdate',
+        'period_end_date'   => 'brownsectionperiodenddate',
+        'frequency'         => 'brownsectionfrequency',
+    );
+    
+    /**
+     * Attribute list used when retrieving meeting period frequency info
+     * 
+     * @var array
+     */
+    protected $meeting_frequency_attributes = array(
+        'hour_code'            => 'brownsectionhourcode',
+        'building_code'        => 'brownsectionbuildingcode',
+        'building_description' => 'brownsectionbuildingdescription',
+        'room'                 => 'brownsectionroom',
+        'start_time'           => 'brownsectionstarttime',
+        'end_time'             => 'brownsectionendtime',  
+    );
+    
     /**
      * Roles by which a person can be associated with a course
      */
@@ -661,10 +686,8 @@ class DOC_Util_Ldap
         $base = "ou=Courses,dc=brown,dc=edu";
         $filter = "(&(brownCourseRDN={$coursespec})(objectClass=brownSection))";
         
-        //var_dump($attributes);
         try {
             $find_result = $this->run_search($base, $filter, array_values($this->course_meeting_attributes));
-            var_dump($find_result);
         } catch (Exception $e) {
             return array(
                 'status' => array(
@@ -672,6 +695,77 @@ class DOC_Util_Ldap
                     'message' => $e->getMessage(),
                 )
             );
+        }
+        
+        if ( $find_result['count'] > 0 ) {
+            $data = $this->parse_result_array($this->course_meeting_attributes, $find_result[0]);
+            $output = array();
+            if ( ! is_array($data['section_period'])) {
+                $data['section_period'] = array($data['section_period']);
+            }
+            foreach ($data['section_period'] as $period) {
+                $output[] = $this->get_meeting_period($period);
+            }
+            return $output;
+        } else {
+            return array(
+                'status' => array(
+                    'ok' => false,
+                    'message' => 'No meeting periods defined.',
+                )
+            );
+        }
+    }
+    
+    /**
+     * Get more detailed information for a meeting period
+     * 
+     * @param string $periods
+     * @return array
+     * @throws Exception
+     */
+    private function get_meeting_period($period) {
+        $base = "ou=Courses,dc=brown,dc=edu";
+        $filter = "(&({$period})(objectClass=brownSectionPeriod))";
+        
+        try {
+            $find_result = $this->run_search($base, $filter, array_values($this->meeting_period_attributes));
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        if ( $find_result['count'] > 0) {
+            $result = $this->parse_result_array($this->meeting_period_attributes, $find_result[0]);
+            $result['frequency'] = $this->get_meeting_frequency($result['frequency']);
+            return $result;
+        } else {
+            throw new Exception('Invalid LDAP Course meeting period.');
+        }
+    }
+    
+    /**
+     * Get information about each specific meeting definition
+     * 
+     * @param string $frequency
+     * @return array
+     * @throws Exception
+     */
+    private function get_meeting_frequency($frequency) {
+        $base = "ou=Courses,dc=brown,dc=edu";
+        $filter = "(&({$frequency})(objectClass=brownSectionFrequency))";
+        
+        try {
+            $find_result = $this->run_search($base, $filter, array_values($this->meeting_frequency_attributes));
+        } catch (Exception $e) {
+            
+        }
+        
+        if ( $find_result['count'] > 0) {
+            $find_result = $this->run_search($base, $filter, array_values($this->meeting_frequency_attributes));
+            $result = $this->parse_result_array($this->meeting_frequency_attributes, $find_result[0]);
+            return $result;
+        } else {
+            throw new Exception('Invalid LDAP Course meeting frequency.');
         }
     }
     
