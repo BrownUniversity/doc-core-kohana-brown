@@ -46,6 +46,7 @@ class DOC_Helper_Table {
 	const RENDER_AS_GRID = 'grid' ;
 
 	public function __construct( $data, $column_specs, $table_attrs = array(), $context = self::CONTEXT_WEB) {
+
 		$this->data = $data ;
 		$this->column_specs = $column_specs ;
 		$this->table_attrs = $table_attrs ;
@@ -63,7 +64,6 @@ class DOC_Helper_Table {
 				'cell' => 'td'
 			)
 		) ;
-
 	}
 
 	/**
@@ -72,19 +72,24 @@ class DOC_Helper_Table {
 	 * @return string
 	 */
 	public function render($render_as = self::RENDER_AS_TABLE) {
-		$_output = array() ;
-		$supplemental_column_headers = array() ;
+		
+		if( Kohana::$profiling === TRUE ) {
+			$bm = Profiler::start(__CLASS__,__METHOD__) ;
+		}
+		
+		$_output = '' ;
+		$supplemental_column_headers = '' ;
 
 		if( count( $this->data ) > 0 ) {
-			$_output[] = "<{$this->render_tags[$render_as]['container']}" . HTML::attributes($this->table_attrs) . ">" ;
+			$_output .= "<{$this->render_tags[$render_as]['container']}" . HTML::attributes($this->table_attrs) . ">" ;
 
 			/*
 			 * Table Header, not necessary for grid render
 			 */
 
 			if( $render_as == self::RENDER_AS_TABLE ) {
-				$_output[] = "<thead>" ;
-				$_output[] = "<tr>" ;
+				$_output .= "<thead>" ;
+				$_output .= "<tr>" ;
 
 				foreach( $this->column_specs as $col_spec ) {
 
@@ -122,13 +127,13 @@ class DOC_Helper_Table {
 								$header_attributes[ 'class' ] = '{sorter: false} checkbox-column' ;
 							}
 
-							$_output[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+							$_output .= "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
 						} else {
 							if( $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
 								if( $this->context == self::CONTEXT_SPREADSHEET ) {
-									$supplemental_column_headers[] = "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+									$supplemental_column_headers .= "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
 								} else {
-									$supplemental_column_headers = array("<th".HTML::attributes( array('class' => '{sorter: false}')).">&nbsp;</th>") ;
+									$supplemental_column_headers = "<th".HTML::attributes( array('class' => '{sorter: false}')).">&nbsp;</th>" ;
 								}
 							}
 						}
@@ -136,14 +141,10 @@ class DOC_Helper_Table {
 				}
 
 				// output supplemental headers, if they exist
+				$_output .= $supplemental_column_headers ;
 
-				if( count( $supplemental_column_headers ) > 0 ) {
-					$_output[] = implode("\n", $supplemental_column_headers) ;
-				}
-
-
-				$_output[] = "</tr>" ;
-				$_output[] = "</thead>" ;
+				$_output .= "</tr>" ;
+				$_output .= "</thead>" ;
 			}
 
 
@@ -153,11 +154,12 @@ class DOC_Helper_Table {
 			 */
 
 			if( $render_as == self::RENDER_AS_TABLE ) {
-				$_output[] = "<tbody>" ;
+				$_output .= "<tbody>" ;
 			}
 
 
 			foreach( $this->data as $object ) {
+				set_time_limit(30) ;
 				$supplemental_data = array() ;
 				$row_data = array() ;
 
@@ -166,7 +168,7 @@ class DOC_Helper_Table {
 				// At the end of the set of rows, we'll then add either a single column (web) with an icon and class to hook into jquery
 				// or we'll create a new set of columns (spreadsheet) with the data we've collected.
 
-				$row_cells = array() ;
+				$row_cells = '' ;
 				foreach( $this->column_specs as $col_spec ) {
 					if( (!isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context)  && (!isset( $col_spec[ 'render_type' ]) || $col_spec[ 'render_type' ] == $render_as)) {
 						$td_attrs = array() ;
@@ -407,7 +409,7 @@ class DOC_Helper_Table {
 							$row_data[ $prop ] = $value ;
 
 						} else {
-							$row_cells[] = "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes($td_attrs) ).">{$value}</{$this->render_tags[$render_as]['cell']}>" ;
+							$row_cells .= "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes($td_attrs) ).">{$value}</{$this->render_tags[$render_as]['cell']}>" ;
 						}
 					}
 				}
@@ -415,11 +417,11 @@ class DOC_Helper_Table {
 				if( count( $supplemental_data ) > 0 ) {
 					if( $this->context == self::CONTEXT_WEB ) {
 						$supplemental_data_json = json_encode( $supplemental_data ) ;
-						$row_cells[] = "<{$this->render_tags[$render_as]['cell']} class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></{$this->render_tags[$render_as]['cell']}>" ;
+						$row_cells .= "<{$this->render_tags[$render_as]['cell']} class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></{$this->render_tags[$render_as]['cell']}>" ;
 
 					} else {
 						foreach( $supplemental_data as $supplement_col ) {
-							$row_cells[] = "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes( $supplement_col['td_attrs'] )).">{$supplement_col['value']}</{$this->render_tags[$render_as]['cell']}>" ;
+							$row_cells .= "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes( $supplement_col['td_attrs'] )).">{$supplement_col['value']}</{$this->render_tags[$render_as]['cell']}>" ;
 						}
 					}
 				}
@@ -427,29 +429,30 @@ class DOC_Helper_Table {
 				if( count( $row_data ) > 0 && $this->context == self::CONTEXT_WEB ) {
 
 					$row_data_json = htmlentities( DOC_Helper_JSON::get_json($row_data), ENT_QUOTES ) ;
-					$_output[] = "<{$this->render_tags[$render_as]['row']} class='row-equiv' data-row-data='{$row_data_json}'>" ;
+					$_output .= "<{$this->render_tags[$render_as]['row']} class='row-equiv' data-row-data='{$row_data_json}'>" ;
 				} else {
-					$_output[] = "<{$this->render_tags[$render_as]['row']} class='row-equiv'>" ;
+					$_output .= "<{$this->render_tags[$render_as]['row']} class='row-equiv'>" ;
 				}
 
-				$_output[] = implode('',$row_cells) ;
-				$_output[] = "</{$this->render_tags[$render_as]['row']}>" ;
+				$_output .= $row_cells ;
+				$_output .= "</{$this->render_tags[$render_as]['row']}>" ;
+
 			}
 
 			if( $render_as == self::RENDER_AS_TABLE ) {
-				$_output[] = "</tbody>" ;
+				$_output .= "</tbody>" ;
 			}
 
 
-			$_output[] = "</".$this->render_tags[$render_as]['container'].">" ;
+			$_output .= "</".$this->render_tags[$render_as]['container'].">" ;
 
 		} else {
-			$_output[] = '<div class="no-data">Nothing to display</div>' ;
+			$_output .= '<div class="no-data">Nothing to display</div>' ;
 		}
 
+		if( isset( $bm )) Profiler::stop ($bm) ;
 
-
-		return trim(implode("", $_output)) ;
+		return trim( $_output) ;
 	}
 
 	/**
@@ -524,6 +527,10 @@ class DOC_Helper_Table {
 	 * @return mixed
 	 */
 	protected function parse_string( $object, $parseable_string, $return_as_string = TRUE ) {
+		if( Kohana::$profiling === TRUE ) {
+			$bm = Profiler::start(__CLASS__,__METHOD__) ;
+		}
+		
 		$_output = $parseable_string ;
 		preg_match_all('/\{(.+?)\}/', $parseable_string, $matches) ;
 
@@ -537,6 +544,8 @@ class DOC_Helper_Table {
 				$_output = $this->generate_content($object, $match) ;
 			}
 		}
+
+		if( isset( $bm )) Profiler::stop($bm);
 
 		return $_output ;
 
@@ -663,27 +672,42 @@ class DOC_Helper_Table {
 	 * @return string
 	 */
 	protected function generate_content( $data_root, $key ) {
-		$key_array = explode('->', $key) ;
 
-		if( $key == 'ROOT') {
-			return $data_root ;
+		if( Kohana::$profiling === TRUE ) {
+			$bm = Profiler::start(__CLASS__,__METHOD__) ;
+		}
+// 		$key_array = explode('->', $key) ;
+// 
+// 		if( $key == 'ROOT') {
+// 			if( isset( $bm )) Profiler::stop($bm);
+// 			return $data_root ;
+// 		} else {
+// 			if( property_exists($data_root, $key) || $data_root->supports_property( $key_array[0] )) {
+// 				$_output = @$data_root->{$key_array[0]};
+// 			} elseif (method_exists($data_root, $key_array[0])) {
+// 				$_output = @$data_root->{$key_array[0]}() ;
+// 			} else {
+// 				$_output = 'ERR: unknown data source' ;
+// 			}
+// 
+// 			if( count( $key_array ) > 1 ) {
+// 				$key = preg_replace("/^{$key_array[0]}->/", '', $key) ;
+// 				if( isset( $bm )) Profiler::stop($bm);
+// 				return $this->generate_content( $_output, $key ) ;
+// 			}
+// 		}
+
+
+		if( $key == 'ROOT' ) {
+			$_output = $data_root ;	
 		} else {
-			if( property_exists($data_root, $key) || $data_root->supports_property( $key_array[0] )) {
-				$_output = @$data_root->{$key_array[0]};
-			} elseif (method_exists($data_root, $key_array[0])) {
-				$_output = @$data_root->{$key_array[0]}() ;
-			} else {
-				$_output = 'ERR: unknown data source' ;
-			}
-
-			if( count( $key_array ) > 1 ) {
-				$key = preg_replace("/^{$key_array[0]}->/", '', $key) ;
-				return $this->generate_content( $_output, $key ) ;
-			}
+			$_output = eval("return \$data_root->{$key};");
 		}
 
 
 
+
+		if( isset( $bm )) Profiler::stop($bm);
 
 		return $_output ;
 
