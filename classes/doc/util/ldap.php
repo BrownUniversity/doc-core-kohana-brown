@@ -736,7 +736,16 @@ class DOC_Util_Ldap
         
         if ( $find_result['count'] > 0) {
             $result = $this->parse_result_array($this->meeting_period_attributes, $find_result[0]);
-            $result['frequency'] = $this->get_meeting_frequency($result['frequency']);
+            
+            $frequencies = $result['frequency'];
+            if ( ! is_array($frequencies)) {
+                $frequencies = array($frequencies);
+            } 
+            
+            $result['frequency'] = array();
+            foreach ($frequencies as $frequency) {
+                $result['frequency'][] = $this->get_meeting_frequency($frequency);
+            }
             return $result;
         } else {
             throw new Exception('Invalid LDAP Course meeting period.');
@@ -757,7 +766,7 @@ class DOC_Util_Ldap
         try {
             $find_result = $this->run_search($base, $filter, array_values($this->meeting_frequency_attributes));
         } catch (Exception $e) {
-            
+            var_dump($e); die();
         }
         
         if ( $find_result['count'] > 0) {
