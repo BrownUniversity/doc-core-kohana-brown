@@ -79,6 +79,7 @@ class DOC_Util_Spreadsheet {
 			$trs = $tbody->item(0)->getElementsByTagName('tr') ;
 			if( $trs->length > 0 ) {
 				foreach( $trs as $tr ) {
+					set_time_limit(10);
 					$row_index++ ;
 					$tds = $tr->getElementsByTagName('td') ;
 					for( $i = 0; $i < $tds->length; $i++ ) {
