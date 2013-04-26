@@ -216,6 +216,46 @@ class DOC_Util_Ldap
     }
 
     /**
+     * Get a list of all courses in LDAP for a given term
+     * 
+     * @param string $term
+     * @param array subjects
+     * @return array
+     */
+    public function get_term_courses($term, $subjects = array()) {
+        $base = "ou=Courses,dc=brown,dc=edu";
+        $courseRDN = "term:" . $term;
+        $filter = "(&(brownCourseRDN={$courseRDN})(objectClass=brownCourseSelector))";
+        $attribute = "browncourseselectionlist";
+        
+        try {
+            $search_result = $this->run_search($base, $filter, array($attribute));
+        } catch (Exception $e) {
+            return array();
+        }
+        
+        if (isset($search_result[0]["{$attribute}"])) {
+            unset($search_result[0]["{$attribute}"]['count']);
+            
+            
+            if (count($subjects) > 0) {
+                $output = array();
+                foreach ($search_result[0]["{$attribute}"] as $spec) {
+                    $parts = explode(':', $spec);
+                    if (array_search($parts[0], $subjects) !== FALSE) {
+                        $output[] = $spec;
+                    }
+                }
+            } else {
+                $output = $search_result[0]["{$attribute}"];
+            }
+            return $output;
+        } else {
+            return array();
+        }
+    }
+    
+    /**
      * Search LDAP for people by name.
      *
      * $paffil can be an array of strings or a comma-delimited list.
@@ -586,18 +626,29 @@ class DOC_Util_Ldap
      *
      * @author Christopher Keith <Christopher_Keith@brown.edu>
      * @param string course specification (DEPT:NUMBER:TERM:SECTION)
+     * @param array $schedule_types include specific schedule types
      * @return array
      */
-    public function find_matching_courses($coursespec) {
+    public function find_matching_courses($coursespec, array $schedule_types = array()) {
 
     	// Check for well formed course specification
     	// @todo: implement regular expression matching
 
     	// Setup find
     	$base = "ou=Courses,dc=brown,dc=edu";
-    	$filter = "(&(brownCourseRDN={$coursespec})(objectClass=brownSection))";
+        
+        $schedulefilter = NULL;
+        if (count($schedule_types > 0)) {
+            $schedulefilter = '(|';
+            foreach ($schedule_types as $st) {
+                $schedulefilter .= "(brownsectionscheduletype={$st})";
+            }
+            $schedulefilter .= ')';
+        }
+        
+    	$filter = "(&(brownCourseRDN={$coursespec})(objectClass=brownSection){$schedulefilter})";
     	$attribute = "browncourserdn";
-
+        
     	// Execute find
     	try {
     		$find_result = $this->run_search($base, $filter, array($attribute));
