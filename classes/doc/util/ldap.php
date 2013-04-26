@@ -219,10 +219,11 @@ class DOC_Util_Ldap
      * Get a list of all courses in LDAP for a given term
      * 
      * @param string $term
-     * @param array subjects
+     * @param array $subjects
      * @return array
      */
     public function get_term_courses($term, $subjects = array()) {
+        
         $base = "ou=Courses,dc=brown,dc=edu";
         $courseRDN = "term:" . $term;
         $filter = "(&(brownCourseRDN={$courseRDN})(objectClass=brownCourseSelector))";
@@ -638,7 +639,7 @@ class DOC_Util_Ldap
     	$base = "ou=Courses,dc=brown,dc=edu";
         
         $schedulefilter = NULL;
-        if (count($schedule_types > 0)) {
+        if (count($schedule_types) > 0) {
             $schedulefilter = '(|';
             foreach ($schedule_types as $st) {
                 $schedulefilter .= "(brownsectionscheduletype={$st})";
