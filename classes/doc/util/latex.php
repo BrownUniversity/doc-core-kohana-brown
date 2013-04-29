@@ -95,6 +95,21 @@ class DOC_Util_LaTeX {
 		
 		$_output = str_replace( array('<','>'), array('{\textless}','{\textgreater}'), $_output ) ;
 		
+		// Whitespace inside text property commands such as \textbf{} causes barfage, 
+		// so replace standard paragraph breaks with alternative line ends.
+		preg_match_all('/\{(.+?)\}/s', $_output, $matches) ;
+		if( count( $matches ) > 0 ) {
+			if( count( $matches[1] ) > 0 ) {
+				foreach( $matches[1] as $match ) {
+					$_output = str_replace("\n\n", "\n\\\\\n", $_output) ;
+				}
+			}
+		}
+		
+		// Having a line break at the very end can cause problems if it's part 
+		// of a \begin{x}\end{x} block, so we'll get rid of those.
+		$_output = preg_replace('/\n\\\\\\\\\s+$/','',$_output) ;
+		
 		return $_output ;
 	}
 	
@@ -142,6 +157,9 @@ class DOC_Util_LaTeX {
 		if( $run_cleanup === TRUE ) {
 			self::cleanup(TRUE) ;
 		}
+		
+//		print("<pre>{$latex_str}</pre>") ;
+//		die() ;
 		
 		$latex_config = Kohana::$config->load('latex') ;
 		
