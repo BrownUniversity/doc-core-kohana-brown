@@ -208,7 +208,7 @@ class DOC_Util_Filter {
 								$replacement_1 = '2999-12-31 23:59:59' ; // Y3K bug, FTW!
 							} else {
 								if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $replacement_1) == 0 ) {
-									$replacement_1 = Date::formatted_time( $replacement_1 . ' 00:00:00' ) ;
+									$replacement_1 = Date::formatted_time( $replacement_1 . ' 23:59:59' ) ;
 								}
 							}
 
