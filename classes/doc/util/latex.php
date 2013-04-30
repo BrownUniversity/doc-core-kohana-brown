@@ -171,21 +171,20 @@ class DOC_Util_LaTeX {
 		$latex_file = "{$latex_config->tmp_path}{$safe_filename}.tex" ;
 		$success = file_put_contents($latex_file,$latex_str) ;
 
-                if ($success === FALSE) {
-                    throw new Kohana_Exception('Failed generating temporary TeX file.');
-                }
+		if ($success === FALSE) {
+			throw new Kohana_Exception('Failed generating temporary TeX file.');
+		}
                 
 		// render the pdf and return the appropriate file info. 
 		$pdf_file = "{$latex_config->tmp_path}{$safe_filename}.pdf" ;
 		$command = "{$latex_config->bin_path}pdflatex -jobname {$safe_filename} -output-directory {$latex_config->tmp_path} {$latex_file}" ;
 		$result = exec( $command, $full_result ) ;
 		
-                $_output = DOC_Util_File::get_file_specs( $pdf_file, $filename ) ;
-		
-                if (count($_output) == 0) {
-                    Kohana::$log->add(Log::DEBUG, $result);
-                    throw new Kohana_Exception('TeX to PDF conversion failed');
-                }
+		$_output = DOC_Util_File::get_file_specs( $pdf_file, $filename ) ;
+
+		if (count($_output) == 0) {
+			throw new Kohana_Exception('TeX to PDF conversion failed');
+		}
 		return $_output ;
 		
 	}
