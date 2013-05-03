@@ -99,14 +99,14 @@ abstract class DOC_Util_Banner_Import {
         }
 
         $data = fread($fp, filesize($local));
+        fclose($fp);
+        
         if ($data === FALSE) {
             $msg = "Cannot read [{$local}] file in Banner data exchange.";
             Kohana::$log->add(Log::ERROR, $msg);
             throw new Kohana_Exception($msg);
         }
-        $data = preg_replace("#\n#", '', $data);
-        fclose($fp);
-		
+        
         if( $delete_downloaded_file === TRUE ) {
             unlink($local);
         }

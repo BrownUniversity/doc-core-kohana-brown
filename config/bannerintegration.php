@@ -40,7 +40,7 @@ return array(
         ),
         'students'		=> array(
                 'filename' => 'ask_student.dat',
-                'regex' => '#\{\s*"Brown_ID"(.*?)"Cohorts"\s*:\s*\[(.*?)\]\s*,\s*"Attributes"\s*:\s*\[(.*?)\]\s*,\s*"Advisors"\s*:\s*\[(.*?)\]\s*,\s*"Programs"\s*:\s*\[(.*?)\]\s*,\s*"Transfer_Work"\s*:\s*\[(.*?)\]\s*,\s*"Courses"\s*:\s*\[(.*?)\]\s*\}#'
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s'
         ),
     ),
     'exports' => array(
