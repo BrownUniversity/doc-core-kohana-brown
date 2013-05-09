@@ -40,6 +40,49 @@ class DOC_Util_Spreadsheet {
         return array_slice($values, 2, count($values) -3);
     }
 
+    /**
+     * Read an arbitrary excel 2007 document into memory
+     * 
+     * @param string $path
+     * @param int $ignore_rows
+     * @param int $column_count
+     * @return array
+     */
+    public static function read_spreadsheet( $path, $ignore_rows = 0, $column_count = NULL ) {
+        $reader = new PHPExcel_Reader_Excel2007();
+        $excel = $reader->load($path);
+        
+        $excel->setActiveSheetIndex(0);
+        $sheet = $excel->getActiveSheet();
+        
+        $values = array();
+        
+        $row_count = 0;
+        
+        foreach ($sheet->getRowIterator() as $row) {
+            set_time_limit(0);
+            $row_count++;
+            $inner = array();
+            $cells = $row->getCellIterator();
+            $cells->setIterateOnlyExistingCells(FALSE);
+            $cell_count = 0;
+            foreach($cells as $cell) {
+                $cell_count++;
+                if (($column_count != NULL) && ($cell_count > $column_count)) {
+                    continue;
+                } else {
+                    $inner[] = $cell->getValue();
+                }
+            }
+            
+            if ($row_count > $ignore_rows) {
+                $values[] = $inner;
+            }
+        }
+        
+        return $values;
+    }
+    
 	/**
 	 * Given a set of data, returns a spreadsheet object. Note that this makes
 	 * use of the Table class, and uses the same type of formatting data that we
