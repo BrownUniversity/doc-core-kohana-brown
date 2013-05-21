@@ -7,7 +7,7 @@
  * @author jorrill
  */
 class DOC_Util_Image {
-	public static function scale_framed( $src_image_path, $target_w, $target_h ) {
+	public static function scale_framed( $src_image_path, $target_w, $target_h, $allow_upscale = FALSE ) {
 		list($src_w, $src_h, $src_type, $attr) = getimagesize($src_image_path) ;
 
 		$src_image = NULL ;
@@ -29,12 +29,15 @@ class DOC_Util_Image {
 		$dst_w = $src_w ;
 		$dst_h = $src_h ;
 
-		if( $src_w > $target_w || $src_h > $target_h ) {
+		// if source dimensions are larger than target dimensions, scale down
+		if( ($src_w > $target_w || $src_h > $target_h) || $allow_upscale === TRUE ) {
 			$scale = min( $target_w/$src_w, $target_h/$src_h ) ;
 
 			$dst_w = $dst_w * $scale ;
-			$dst_h = $dst_h * $scale ;
-		}
+			$dst_h = $dst_h * $scale ;			
+		} 
+		
+		
 		$dst_x = ($target_w - $dst_w)/2 ;
 		$dst_y = ($target_h - $dst_h)/2 ;
 
