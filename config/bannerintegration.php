@@ -15,9 +15,14 @@ defined('FTPS_PATH') or define('FTPS_PATH', '/path/to/files/');
 defined('BANNERINTEGRATION_APIS_IAR_SECRET') or define('BANNERINTEGRATION_APIS_IAR_SECRET', '***REMOVED***');
 defined('BANNERINTEGRATION_APIS_IAR_URL') or define('BANNERINTEGRATION_APIS_IAR_URL', '***REMOVED***');
 //defined('BANNERINTEGRATION_APIS_IAR_URL') or define('BANNERINTEGRATION_APIS_IAR_URL', '***REMOVED***');
+
 defined('BANNERINTEGRATION_APIS_PHOTO_SECRET') or define('BANNERINTEGRATION_APIS_PHOTO_SECRET', '***REMOVED***');
 defined('BANNERINTEGRATION_APIS_PHOTO_URL') or define('BANNERINTEGRATION_APIS_PHOTO_URL', '***REMOVED***');
 // defined('BANNERINTEGRATION_APIS_PHOTO_URL') or define('BANNERINTEGRATION_APIS_PHOTO_URL', '***REMOVED***');
+
+defined('BANNERINTEGRATION_APIS_CART_SECRET') or define('BANNERINTEGRATION_APIS_CART_SECRET', '***REMOVED***') ;
+defined('BANNERINTEGRATION_APIS_CART_URL') or define('BANNERINTEGRATION_APIS_CART_URL', '***REMOVED***');
+//defined('BANNERINTEGRATION_APIS_CART_URL') or define('BANNERINTEGRATION_APIS_CART_URL', '***REMOVED***');
 
 
 return array(
@@ -59,7 +64,12 @@ return array(
     		'secret' => BANNERINTEGRATION_APIS_PHOTO_SECRET,
     		'url' => BANNERINTEGRATION_APIS_PHOTO_URL,
     		'contact' => 'Christopher_Keith@brown.edu'
-    	)
+    	),
+		'cart' => array(
+			'secret' => BANNERINTEGRATION_APIS_CART_SECRET,
+			'url' => BANNERINTEGRATION_APIS_CART_URL,
+			'contact' => 'Christopher_Keith@brown.edu'
+		)
     )
 );
 
