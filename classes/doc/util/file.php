@@ -115,7 +115,14 @@ abstract class DOC_Util_File {
 		}
 		$mime_type = $this->get_mime_type( $filepath ) ;
 
-		return in_array($mime_type, $this->allowed_file_types) ;
+		foreach( $this->allowed_file_types as $file_type ) {
+			if( strpos( $mime_type, $file_type ) !== FALSE ) {
+				return TRUE ;
+			}
+		}
+
+		return FALSE ;
+
 	}
 
 	/**
@@ -308,7 +315,7 @@ abstract class DOC_Util_File {
 	 * @param string $mime_type
 	 * @return boolean
 	 */
-	public function is_web_friendly($mime_type) {
+	public function is_web_friendly($mime_type) {	
 		$friendly_mime_types = array(
 			'application/pdf',
 			'image/jpeg',
@@ -324,7 +331,13 @@ abstract class DOC_Util_File {
 			'image/tiff'
 		) ;
 
-		return in_array($mime_type, $friendly_mime_types) ;
+		foreach( $friendly_mime_types as $friendly_type ) {
+			if( strpos( $mime_type, $friendly_type ) !== FALSE ) {
+				return TRUE ;
+			}
+		}
+
+		return FALSE
 	}
 	
 	/**
@@ -342,7 +355,13 @@ abstract class DOC_Util_File {
 			'image/tiff'
 		) ;
 
-		return in_array($mime_type, $valid_mime_types) ;
+		foreach( $valid_mime_types as $valid_type ) {
+			if( strpos( $mime_type, $valid_type ) !== FALSE ) {
+				return TRUE ;
+			}
+		}
+
+		return FALSE ;
 	}
 }
 
