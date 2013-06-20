@@ -337,7 +337,7 @@ abstract class DOC_Util_File {
 			}
 		}
 
-		return FALSE
+		return FALSE ;
 	}
 	
 	/**
