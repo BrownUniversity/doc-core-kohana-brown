@@ -10,6 +10,316 @@ class DOC_Util_LaTeX {
 	const LATEX_LINE_END = '\\\\\\\\ ' ;
 	
 	/**
+	 * HTML Entity translation table
+	 
+	 * @var array
+	 */
+	public static $html_entities = array(
+
+		// Reserved Characters in HTML
+		'&quot;'      => ' ', // quotation mark
+		'&apos;'      => ' ', // apostrophe
+		'&amp;'       => ' ', // ampersand
+		'&lt;'        => ' ', // less-than
+		'&gt;'        => ' ', // greater-than
+	
+		// ISO 8859-1 Symbols
+		'&nbsp;'      => ' ', // non-breaking space
+		'&iexcl;'     => '\textexclamdown ', // inverted exclamation mark
+		'&cent;'      => ' ', // cent
+		'&pound;'     => ' ', // pound
+		'&curren;'    => ' ', // currency
+		'&yen;'       => ' ', // yen,
+		'&brvbar;'    => ' ', // broken vertical bar
+		'&sect;'      => ' ', // section
+		'&uml;'       => ' ', // spacing diaeresis
+		'&copy;'      => '\copyright ', // copyright
+		'&ordf;'      => ' ', // feminine ordinal indicator
+		'&laquo;'     => ' ', // angle quotation mark (left)
+		'&not;'       => ' ', // negation
+		'&shy;'       => ' ', // soft hyphen
+		'&reg;'       => ' ', // registered trademark
+		'&macr;'      => '\={} ', // spacing macron
+		'&deg;'       => '$^{\circ}$ ', // degree
+		'&plusmn;'    => '${\pm}$ ', // plus-or-minus
+		'&sup2;'      => '$^{2}$ ', // superscript 2
+		'&sup3;'      => '$^{3}$ ', // superscript 3
+		'&acute;'     => "\'{} ", // spacing acute
+		'&micro;'     => ' ', // micro
+		'&para;'      => ' ', // paragraph
+		'&middot;'    => '\textbullet ', // middle dot
+		'&cedil;'     => ' ', // spacing cedilla
+		'&sup1;'      => '$^{1}$ ', // superscript 1
+		'&ordm;'      => ' ', // masculine ordinal indicator
+		'&raquo;'     => ' ', // angle quotaion mark (right)
+		'&frac14;'    => '$\frac{1}{4}$ ', // fraction 1/4
+		'&frac12;'    => '$\frac{1}{2}$ ', // fraction 1/2
+		'&frac34;'    => '$\frac{3}{4}$ ', // fraction 3/4
+		'&iquest;'    => ' ', // inverted question mark
+		'&times;'     => ' ', // multiplication
+		'&divide;'    => ' ', // division
+	
+		// ISO 8859-1 Characters
+		'&Agrave;'    => '\`{A} ', // capital a, grave accent
+		'&Aacute;'    => "\'{A} ", // capital a, acute accent
+		'&Acirc;'     => '\^{A} ', // capital a, circumflex accent
+		'&Atilde;'    => '\~{A} ', // capital a, tilde
+		'&Auml;'      => '\"{A} ', // capital a, umlaut mark
+		'&Aring;'     => '\r{A} ', // capital a, ring
+		'&AElig;'     => '\AE ', // capital ae
+		'&Ccedil;'    => '\c{C} ', // capital c, cedilla
+		'&Egrave;'    => '\`{E} ', // capital e, grave accent
+		'&Eacute;'    => "\'{E} ", // capital e, acute accent
+		'&Ecirc;'     => '\^{E} ', // capital e, circumflex accent
+		'&Euml;'      => '\"{E} ', // capital e, umlaut mark
+		'&Igrave;'    => '\`{I} ', // capital i, grave accent
+		'&Iacute;'    => "\'{I} ", // capital i, accuate accent
+		'&Icirc;'     => '\^{I} ', // capital i, circumflex accent
+		'&Iuml;'      => '\"{I} ', // capital i, umlaut mark
+		'&ETH;'       => ' ', // capital eth, Icelandic
+		'&Ntilde;'    => '\~{N} ', // capital n, tilde
+		'&Ograve;'    => '\`{O} ', // capital o, grave accent
+		'&Oacute;'    => "\'{O} ", // capital o, acute accent
+		'&Ocirc;'     => '\^{O} ', // capital o, circumflex accent
+		'&Otilde;'    => '\~{O} ', // capital o, tilde
+		'&Ouml;'      => '\"{O} ', // capital o, umlaut mark
+		'&Oslash;'    => ' ', // capital o, slash
+		'&Ugrave;'    => '\`{U} ', // capital u, grave accent
+		'&Uacute;'    => "\'{U} ", // capital u, acute accent
+		'&Ucirc;'     => '\^{U} ', // capital u, circumflex accent
+		'&Uuml;'      => '\"{U} ', // capital u, umlaut mark
+		'&Yacute;'    => '\'{Y} ', // capital y, acute accent
+		'&THORN;'     => ' ', // capital THORN, Icelandic
+		'&szlig;'     => ' ', // small sharp s, German
+		'&agrave;'    => '\`{a} ', // small a, grave accent
+		'&aacute;'    => "\'{a} ", // small a, accute accent
+		'&acirc;'     => '\^{a} ', // small a, circumflex accent
+		'&atilde;'    => '\~{a} ', // small a, tilde
+		'&auml;'      => '\"{a} ', // small a, umlaut mark
+		'&aring;'     => '\r{a} ', // small a, ring
+		'&aelig;'     => '\ae ', // small ae
+		'&ccedil;'    => '\c{c} ', // small c, cedilla
+		'&egrave;'    => '\`{e} ', // small e, grave accent
+		'&eacute;'    => "\'{e} ", // small e, acute accent
+		'&ecirc;'     => '\^{e} ', // small e, circumflex accent
+		'&euml;'      => '\"{e} ', // small e, umlaut mark
+		'&igrave;'    => '\`{i} ', // small i, grave accent
+		'&iacute;'    => "\'{i} ", // small i, acute accent
+		'&icirc;'     => '\^{I} ', // small i, circumflex accent
+		'&iuml;'      => '\"{I} ', // small i, umlaut mark
+		'&eth;'       => ' ', // small eth, Icelandic
+		'&ntilde;'    => '\~{n} ', // small n, tilde
+		'&ograve;'    => '\`{o} ', // small o, grave accent
+		'&oacute;'    => "\'{o} ", // small o, acute accent
+		'&ocirc;'     => '\^{o} ', // small o, circumflex accent
+		'&otilde;'    => '\~{o} ', // small o, tilde
+		'&ouml;'      => '\"{o} ', // small o, umlaut mark
+		'&oslash;'    => ' ', // small o, slash
+		'&ugrave;'    => '\`{u} ', // small u, grave accent
+		'&uacute;'    => "\'{u} ", // small u, acute accent
+		'&ucirc;'     => '\^{u} ', // small u, circumflex accent
+		'&uuml;'      => '\"{u} ', // small u, umlaut mark
+		'&yacute;'    => '\'{y} ', // small y, acute accent
+		'&thorn;'     => ' ', // small thorn, Icelandic
+		'&yuml;'      => '\"{y} ', // small y, umlaut mark
+	
+		// Math Symbols Supported by HTML
+		'&forall;'    => ' ', // for all
+		'&part;'      => ' ', // part
+		'&exist;'     => ' ', // exists
+		'&empty;'     => ' ', // empty
+		'&nabla;'     => ' ', // nabla
+		'&isin;'      => ' ', // isin
+		'&notin;'     => ' ', // notin
+		'&ni;'        => ' ', // ni
+		'&prod;'      => ' ', // prod
+		'&sum;'       => ' ', // sum
+		'&minus;'     => ' ', // minus
+		'&lowast;'    => ' ', // lowast
+		'&radic;'     => ' ', // square root
+		'&prop;'      => ' ', // proportional to
+		'&infin;'     => ' ', // infinity
+		'&ang;'       => ' ', // angle
+		'&and;'       => ' ', // and
+		'&or;'        => ' ', // or
+		'&cap;'       => ' ', // cap
+		'&cup;'       => ' ', // cup
+		'&int;'       => ' ', // integral
+		'&there4;'    => ' ', // therefore
+		'&sim;'       => ' ', // similar to
+		'&cong;'      => ' ', // congruent to
+		'&asymp;'     => ' ', // almost equal
+		'&ne;'        => ' ', // not equal
+		'&equiv;'     => ' ', // equivalent
+		'&le;'        => ' ', // less or equal
+		'&ge;'        => ' ', // greater or equal
+		'&sub;'       => ' ', // subset of
+		'&sup;'       => ' ', // superset of
+		'&nsub;'      => ' ', // not subset of
+		'&sube;'      => ' ', // subset or equal
+		'&supe;'      => ' ', // superset or equal
+		'&oplus;'     => ' ', // circled plus
+		'&otimes;'    => ' ', // circled times
+		'&perp;'      => ' ', // perpendicular
+		'&sdot;'      => ' ', // dot operator
+	
+		// Greek Letters Supported by HTML
+		'&Alpha;'     => ' ', // Alpha
+		'&Beta;'      => ' ', // Beta
+		'&Gamma;'     => ' ', // Gamma
+		'&Delta;'     => ' ', // Delta
+		'&Epsilon;'   => ' ', // Epsilon
+		'&Zeta;'      => ' ', // Zeta
+		'&Eta;'       => ' ', // Eta
+		'&Theta;'     => ' ', // Theta
+		'&Iota;'      => ' ', // Iota
+		'&Kappa;'     => ' ', // Kappa
+		'&Lambda;'    => ' ', // Lambda
+		'&Mu;'        => ' ', // Mu
+		'&Nu;'        => ' ', // Nu
+		'&Xi;'        => ' ', // Xi
+		'&Omnicron;'  => ' ', // Omnicron
+		'&Pi;'        => ' ', // Pi
+		'&Rho;'       => ' ', // Rho
+		'&Sigma;'     => ' ', // Sigma
+		'&Tau;'       => ' ', // Tau
+		'&Upsilon;'   => ' ', // Upsilon
+		'&Phi;'       => ' ', // Phi
+		'&Chil;'      => ' ', // Chi
+		'&Psi;'       => ' ', // Psi
+		'&Omega;'     => ' ', // Omega
+		'&alpha;'     => ' ', // alpha
+		'&beta;'      => ' ', // beta
+		'&gamma;'     => ' ', // gamma
+		'&delta;'     => ' ', // delta
+		'&epsilon;'   => ' ', // epsilon
+		'&zeta;'      => ' ', // zeta
+		'&eta;'       => ' ', // eta
+		'&theta;'     => ' ', // theta
+		'&iota;'      => ' ', // iota
+		'&kappa;'     => ' ', // kappa
+		'&lambda;'    => ' ', // lambda
+		'&mu;'        => ' ', // mu;
+		'&nu;'        => ' ', // nu;
+		'&xi;'        => ' ', // xi;
+		'&omnicron;'  => ' ', // omnicron
+		'&pi;'        => ' ', // pi
+		'&rho;'       => ' ', // rho
+		'&sigmaf;'    => ' ', // sigmaf
+		'&sigma;'     => ' ', // sigma
+		'&tau;'       => ' ', // tau
+		'&upsilon;'   => ' ', // upsilon
+		'&phi;'       => ' ', // phi
+		'&chi;'       => ' ', // chi
+		'&psi;'       => ' ', // psi
+		'&omega;'     => ' ', // omega
+		'&thetasym;'  => ' ', // theta symbol
+		'&upsih;'     => ' ', // upsilon symbol
+		'&piv;'       => ' ', // pi symbol
+	
+		// Other Entities Supported by HTML
+		'&OElig;'     => ' ', // capital ligature OE
+		'&oelig;'     => ' ', // small igature oe
+		'&Scaron;'    => ' ', // capital s with caron
+		'&scaron;'    => ' ', // small s with caron
+		'&Yuml;'      => ' ', // capital y with diaeres
+		'&fnof;'      => ' ', // f with hook
+		'&circ;'      => ' ', // modifier letter circumflex accent
+		'&tilde;'     => ' ', // small tilde
+		'&ensp;'      => ' ', // en space
+		'&emsp;'      => ' ', // em space
+		'&thinsp;'    => ' ', // thin space
+		'&zwnj;'      => ' ', // zero width non-joiner
+		'&zwj;'       => ' ', // zero width joiner
+		'&lrm;'       => ' ', // left-to-right mark
+		'&rlm;'       => ' ', // right-to-left mark
+		'&ndash;'     => '\textemdash ', // en dash
+		'&mdash;'     => '\textemdash ', // em dash
+		'&lsquo;'     => ' ', // left single quotation mark
+		'&rsquo;'     => ' ', // right single quotation mark
+		'&sbquo;'     => ' ', // single low-9 quotation mark
+		'&ldquo;'     => ' ', // left double quotation mark
+		'&rdquo;'     => ' ', // right double quotation mark
+		'&bdquo;'     => ' ', // double low-9 quotation mark
+		'&dagger;'    => ' ', // dagger
+		'&Dagger;'    => ' ', // double dagger
+		'&bull;'      => '\textbullet ', // bullet
+		'&hellip;'    => ' ', // horizontal ellipsis
+		'&permil;'    => ' ', // per mile
+		'&prime;'     => ' ', // minutes
+		'&Prime;'     => ' ', // seconds
+		'&lsaquo;'    => ' ', // single left angle quotation
+		'&rsaquo;'    => ' ', // singlre right angle quotation
+		'&oline;'     => ' ', // overline
+		'&euro;'      => ' ', // euro
+		'&trade;'     => ' ', // trademark
+		'&larr;'      => ' ', // left arrow
+		'&uarr;'      => ' ', // up arrow
+		'&rarr;'      => ' ', // right arrow
+		'&darr;'      => ' ', // down arrow
+		'&harr;'      => ' ', // left right arrow
+		'&crarr;'     => ' ', // carriage return arrow
+		'&lceil;'     => ' ', // left ceiling
+		'&rceil;'     => ' ', // right ceiling
+		'&lfloor;'    => ' ', // left floor
+		'&rfloor;'    => ' ', // right floor
+		'&loz;'       => ' ', // lozenge
+		'&spades;'    => ' ', // spade
+		'&clubs;'     => ' ', // club
+		'&hearts;'    => ' ', // heart
+		'&diams;'     => ' ', // diamond
+	
+		// Other
+		
+		
+	);
+	
+	/**
+	 * Removed character references that cannot be translated to latex
+	 *
+	 * @param input string
+	 * @return string
+	 */
+	public static function fix_bad_utf8($input) {
+		$replacements = array(
+			'&#128;',
+            '&#129;',
+            '&#130;',
+            '&#131;',
+            '&#132;',
+            '&#133;',
+            '&#134;',
+            '&#135;',
+			'&#136;',
+			'&#137;',
+			'&#138;',
+            '&#139;',
+            '&#140;',
+			'&#141;',
+			'&#142;',
+			'&#143;', 
+			'&#144;',
+			'&#145;',
+            '&#146;',
+            '&#147;',
+            '&#148;',
+            '&#149;',
+            '&#150;',
+            '&#151;',
+            '&#152;',
+            '&#153;', 
+            '&#154;',
+            '&#155;',
+            '&#156;',
+            '&#157;',
+            '&#158;',
+            '&#159;',
+		);
+		
+		return str_replace($replacements, ' ', $input);
+	}
+	
+	/**
 	 * Intended for use with preg_replace_callback to remove HTML code that would
 	 * render as whitespace only. 
 	 * 
@@ -33,11 +343,14 @@ class DOC_Util_LaTeX {
 		$_output = $html ;
 		
 		$replacements = array(
-			'/<div.*?>(.*?)<\/div>/s' => '$1'.self::LATEX_LINE_END,
+			'/<div.*?>(.*?)<\/div>/s' => '$1'.self::LATEX_LINE_END . PHP_EOL,
 			'/<p.*?>(.*?)<\/p>/s' => "$1\n\n",
 			// LaTeX doesn't like seeing a line break with no other content on the line,
 			// which this might otherwise allow, so we'll stick a non-breaking space in front of it
-			'/<br.*?>/' => '~'.self::LATEX_LINE_END, 
+			'/<blockquote>(.*?)<\/blockquote>(\s|<br.*?>)*/s' => '\begin{quotation}$1\end{quotation}' . PHP_EOL,
+			'/<ol.*?>(\s|<br.*?>)*(.*?)<\/ol>(\s|<br.*?>)*/s' => '\begin{enumerate}' . PHP_EOL . '$2\end{enumerate}' . PHP_EOL,
+			'/<ul.*?>(\s|<br.*?>)*(.*?)<\/ul>(\s|<br.*?>)*/s' => '\begin{itemize}' . PHP_EOL . '$2\end{itemize}' . PHP_EOL,
+			'/<br.*?>/' => self::LATEX_LINE_END . PHP_EOL,
 			'/<strong>(.*?)<\/strong>/s' => '\textbf{$1}',
 			'/<b>(.*?)<\/b>/s' => '\textbf{$1}',
 			'/<em>(.*?)<\/em>/s' => '\textit{$1}',
@@ -45,10 +358,7 @@ class DOC_Util_LaTeX {
 			'/<u>(.*?)<\/u>/s' => '\underline{$1}',
 			'/<del>(.*?)<\/del>/s' => '\sout{$1}',
 			'/<strike>(.*?)<\/strike>/s' => '\sout{$1}',
-			'/<blockquote>(.*?)<\/blockquote>/s' => '\begin{quote}$1\end{quote}',
-			'/<ol.*?>(.*?)<\/ol>/s' => '\begin{enumerate}$1\end{enumerate}',
-			'/<ul.*?>(.*?)<\/ul>/s' => '\begin{itemize}$1\end{itemize}',
-			'/<li.*?>(.*?)<\/li>/s' => '\item $1'
+			'/<li.*?>(.*?)<\/li>/s' => '\item $1' . PHP_EOL,
 		) ;		
 			
 		// strip out any tags we don't support
@@ -62,12 +372,13 @@ class DOC_Util_LaTeX {
 		// tidy the document
 		
 		$_output = DOC_Util_WordHTML::domdocument_tidy($_output) ;
-		$_output = str_replace('&nbsp;', ' ', $_output) ;
-
-		// run through html_entity_decode
+        
+        // run through html_entity_decode
 
 		$_output = html_entity_decode($_output) ;
 		
+		$_output = self::fix_bad_utf8($_output) ;
+				
 		// tighten up any extra whitespace
 		
 		$_output = preg_replace('/(\s|\n){2,}/s',' ',$_output) ;
@@ -76,13 +387,15 @@ class DOC_Util_LaTeX {
 		// deal with most characters LaTeX needs modified
 		
 		$_output = self::latex_special_chars($_output) ;
-
-		// remove any empty blockquotes, since they run the risk of making LaTeX crabby
+        
+        // remove any empty blockquotes, since they run the risk of making LaTeX crabby
 		$_output = preg_replace_callback('/<blockquote>(.*?)<\/blockquote>/','DOC_Util_LaTeX::strip_empty',$_output) ;
 
+        // remove any empty paragraphs, these definitely make LaTeX crabby
+        $_output = preg_replace_callback('/<p>(.*?)<\/p>/', 'DOC_Util_LaTeX::strip_empty', $_output);
+        
 		// the rich text editor sometimes leaves breaks at the end of a list item, which is redundant
 		$_output = preg_replace('/<li>(.*?)<br.*?>\s*?<\/li>/s','<li>$1</li>',$_output) ; 
-		
 		// parse the html
 		$pre_replace = $_output ;
 		$_output = preg_replace( array_keys( $replacements ), array_values( $replacements ), $pre_replace ) ;
@@ -110,9 +423,25 @@ class DOC_Util_LaTeX {
 		// of a \begin{x}\end{x} block, so we'll get rid of those.
 		$_output = preg_replace('/\n\\\\\\\\\s+$/','',$_output) ;
 		
-		return $_output ;
+        $_output = htmlentities($_output);
+        $_output = self::latex_html_entities($_output) ;
+        
+        // @todo, remove more than 2 consecutive line breaks?
+        return $_output ;
 	}
 	
+    /**
+     * Convert HTML Entities to appropriate plaintext replacements that we can 
+     * get LaTeX to support via UTF-8
+     * 
+     * @param string $str
+     * @return string
+     */
+    public static function latex_html_entities($str) {
+        
+        return str_replace(array_keys( self::$html_entities ), array_values( self::$html_entities ), $str) ;
+    }
+    
 	/**
 	 * Parse a string for any characters that need special handling in LaTeX. Note
 	 * that we skip the greater than/less than characters here, because those need 
@@ -123,6 +452,7 @@ class DOC_Util_LaTeX {
 	 */
 	public static function latex_special_chars($str) {
 		$replacements = array(
+            
 			'\\' => '\textbackslash', 
 			'{' => '\{',
 			'}' => '\}',
@@ -136,7 +466,10 @@ class DOC_Util_LaTeX {
 			'#' => '\#',
 			'\'' => '{\textquotesingle}',
 			'"' => '{\textquotedbl}',
-			'\textbackslash' => '{\textbackslash}'
+			'\textbackslash' => '{\textbackslash}',
+            '[' => '{[}',
+            ']' => '{]}',
+            
 //			'<' => '\textless',
 //			'>' => '\textgreater'
 		) ;
