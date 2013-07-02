@@ -72,6 +72,8 @@ abstract class DOC_Util_Banner_Import {
             throw new Kohana_Exception($msg);
         }
 
+		$pasv = ftp_pasv($ftps, TRUE) ;
+
         /**
          * Fetch specified file from FTPs server
          */
