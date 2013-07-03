@@ -339,7 +339,7 @@ class DOC_Util_LaTeX {
 	 * @return string LaTeX code
 	 * @todo Add support for hyperlinks
 	 */
-	public static function parse_html($html, $supported_tags = DOC_Util_WordHTML::ALLOWABLE_TAGS_DEFAULT) {
+	public static function parse_html($html, $supported_tags = DOC_Util_WordHTML::ALLOWABLE_TAGS_DEFAULT, $plain_text_input = FALSE) {
 		$_output = $html ;
 		
 		$replacements = array(
@@ -381,7 +381,10 @@ class DOC_Util_LaTeX {
 				
 		// tighten up any extra whitespace
 		
-		$_output = preg_replace('/(\s|\n){2,}/s',' ',$_output) ;
+		if ($plain_text_input == FALSE) {
+			$_output = preg_replace('/(\s|\n){2,}/s',' ',$_output) ;
+		}
+		
 		$_output = preg_replace("~>\n*\s*\n*<~", '><', $_output) ;
 
 		// deal with most characters LaTeX needs modified
@@ -414,7 +417,11 @@ class DOC_Util_LaTeX {
 		if( count( $matches ) > 0 ) {
 			if( count( $matches[1] ) > 0 ) {
 				foreach( $matches[1] as $match ) {
-					$_output = str_replace("\n\n", "\n\\\\\n", $_output) ;
+					if ($plain_text_input) {
+						$_output = str_replace("\n\n", '\newline' . PHP_EOL . '\newline' . PHP_EOL, $_output) ;
+					} else {
+						$_output = str_replace("\n\n", "\n\\\\\n", $_output) ;
+					}
 				}
 			}
 		}
