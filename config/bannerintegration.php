@@ -43,9 +43,17 @@ return array(
                 'filename' => 'ask_instructors.dat',
                 'regex' => '#\{\s*"Term"\s*:\s*"[^"]*"\s*,\s*"CRN"\s*:\s*"[^"]*"\s*,\s*"LDAP_ID"\s*:\s*"[^"]*"\s*,\s*"Primary_Ind"\s*:\s*"[^"]*"\s*\}#'
         ),
-        'students'		=> array(
-                'filename' => 'ask_student.dat',
-                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s'
+        'undergraduate_active' => array(
+                'filename' => 'ask_ug_active.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s', 
+        ),
+        'undergraduate_inactive' => array(
+                'filename' => 'ask_ug_inactive.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
+        ),
+        'undergraduate_graduated' => array(
+                'filename' => 'ask_ug_grad.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
         ),
     ),
     'exports' => array(

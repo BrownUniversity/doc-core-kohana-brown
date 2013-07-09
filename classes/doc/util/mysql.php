@@ -114,8 +114,14 @@ class DOC_Util_Mysql {
             LINES TERMINATED BY '\n'
             ({$columns})
         ";
-
-            return $this->mysqli->query($sql);
+            
+        $result = $this->mysqli->query($sql);
+        
+        if ($result === FALSE) {
+            Kohana::$log->add(Log::ERROR, 'MySQLi Error in DOC_Util_MySQL::load() - ' . $this->mysqli->errno . ': ' . $this->mysqli->error);
+        }
+        
+        return $this->mysqli->query($sql);
     }
 
     /**
