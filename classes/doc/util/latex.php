@@ -9,14 +9,16 @@ class DOC_Util_LaTeX {
 		
 	const LATEX_LINE_END = '\\\\\\\\ ' ;
 	
+    public static $line_end = "\\\\\n";
+    
 	/**
 	 * HTML Entity translation table
 	 
 	 * @var array
 	 */
 	public static $html_entities = array(
-
-		// Reserved Characters in HTML
+        
+        // Reserved Characters in HTML
 		'&quot;'      => ' ', // quotation mark
 		'&apos;'      => ' ', // apostrophe
 		'&amp;'       => ' ', // ampersand
@@ -343,6 +345,7 @@ class DOC_Util_LaTeX {
 		$_output = $html ;
 		
 		$replacements = array(
+            '/\t/s' => '',
 			'/<div.*?>(.*?)<\/div>/s' => '$1'.self::LATEX_LINE_END . PHP_EOL,
 			'/<p.*?>(.*?)<\/p>/s' => "$1\n\n",
 			// LaTeX doesn't like seeing a line break with no other content on the line,
@@ -374,10 +377,10 @@ class DOC_Util_LaTeX {
 		$_output = DOC_Util_WordHTML::domdocument_tidy($_output) ;
         
         // run through html_entity_decode
-
+        
 		$_output = html_entity_decode($_output) ;
 		
-		$_output = self::fix_bad_utf8($_output) ;
+        $_output = self::fix_bad_utf8($_output) ;
 				
 		// tighten up any extra whitespace
 		
@@ -420,7 +423,7 @@ class DOC_Util_LaTeX {
 					if ($plain_text_input) {
 						$_output = str_replace("\n\n", '\newline' . PHP_EOL . '\newline' . PHP_EOL, $_output) ;
 					} else {
-						$_output = str_replace("\n\n", "\n\\\\\n", $_output) ;
+						$_output = str_replace("\n\n", '\\\\' . PHP_EOL . '\\\\' . PHP_EOL, $_output) ;
 					}
 				}
 			}
@@ -553,4 +556,14 @@ class DOC_Util_LaTeX {
 			closedir( $handle ) ;
 		}
 	}
+    
+    /**
+     * Remove line breaks from a string
+     * 
+     * @param string $input
+     * @return string
+     */
+    public static function remove_breaks($input) {
+        return str_replace(array("\n","<br>","<br >","<br />", "<br/>"), '', $input);
+    }
 }
