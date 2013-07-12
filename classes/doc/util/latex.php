@@ -9,7 +9,7 @@ class DOC_Util_LaTeX {
 		
 	const LATEX_LINE_END = '\\\\\\\\ ' ;
 	
-    public static $line_end = "\\\\\n";
+    public static $line_end = "~\\\\\n";
     
 	/**
 	 * HTML Entity translation table
