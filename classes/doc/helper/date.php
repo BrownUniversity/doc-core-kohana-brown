@@ -15,9 +15,13 @@ class DOC_Helper_Date {
 	public static function days_in_range( $start_date, $end_date, $day, $key_format = 'Y-m-d', $value_format = 'm/d/Y' ) {
 		$_output = array() ;
 		
+		$start_date = date('Y-m-d', strtotime( '-1 day', strtotime( $start_date ))) ;
+		$end_date = date('Y-m-d', strtotime( '+1 day', strtotime( $end_date ))) ;
+		
+		
 		$timestamp = strtotime( "first {$day} {$start_date}") ;
 		$end_timestamp = strtotime( "last {$day} {$end_date}") ;
-		while( $timestamp < $end_timestamp ) {
+		while( $timestamp <= $end_timestamp ) {
 			$_output[ date( $key_format, $timestamp )] = date($value_format, $timestamp) ;
 			$timestamp = strtotime( "next {$day}", $timestamp ) ;
 		}
