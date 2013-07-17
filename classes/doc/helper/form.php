@@ -157,7 +157,7 @@ class DOC_Helper_Form {
 		$hour = $request->post( $name_prefix . self::SUFFIX_HOUR ) ;
 		$minute = $request->post( $name_prefix . self::SUFFIX_MINUTE ) ;
 
-		if( strtoupper($meridian) == 'PM' ) {
+		if( strtoupper($meridian) == 'PM' && (int) $hour < 12 ) {
 			$hour = ((int) $hour) + 12 ;
 		}
 
