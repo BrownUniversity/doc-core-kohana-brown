@@ -445,7 +445,7 @@ class DOC_Controller_REST extends Controller {
 		header('HTTP/1.1 ' . $status . ' ' . $this->status_codes[$status]);
 		header('Cache-Control: no-cache, must-revalidate') ;
 		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT') ;
-
+		
 		if ($headers === NULL) {
 			$headers = array("Content-Type: {$this->accept_type}");
 		} else if ( ! is_array($headers)) {
@@ -455,8 +455,6 @@ class DOC_Controller_REST extends Controller {
 		foreach ($headers as $header) {
 			header($header);
 		}
-
-
 
 		if ($status != 200) {
 			if ($status == 405) {
@@ -479,6 +477,7 @@ class DOC_Controller_REST extends Controller {
 			print( $view->render() ) ;
 
 		} else if ($payload !== NULL) {
+			header('Content-length: '.strlen($payload)) ;
 			echo $payload;
 		}
 		exit;
