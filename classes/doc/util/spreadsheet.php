@@ -155,6 +155,10 @@ class DOC_Util_Spreadsheet {
 											->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD) ;
 									break ;
 
+								case 'xls-text':
+									// magic...
+									break ;
+									
 								case 'wrap':
 									$active_sheet->getStyleByColumnAndRow($i, $row_index)->getAlignment()->setWrapText(TRUE);
 									break ;

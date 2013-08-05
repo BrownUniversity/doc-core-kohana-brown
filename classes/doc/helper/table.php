@@ -37,6 +37,7 @@ class DOC_Helper_Table {
 	const FORMAT_DATETIME_PRECISE = 'datetime_precise' ;
 	const FORMAT_DATETIME_SHORT = 'datetime_short' ;
 	const FORMAT_XLS_DATETIME = 'xlsdatetime' ;
+	const FORMAT_XLS_TEXT = 'xls_text' ;
 	const FORMAT_TRUNCATE = 'truncate' ;
 	const FORMAT_CUSTOM = 'custom' ;
 	const FORMAT_DEFAULT = 'default' ;
@@ -225,6 +226,11 @@ class DOC_Helper_Table {
 									case self::FORMAT_DOLLARS:
 										$value = $this->format_dollars($value, TRUE) ;
 										$td_attrs[ 'class' ][] = 'dollars' ;
+										break ;
+										
+									case self::FORMAT_XLS_TEXT:
+										// $value = $this->format_dollars($value, TRUE) ;
+										$td_attrs[ 'class' ][] = 'xls-text' ;
 										break ;
 
 									case self::FORMAT_TRIM_DECIMAL:
