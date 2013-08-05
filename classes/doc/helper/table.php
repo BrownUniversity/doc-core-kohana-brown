@@ -229,7 +229,6 @@ class DOC_Helper_Table {
 										break ;
 										
 									case self::FORMAT_XLS_TEXT:
-										// $value = $this->format_dollars($value, TRUE) ;
 										$td_attrs[ 'class' ][] = 'xls-text' ;
 										break ;
 

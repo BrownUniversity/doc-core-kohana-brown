@@ -133,41 +133,44 @@ class DOC_Util_Spreadsheet {
 						$cell_value = preg_replace('/<\/?((p)|(br)|(div)).*?\/?>/',"\r", $cell_value ) ; 
 						$cell_value = DOC_Util_WordHTML::clean($cell_value,'') ;
 
-  //DOC_Util_Debug::dump( $cell_value, false ) ;
- 
-						$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $cell_value ) ;
-
+  						$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $cell_value ) ;
 
 						if( $tds->item($i)->hasAttribute( 'class' )) {
+                            
+                            $classes = explode(' ', $tds->item($i)->getAttribute('class'));
+                            
+                            foreach ($classes as $c) {
+                                switch( $c ) {
+                                    case 'datetime':
+                                        $active_sheet
+                                                ->getStyleByColumnAndRow($i, $row_index)
+                                                ->getNumberFormat()
+                                                ->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_XLSX22) ;
+                                        break ;
 
-							switch( $tds->item($i)->getAttribute('class')) {
-								case 'datetime':
-									$active_sheet
-											->getStyleByColumnAndRow($i, $row_index)
-											->getNumberFormat()
-											->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_DATE_XLSX22) ;
-									break ;
+                                    case 'dollars':
+                                        $active_sheet
+                                                ->getStyleByColumnAndRow($i, $row_index)
+                                                ->getNumberFormat()
+                                                ->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD) ;
+                                        break ;
 
-								case 'dollars':
-									$active_sheet
-											->getStyleByColumnAndRow($i, $row_index)
-											->getNumberFormat()
-											->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD) ;
-									break ;
+                                    case 'xls-text':
+                                        $active_sheet
+                                            ->getCellByColumnAndRow($i, $row_index)
+                                            ->setValueExplicit($cell_value, PHPExcel_Cell_DataType::TYPE_STRING);
+                                        break ;
 
-								case 'xls-text':
-									// magic...
-									break ;
-									
-								case 'wrap':
-									$active_sheet->getStyleByColumnAndRow($i, $row_index)->getAlignment()->setWrapText(TRUE);
-									break ;
+                                    case 'wrap':
+                                        $active_sheet->getStyleByColumnAndRow($i, $row_index)->getAlignment()->setWrapText(TRUE);
+                                        break ;
 
-								default:
-									// do nothing
-							}
+                                    default:
+                                        // do nothing
+                                }
+                            }
 						}
-					}
+        			}
 				}
 			} else {
 				$row_index++ ;
