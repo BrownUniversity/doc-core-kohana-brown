@@ -145,5 +145,15 @@ class DOC_Valid extends Kohana_Valid {
     public static function auth_id( $value ) {
         return preg_match('/^[a-z0-9]{1,8}$/', $value);
     }
+    
+    /**
+     * Verify that the value is a properly formatted Banner ID.
+     *
+     * @param string $value
+     * @return boolean
+     */
+    public static function banner_id( $value ) {
+    	return preg_match('/^B\d{8}$/', $value) ;
+    }
 }
 
