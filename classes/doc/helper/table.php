@@ -34,6 +34,7 @@ class DOC_Helper_Table {
 	const FORMAT_XLS_DOLLARS = 'xls_dollars' ;
 	const FORMAT_TRIM_DECIMAL = 'trim_decimal' ;
 	const FORMAT_DATETIME = 'datetime' ;
+	const FORMAT_DATETIME_WITH_DAY = 'datetime_with_day' ;
 	const FORMAT_DATETIME_PRECISE = 'datetime_precise' ;
 	const FORMAT_DATETIME_SHORT = 'datetime_short' ;
 	const FORMAT_XLS_DATETIME = 'xlsdatetime' ;
@@ -243,6 +244,11 @@ class DOC_Helper_Table {
 
 									case self::FORMAT_DATETIME:
 										$value = $this->format_datetime( $value, 'M j, Y g:i A' ) ;
+										$td_attrs[ 'class' ][] = 'datetime' ;
+										break ;
+
+									case self::FORMAT_DATETIME_WITH_DAY:
+										$value = $this->format_datetime( $value, 'D M j, Y g:i A' ) ;
 										$td_attrs[ 'class' ][] = 'datetime' ;
 										break ;
 
