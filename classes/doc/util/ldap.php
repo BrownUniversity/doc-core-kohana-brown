@@ -50,6 +50,7 @@ class DOC_Util_Ldap
 		"memberships"         => "ismemberof",
 		"country_code"        => 'brownsecuritycountrycode',
 		"local_address"       => 'brownlocaladdress',
+        "type"                => 'browntype',
 	);
 
     /**
