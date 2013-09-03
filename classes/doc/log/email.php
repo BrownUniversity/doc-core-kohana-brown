@@ -80,7 +80,8 @@ class DOC_Log_Email extends Log_Writer {
         
         // Add supplemental information to the error text
 		$supp_info = Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
-		$error_prefix = "IP Address: " . Request::$client_ip;
+        $error_prefix = "Route: " . Request::current()->uri();
+		$error_prefix .= "\nIP Address: " . Request::$client_ip;
 		$error_prefix .= "\nBrowser: " . $supp_info['browser'];
 		$error_prefix .= "\nVersion: " . $supp_info['version'];
 		$error_prefix .= "\nPlatform: " . $supp_info['platform'];
