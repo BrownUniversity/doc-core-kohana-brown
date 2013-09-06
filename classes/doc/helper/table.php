@@ -405,8 +405,8 @@ class DOC_Helper_Table {
 							}
 
 							$supplemental_data[] = array(
-									'heading' => htmlentities($heading, ENT_QUOTES),
-									'value' => htmlentities($value, ENT_QUOTES),
+									'heading' => $heading, //htmlentities($heading, ENT_QUOTES),
+									'value' => $value, //htmlentities($value, ENT_QUOTES),
 									'td_attrs' => $td_attrs
 							) ;
 
@@ -427,7 +427,7 @@ class DOC_Helper_Table {
 
 				if( count( $supplemental_data ) > 0 ) {
 					if( $this->context == self::CONTEXT_WEB ) {
-						$supplemental_data_json = json_encode( $supplemental_data ) ;
+						$supplemental_data_json = json_encode( $supplemental_data, JSON_HEX_QUOT | JSON_HEX_APOS ) ;
 						$row_cells .= "<{$this->render_tags[$render_as]['cell']} class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></{$this->render_tags[$render_as]['cell']}>" ;
 
 					} else {
