@@ -93,13 +93,19 @@ class DOC_Helper_Table {
 				$_output .= "<thead>" ;
 				$_output .= "<tr>" ;
 
-				foreach( $this->column_specs as $col_spec ) {
+				foreach( $this->column_specs as $key => $col_spec ) {
 
-					if( (!isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context) && (!isset( $col_spec[ 'render_type' ]) || $col_spec[ 'render_type' ] == $render_as) ) {
-
-						// TODO: This should only create columns for data that is NOT TYPE_SUPPLEMENTAL.
-						// Anything else should be ignored here except for creating a flag to indicate that
-						// supplemental data exists.
+					// set the conditional property for the column, executing the test if it exists
+					if( isset( $col_spec[ 'conditional'])) {
+						$test = "return " . $col_spec[ 'conditional' ] . ';' ;
+						$col_spec['conditional'] = eval( $test ) ;
+					} else {
+						$col_spec['conditional'] = TRUE ;
+					}
+					$this->column_specs[ $key ][ 'conditional' ] = $col_spec[ 'conditional' ] ;
+					
+					
+					if( (!isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context) && (!isset( $col_spec[ 'render_type' ]) || $col_spec[ 'render_type' ] == $render_as) && $col_spec['conditional'] == TRUE ) {
 
 						$property = '' ;
 						if( isset( $col_spec[ 'property' ] )) {
@@ -172,7 +178,7 @@ class DOC_Helper_Table {
 
 				$row_cells = '' ;
 				foreach( $this->column_specs as $col_spec ) {
-					if( (!isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context)  && (!isset( $col_spec[ 'render_type' ]) || $col_spec[ 'render_type' ] == $render_as)) {
+					if( (!isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context)  && (!isset( $col_spec[ 'render_type' ]) || $col_spec[ 'render_type' ] == $render_as) && $col_spec[ 'conditional' ] == TRUE) {
 						$td_attrs = array() ;
 
 
