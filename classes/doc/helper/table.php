@@ -178,7 +178,7 @@ class DOC_Helper_Table {
 
 				$row_cells = '' ;
 				foreach( $this->column_specs as $col_spec ) {
-					if( (!isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context)  && (!isset( $col_spec[ 'render_type' ]) || $col_spec[ 'render_type' ] == $render_as) && $col_spec[ 'conditional' ] == TRUE) {
+					if( (!isset( $col_spec[ 'context' ]) || $col_spec[ 'context' ] == $this->context)  && (!isset( $col_spec[ 'render_type' ]) || $col_spec[ 'render_type' ] == $render_as) && ( !isset( $col_spec[ 'conditional' ]) || $col_spec[ 'conditional' ] == TRUE)) {
 						$td_attrs = array() ;
 
 
