@@ -436,6 +436,9 @@ class DOC_Util_LaTeX {
         $_output = htmlentities($_output);
         $_output = self::latex_html_entities($_output) ;
         
+		// remove multiple line breaks (again?)
+		$_output = preg_replace( "/\n{2,}/", "\n", $_output ) ;
+		
         // @todo, remove more than 2 consecutive line breaks?
         return $_output ;
 	}

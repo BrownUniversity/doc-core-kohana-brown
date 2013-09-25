@@ -235,7 +235,7 @@ class DOC_Util_Spreadsheet {
 		}
 
 		$phpexcel_writer = PHPExcel_IOFactory::createWriter($obj_phpexcel, $file_type) ;
-//		$phpexcel_writer->save('/www/vhosts/appscollege.cis-dev.brown.edu/phpexcel_out/'.$filename.'.xls');
+//		$phpexcel_writer->save('/www/vhosts/dev.college.brown.edu/phpexcel_out/'.$filename.'.xls');
 		$phpexcel_writer->save('php://output') ;
 		exit() ;
 	}
