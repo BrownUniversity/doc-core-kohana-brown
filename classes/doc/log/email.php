@@ -80,7 +80,14 @@ class DOC_Log_Email extends Log_Writer {
         
         // Add supplemental information to the error text
 		$supp_info = Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
-        $error_prefix = "Route: " . Request::current()->uri();
+        
+        $request = Request::current();
+        if ((is_a($request, 'Request'))) {
+            $error_prefix = "Route: " . Request::current()->uri();
+        } else {
+            $error_prefix = "Route: could not be determined.";
+        }
+        
 		$error_prefix .= "\nIP Address: " . Request::$client_ip;
 		$error_prefix .= "\nBrowser: " . $supp_info['browser'];
 		$error_prefix .= "\nVersion: " . $supp_info['version'];
