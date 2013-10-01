@@ -63,6 +63,8 @@ class DOC_Log_Mongo extends Log_Writer {
         Log::STRACE    => 'STRACE',
     );
     
+    const TIMEOUT = 5000 ;
+    
     /**
      * Class constructor override to facilitate configuration mapping
      */
@@ -71,20 +73,21 @@ class DOC_Log_Mongo extends Log_Writer {
         $this->application = $app;
         $this->environment = $environment;
         
-        $config = Kohana::$config->load('logmongo');
+        $config = Kohana::$config->load('mongodb')->log;
         self::$client = new MongoClient(
-            "mongodb://{$config->host}:{$config->port}", 
+            "mongodb://{$config['host']}:{$config['port']}", 
             array(
-                'username' => $config->user, 
-                'password' => $config->password, 
-                'db' => $config->database,
+                'username' => $config['user'], 
+                'password' => $config['password'], 
+                'db' => $config['database'],
                 'connect' => FALSE,
-                'connectTimeoutMS' => $config->timeout,
-                'socketTimeoutMS' => $config->timeout,
+                'connectTimeoutMS' => self::TIMEOUT,
+                'socketTimeoutMS' => self::TIMEOUT,
             )
         );
-        self::$db = self::$client->selectDB($config->database);
-        self::$collection = self::$db->selectCollection($config->collection);
+        
+        self::$db = self::$client->selectDB($config['database']);
+        self::$collection = self::$db->selectCollection($config['default_collection']);
     }
     
     /**

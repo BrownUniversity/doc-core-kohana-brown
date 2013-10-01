@@ -9,7 +9,7 @@ defined( 'SYSPATH' ) or die( 'No direct script access.');
 /**
  * Utility class for Performance Metrics
  * 
- * Data are stored in various collections using MongoDB.  A configuratino file
+ * Data are stored in various collections using MongoDB.  A configuration file
  * will be necessary to intializate an instance of this class.
  */
 class DOC_Util_MongoMeter {
@@ -56,26 +56,44 @@ class DOC_Util_MongoMeter {
      */
     protected $collection_realtime = NULL;
     
+	/**
+	 * Collection names for storing data at different time slices.
+	 */
+    const COLLECTION_REALTIME = 'realtime' ;
+	const COLLECTION_DAILY = 'daily' ;
+	const COLLECTION_HOURLY = 'hourly' ;
+	
+	/**
+	 * Indicate which configuration block of the mongodb we want to use.
+	 */
+	const CONFIG_KEY = 'default' ;
+	
+	/**
+	 * MongoDB connection timeout.
+	 */
+	const TIMEOUT = 1000 ;
+    
     /**
      * Class constructor
      */
     public function __construct() {
-        $config = Kohana::$config->load('mongometer');
+        $config = Kohana::$config->load('mongodb');
+        $config = $config[ self::CONFIG_KEY ] ;
         $this->client = new MongoClient(
-            "mongodb://{$config->host}:{$config->port}", 
+            "mongodb://{$config['host']}:{$config['port']}", 
             array(
-                'username' => $config->user, 
-                'password' => $config->password, 
-                'db' => $config->database,
+                'username' => $config['user'], 
+                'password' => $config['password'], 
+                'db' => $config['database'],
                 'connect' => TRUE,
-                'connectTimeoutMS' => $config->timeout,
-                'socketTimeoutMS' => $config->timeout,
+                'connectTimeoutMS' => self::TIMEOUT,
+                'socketTimeoutMS' => self::TIMEOUT,
             )
         );
-        $this->database = $this->client->selectDB($config->database);
-        $this->collection_realtime = $this->database->selectCollection($config->collections['realtime']);
-        $this->collection_daily = $this->database->selectCollection($config->collections['daily']);
-        $this->collection_hourly = $this->database->selectCollection($config->collections['hourly']);
+        $this->database = $this->client->selectDB( $config['database'] ) ;
+        $this->collection_realtime = $this->database->selectCollection( self::COLLECTION_REALTIME );
+        $this->collection_daily = $this->database->selectCollection( self::COLLECTION_DAILY );
+        $this->collection_hourly = $this->database->selectCollection( self::COLLECTION_HOURLY );
     }
     
     /**
