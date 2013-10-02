@@ -23,6 +23,8 @@ class DOC_Util_Canvas {
      */
     private static $ch;
     
+    
+    
     /**
      * Base URL of the Canvas instance to which requests should be made
      * 
@@ -272,17 +274,70 @@ class DOC_Util_Canvas {
     }
     
     /**
+     * Use the CANVAS list assignment groups API
+     * 
+     * @param string $course_id
+     * @return array
+     */
+    public static function get_assignment_groups($course_id) {
+        self::init();
+        
+        $options = array();
+        $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/assignment_groups";
+        
+        $result = self::execute_curl($options);
+        
+        $output = array();
+        foreach ($result as $r) {
+            $output[$r['position']] = $r;
+        }
+        ksort($output);
+        return $output;
+    }
+    
+    /**
      * Use the CANVAS assignments API
      * 
      * @param int $course_id
      * @return array
      */
-    public static function get_assignments($course_id) {
-       self::init();
+    public static function get_assignments($course_id, $assignment_id = NULL) {
+
+        self::init();
        
-       $options = array();
-       $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/assignments";
-       return self::execute_curl($options);
+        $options = array();
+       
+        if ($assignment_id == NULL) {
+            $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/assignments";
+        } else {
+            $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/assignments/{$assignment_id}";
+        }
+        
+        return self::execute_curl($options);
+    }
+    
+    /**
+     * Use the CANVAS course enrollment API
+     * 
+     * @param int $course_id
+     * @param mixed $role
+     * @return array
+     */
+    public static function get_course_enrollment($course_id, $role = NULL) {
+        
+        self::init();
+        
+        $options = array();
+        $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/enrollments";
+        
+        $results = self::execute_curl($options);
+        
+        $output = array();
+        foreach ($results as $r) {
+            $output[strtolower($r['user']['sortable_name'])] = $r['user'];
+        }
+        ksort($output);
+        return $output;
     }
     
     /**
@@ -352,6 +407,37 @@ class DOC_Util_Canvas {
     	$options[CURLOPT_URL] = self::$host_url . "/api/v1/folders/{$folder_id}/folders";
     	
     	return self::execute_curl($options);
+    }
+    
+    /**
+     * Use the CANVAS get one submission API
+     * 
+     * @param int $course_id
+     * @param int $assignment_id
+     * @param int $user_id
+     */
+    public static function get_submission($course_id, $assignment_id, $user_id) {
+        self::init();
+        
+        $options = array();
+        $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/assignments/{$assignment_id}/submissions/{$user_id}";
+        
+        return self::execute_curl($options);
+    }
+    
+    /**
+     * Use the CANVAS submission list API
+     * 
+     * @param int $course_id
+     * @return array
+     */
+    public static function get_submissions_list($course_id) {
+        self::init();
+        
+        $options = array();
+        $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/students/submissions";
+        
+        return self::execute_curl($options);
     }
     
     /**
