@@ -17,13 +17,45 @@ defined( 'SYSPATH' ) or die( 'No direct script access.' );
 class DOC_Util_Canvas {
     
     /**
+     * Definition of class constants for submission types
+     */
+    const ROLE_DESIGNER = 'DesignerEnrollment';
+    const ROLE_INSTRUCTOR = 'TeacherEnrollment';
+    const ROLE_OBSERVER = 'ObserverEnrollment';
+    const ROLE_STUDENT = 'StudentEnrollment';
+    const ROLE_TA = 'TaEnrollment';
+    const ROLE_UTA = 'Undergraduate TA';
+    
+    /**
+     * Definition of class constants for submission types
+     * 
+     * - These are the values used by Canvas and returned from 
+     *   varioud APIs (e.g. assignment and submission)
+     */
+    const SUBMISSION_TYPE_DISCUSSION = 'discussion_topic';
+    const SUBMISSION_TYPE_NONE = 'none';
+    const SUBMISSION_TYPE_NOT_GRADED = 'not_graded';
+    const SUBMISSION_TYPE_OFFLINE = 'offline';
+    const SUBMISSION_TYPE_PAPER = 'on_paper';
+    const SUBMISSION_TYPE_QUIZ = 'quiz';
+    const SUBMISSION_TYPE_TEXT = 'online_text_entry';
+    const SUBMISSION_TYPE_UPLOAD = 'online_upload';
+    
+    /**
+     * Definition of class constants for submission types
+     */
+    const TYPE_DESIGNER = 'DesignerEnrollment';
+    const TYPE_INSTRUCTOR = 'TeacherEnrollment';
+    const TYPE_OBSERVER = 'ObserverEnrollment';
+    const TYPE_STUDENT = 'StudentEnrollment';
+    const TYPE_TA = 'TaEnrollment';
+    
+    /**
      * Resource for making CURL requests
      * 
      * @var resource
      */
     private static $ch;
-    
-    
     
     /**
      * Base URL of the Canvas instance to which requests should be made
@@ -321,20 +353,56 @@ class DOC_Util_Canvas {
      * 
      * @param int $course_id
      * @param mixed $role
+     * @param mixed $types
      * @return array
      */
-    public static function get_course_enrollment($course_id, $role = NULL) {
+    public static function get_course_enrollment($course_id, $roles = NULL, $types = NULL) {
         
         self::init();
         
         $options = array();
-        $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/enrollments";
+        
+        $url = self::$host_url . "/api/v1/courses/{$course_id}/enrollments";
+        
+        $params = array();
+        
+        if ($roles != NULL) {
+            if ( ! is_array($roles)) {
+                $roles = array($roles);
+            }
+            
+            foreach ($roles as $role) {
+                $params[] = "role[]={$role}";
+            }
+            
+            
+        }
+        
+        if ($types != NULL) {
+            if ( ! is_array($types)) {
+                $types = array($types);
+            }
+            
+            foreach ($types as &$type) {
+                $params[] = "type[]={$type}";
+            }
+        }
+        
+        if (count($params) > 0) {
+            $url .= '?' . implode('&', $params);
+        }
+        
+        $options[CURLOPT_URL] = $url;
         
         $results = self::execute_curl($options);
         
         $output = array();
-        foreach ($results as $r) {
-            $output[strtolower($r['user']['sortable_name'])] = $r['user'];
+        if ($results != NULL) {
+            foreach ($results as $r) {
+                $r['user']['role'] = $r['role'];
+                $r['user']['type'] = $r['type'];
+                $output[strtolower($r['user']['sortable_name'])] = $r['user'];
+            }
         }
         ksort($output);
         return $output;
@@ -441,6 +509,29 @@ class DOC_Util_Canvas {
     }
     
     /**
+     * Determine if a particular user has a given course enrollment
+     * 
+     * @param int $course_id
+     * @param int $user_id
+     * @param mixed (string/array) $roles
+     * @return boolean
+     */
+    public static function has_course_enrollment($course_id, $user_id, $roles, $types) {
+        
+        $enrollments = self::get_course_enrollment($course_id, $roles, $types);
+            
+        $output = FALSE;
+        foreach ($enrollments as $e) {
+            echo '<pre>'; print_r($e); echo '</pre>';
+            if ($e['id'] == $user_id) {
+                $output = TRUE;
+                break;
+            }
+        }
+        return $output;
+    }
+    
+    /**
      * Initialize class for full use
      */
     private static function init($include_token = TRUE) {
@@ -471,6 +562,56 @@ class DOC_Util_Canvas {
        $options[CURLOPT_POSTFIELDS] = $info; //implode('&', $post_options);
        
        return self::execute_curl($options);
+    }
+    
+    /**
+     * Determine if a submission should be available based on the particular 
+     * document type
+     * 
+     * @param string $submission_type
+     * @return boolean
+     */
+    public static function is_submission_available($submission_type) {
+        $output = FALSE;
+        switch ($submission_type) {
+            
+            case self::SUBMISSION_TYPE_DISCUSSION :
+                // Leave as FALSE
+                break;
+            
+            case self::SUBMISSION_TYPE_NONE :
+                // Leave as FALSE
+                break;
+            
+            case self::SUBMISSION_TYPE_NOT_GRADED :
+                // Leave as FALSE
+                break;
+            
+            case self::SUBMISSION_TYPE_OFFLINE :
+                // Leave as FALSE
+                break;
+            
+            case self::SUBMISSION_TYPE_PAPER :
+                // Leave as FALSE
+                break;
+            
+            case self::SUBMISSION_TYPE_QUIZ :
+                // Leave as FALSE
+                break;
+            
+            case self::SUBMISSION_TYPE_TEXT :
+                // Leave as FALSE
+                break;
+            
+            case self::SUBMISSION_TYPE_UPLOAD :
+                $output = TRUE;
+                break;
+    
+            default :
+                // Intentionally left blank
+        }
+        
+        return $output;
     }
     
     /**
