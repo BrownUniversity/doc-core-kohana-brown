@@ -494,6 +494,22 @@ class DOC_Util_Canvas {
     }
     
     /**
+     * Use the CANVAS assignment submissions API
+     *
+     * @param int $course_id
+     * @param int $assignment_id
+     * @return array
+     */
+    public static function get_submissions_by_assignment($course_id, $assignment_id) {
+    	self::init();
+    	
+    	$options = array();
+    	$options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/assignments/{$assignment_id}/submissions";
+    	
+    	return self::execute_curl($options);
+    }
+    
+    /**
      * Use the CANVAS submission list API
      * 
      * @param int $course_id
