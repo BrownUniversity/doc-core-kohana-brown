@@ -17,6 +17,13 @@ defined( 'SYSPATH' ) or die( 'No direct script access.' );
 class DOC_Util_Canvas {
     
     /**
+     * Limit to the number of records returned by API requests
+     *
+     * @var int
+     */
+    const PER_PAGE = 50;
+    
+    /**
      * Definition of class constants for submission types
      */
     const ROLE_DESIGNER = 'DesignerEnrollment';
@@ -65,6 +72,14 @@ class DOC_Util_Canvas {
     private static $host_url = NULL;
     
     /**
+     * Used as a hack to indicate that there is more data pending from an API request
+     *
+     * @todo refactor
+     * @var boolean
+     */
+    private static $more_data = NULL;
+    
+    /**
      * Has this class been initialized yet?
      * 
      * @var boolean
@@ -75,6 +90,31 @@ class DOC_Util_Canvas {
      * Token for authentication purpose
      */
     private static $token = NULL;
+    
+    /**
+     * Check the return headers from CANVAS API request to check to see if
+     * pagination has been used.
+     *
+     * @param string $input
+     * @return string
+     */
+    private static function check_headers_for_link($input) {
+    	$headers = array();
+		$header_lines = explode("\n", $input);
+		foreach ($header_lines as $line) {
+			$parts = explode(': ', $line);
+			if (count($parts) == 2) {
+				$headers[$parts[0]] = $parts[1];
+			}
+		}
+		
+		$output = '';
+		if (array_key_exists('Link', $headers)) {
+			$output = $headers['Link'];
+		}
+		
+		return $output;
+    }
     
     /**
      * Finalized the file upload process
@@ -301,8 +341,26 @@ class DOC_Util_Canvas {
      */
     private static function execute_curl($options, $include_token = TRUE) {
         self::reset_curl($options, $include_token);
-        $response = curl_exec(self::$ch);
-        return json_decode($response, TRUE);
+        
+        curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt(self::$ch, CURLOPT_VERBOSE, 1);
+		curl_setopt(self::$ch, CURLOPT_HEADER, 1);
+		curl_setopt(self::$ch, CURLOPT_CONNECTTIMEOUT_MS, 10000);
+		$response = curl_exec(self::$ch);
+		
+		// Then, after your curl_exec call:
+		$header_size = curl_getinfo(self::$ch, CURLINFO_HEADER_SIZE);
+		$header = substr($response, 0, $header_size);
+		$body = substr($response, $header_size);
+
+		$link_header = self::check_headers_for_link($header);
+		
+		self::$more_data = NULL;
+		if ($link_header != NULL) {
+			self::$more_data = self::process_link_header($link_header);
+		}
+		
+		return json_decode($body, TRUE);
     }
     
     /**
@@ -362,7 +420,7 @@ class DOC_Util_Canvas {
         
         $options = array();
         
-        $url = self::$host_url . "/api/v1/courses/{$course_id}/enrollments";
+        $url = self::$host_url . "/api/v1/courses/{$course_id}/enrollments?per_page=" . self::PER_PAGE;
         
         $params = array();
         
@@ -389,16 +447,26 @@ class DOC_Util_Canvas {
         }
         
         if (count($params) > 0) {
-            $url .= '?' . implode('&', $params);
+            $url .= '&' . implode('&', $params);
         }
         
         $options[CURLOPT_URL] = $url;
         
-        $results = self::execute_curl($options);
+        /**
+         * Does this double assignment work and is it confusing?
+         */
+        $all_results = self::execute_curl($options);
+        
+        while (self::$more_data != NULL) {
+    		$options[CURLOPT_URL] = self::$more_data;
+    		$results = self::execute_curl($options);
+    		
+    		$all_results = array_merge($all_results, $results);
+    	}
         
         $output = array();
-        if ($results != NULL) {
-            foreach ($results as $r) {
+        if ($all_results != NULL) {
+            foreach ($all_results as $r) {
                 $r['user']['role'] = $r['role'];
                 $r['user']['type'] = $r['type'];
                 $output[strtolower($r['user']['sortable_name'])] = $r['user'];
@@ -506,7 +574,19 @@ class DOC_Util_Canvas {
     	$options = array();
     	$options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/assignments/{$assignment_id}/submissions";
     	
-    	return self::execute_curl($options);
+    	/**
+         * Does this double assignment work and is it confusing?
+         */
+        $all_results = self::execute_curl($options);
+        
+        while (self::$more_data != NULL) {
+    		$options[CURLOPT_URL] = self::$more_data;
+    		$results = self::execute_curl($options);
+    		
+    		$all_results = array_merge($all_results, $results);
+    	}
+    	
+    	return $all_results;
     }
     
     /**
@@ -554,7 +634,6 @@ class DOC_Util_Canvas {
             $config = Kohana::$config->load('canvas');
             self::$host_url = $config->host_url;
             self::$token = $config->api_token;
-            self::$ch = curl_init();
             self::reset_curl(array(), $include_token);
     }
     
@@ -679,6 +758,66 @@ class DOC_Util_Canvas {
     }
     
     /**
+     * Process the link header to see if there is any more data for the API request
+     *
+     * @param string $input
+     * @return string
+     */
+    private static function process_link_header($input) {
+    	$lines = explode(',', $input);
+    	
+    	$links = array(
+    		'current' => '',
+    		'next' => '',
+    		'previous' => '',
+    		'last' => '',
+    		'first' => '',
+    	);
+    	
+    	foreach ($lines as $l) {
+    		$parts = explode('; ', $l);
+    		
+    		if (count($parts) == 2) {
+    			$data = urldecode(substr($parts[0], 1, strlen($parts[0]) - 2));
+    			switch (trim($parts[1])) {
+    				
+    				case 'rel="current"' :
+    					$links['current'] = $data;
+    					break;
+    					
+    				case 'rel="next"' :
+    					$links['next'] = $data;
+    					break;
+    					
+    				case 'rel="last"' :
+    					$links['last'] = $data;
+    					break;
+    				
+    				case 'rel="first"' :
+    					$links['first'] = $data;
+    					break;
+    					
+    				case 'rel="previous"' :
+    					$links['previous'] = $data;
+    					break;
+    					
+    				default :
+    					// intentionally left blank
+    			}
+    		}
+    	}
+    	
+    	$output = NULL;
+    	if (($links['current'] != $links['last']) &&
+    		($links['next'] != NULL))
+    	{
+    		$output = $links['next'];
+    	}
+    	
+    	return $output;
+    }
+    
+    /**
      * Reset CURL resource for a new API Call
      * 
      * @param array $options
@@ -686,6 +825,8 @@ class DOC_Util_Canvas {
      */
     private static function reset_curl($options = array(), $include_token = TRUE) {
         
+        self::$ch = curl_init();
+            
         if ($include_token === TRUE) {
         	$options[CURLOPT_HTTPHEADER] = array (
                 'Authorization: Bearer ' . self::$token,
