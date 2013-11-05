@@ -29,7 +29,8 @@ class DOC_Util_Mail {
 			$mailer = new Swift_Mailer( new Swift_SpoolTransport( $spool )) ;
 		} else {
 // 			$transport = Swift_MailTransport::newInstance() ;
-			$transport = Swift_SmtpTransport::newInstance('localhost') ;
+// 			$transport = Swift_SmtpTransport::newInstance('localhost') ;
+			$transport = Swift_SendmailTransport::newInstance() ;
 			$mailer = Swift_Mailer::newInstance($transport) ;
 		}
 
@@ -95,7 +96,8 @@ class DOC_Util_Mail {
 
 		$spool = new Swift_FileSpool($mail_config['spool_location']) ;
 // 		$transport = Swift_MailTransport::newInstance() ;
-		$transport = Swift_SmtpTransport::newInstance('localhost') ;
+// 		$transport = Swift_SmtpTransport::newInstance('localhost') ;
+		$transport = Swift_SendmailTransport::newInstance() ;
 		$count = $spool->flushQueue($transport) ;
 		Kohana::$log->add(Log::INFO, "Flushed {$count} messages from the spool.") ;
 	}
