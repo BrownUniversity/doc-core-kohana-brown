@@ -33,7 +33,7 @@
 		<?php if( $render_as == DOC_Helper_Table::RENDER_AS_TABLE ) { ?>
 					.tablesorter({
 						sortList: <?php print( $default_sort ) ; ?>,
-						widgets: ['zebra','resizable','saveSort'],
+						widgets: ['zebra','resizable','saveSort','stickyHeaders'],
 						debug: false,
 						theme: '<?php print( $theme ) ; ?>'
 					})

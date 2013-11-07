@@ -318,17 +318,17 @@ abstract class DOC_Util_File {
 	public function is_web_friendly($mime_type) {	
 		$friendly_mime_types = array(
 			'application/pdf',
-			'image/jpeg',
-			'video/jpeg',
-			'image/gif',
-			'image/png',
 			'application/x-shockwave-flash',
 			'audio/mpeg',
-			'video/mpeg',
 			'audio/mp4',
+			'image/gif',
+			'image/jpeg',
+			'image/png',
+			'image/tiff',
+			'video/jpeg',
+			'video/mpeg',
 			'video/mp4',
-			'video/quicktime',
-			'image/tiff'
+			'video/quicktime'
 		) ;
 
 		foreach( $friendly_mime_types as $friendly_type ) {
