@@ -982,7 +982,7 @@ class DOC_Util_Ldap
     			} else {
     				$value = $data[$ldapname][0];
     			}
-    			$outp[$attribute] = $value;
+    			$outp[$attribute] = (is_array($value) || is_object($value)) ? $value : trim($value);
     		} else {
     			$outp[$attribute] = NULL;
     		}
