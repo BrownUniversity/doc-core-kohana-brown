@@ -18,7 +18,7 @@ defined('BANNERINTEGRATION_APIS_IAR_URL') or define('BANNERINTEGRATION_APIS_IAR_
 
 defined('BANNERINTEGRATION_APIS_PHOTO_SECRET') or define('BANNERINTEGRATION_APIS_PHOTO_SECRET', '***REMOVED***');
 defined('BANNERINTEGRATION_APIS_PHOTO_URL') or define('BANNERINTEGRATION_APIS_PHOTO_URL', '***REMOVED***');
-// defined('BANNERINTEGRATION_APIS_PHOTO_URL') or define('BANNERINTEGRATION_APIS_PHOTO_URL', '***REMOVED***');
+//defined('BANNERINTEGRATION_APIS_PHOTO_URL') or define('BANNERINTEGRATION_APIS_PHOTO_URL', '***REMOVED***');
 
 defined('BANNERINTEGRATION_APIS_CART_SECRET') or define('BANNERINTEGRATION_APIS_CART_SECRET', '***REMOVED***') ;
 defined('BANNERINTEGRATION_APIS_CART_URL') or define('BANNERINTEGRATION_APIS_CART_URL', '***REMOVED***');
@@ -78,6 +78,16 @@ return array(
 			'url' => BANNERINTEGRATION_APIS_CART_URL,
 			'contact' => 'Christopher_Keith@brown.edu'
 		)
+    ),
+    'meta' => array(
+    	'ap_institution_codes' => array(
+			'T00001',
+			'T00002',
+			'T00003',
+			'T00004',
+			'T00005',
+			'T00006'
+    	)
     )
 );
 
