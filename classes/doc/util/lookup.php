@@ -29,9 +29,9 @@ class DOC_Util_Lookup {
 			$cache = Cache::instance() ;
 		}
 		$cache_key = "{$model}.{$key}.{$mode}." . md5( serialize( $order )) . '.' . md5( serialize( $wheres )) ;
-		
+
 		if( $cache !== FALSE && !empty( $cache_key )) {
-			$_output = $cache->get($cache_key,'') ;
+			$_output = $cache->get($cache_key,$_output) ;
 		}
 		
 		if( empty( $_output )) {
@@ -56,16 +56,19 @@ class DOC_Util_Lookup {
 			}
 
 			$arr = $orm->find_all() ;
-
-			if ( $mode == self::BY_VAL) {
-				foreach( $arr as $obj ) {
-					$_output[ $obj->$key ] = $obj->pk() ;
-				}
-			} else {
-				foreach ( $arr as $obj ) {
-					$_output[ $obj->pk() ] = $obj->$key;
-				}
-			}		
+			
+			if( $arr->count() > 0 ) {
+				if ( $mode == self::BY_VAL) {
+					foreach( $arr as $obj ) {
+						$_output[ $obj->$key ] = $obj->pk() ;
+					}
+				} else {
+					foreach ( $arr as $obj ) {
+						$_output[ $obj->pk() ] = $obj->$key;
+					}
+				}		
+			
+			}
 		}
 
 		return $_output ;
