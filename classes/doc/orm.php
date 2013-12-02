@@ -49,7 +49,10 @@ class DOC_ORM extends Kohana_ORM {
         if (count($this->_project_columns) == 0) {
             $this->_db_builder->select($this->_object_name.'.*');
         } else {
-            $this->_db_builder->select_array($this->_project_columns);
+        	foreach( $this->_project_columns as $project_column ) {
+        		$this->_db_builder->select($project_column);
+        	}
+//            $this->_db_builder->select_array($this->_project_columns);
         }
         
 		if ( ! isset($this->_db_applied['order_by']) AND ! empty($this->_sorting))
@@ -217,7 +220,7 @@ class DOC_ORM extends Kohana_ORM {
                 if (strpos($cn, '.') === FALSE) {
                     $this->_project_columns[] = "{$this->_object_name}.{$cn}";
                 } else {
-                    $this->_project_columns[] = $cn;
+                    $this->_project_columns[] = array($cn,str_replace('.',':',$cn));
                 }
             }
         }

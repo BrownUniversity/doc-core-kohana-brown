@@ -24,37 +24,49 @@ class DOC_Util_Lookup {
 	 */
 	static function get_lut( $model, $key, $mode = self::BY_VAL, $order = NULL, $wheres = NULL) {
 		$_output = array() ;
-		$orm = ORM::factory($model) ;
-		if( !empty( $order )) {
-            if ( ! is_array($order)) {
-                $order = array($order => 'asc');
-            }
-            foreach ($order as $column => $direction) {
-                $orm->order_by($column, $direction);
-            }
-		} else {
-			if( $orm->supports_property('id')) {
-				$orm->order_by('id') ;
-			}
+		$cache = FALSE ;
+		if( array_key_exists( 'cache', Kohana::modules())) {
+			$cache = Cache::instance() ;
 		}
-
-		if( is_array( $wheres )) {
-			foreach( $wheres as $where ) {
-				$orm->where( $where[0], $where[1], $where[2] ) ;
-			}
+		$cache_key = "{$model}.{$key}.{$mode}." . md5( serialize( $order )) . '.' . md5( serialize( $wheres )) ;
+		
+		if( $cache !== FALSE && !empty( $cache_key )) {
+			$_output = $cache->get($cache_key,'') ;
 		}
+		
+		if( empty( $_output )) {
+			$orm = ORM::factory($model) ;
+			if( !empty( $order )) {
+				if ( ! is_array($order)) {
+					$order = array($order => 'asc');
+				}
+				foreach ($order as $column => $direction) {
+					$orm->order_by($column, $direction);
+				}
+			} else {
+				if( $orm->supports_property('id')) {
+					$orm->order_by('id') ;
+				}
+			}
 
-		$arr = $orm->find_all() ;
+			if( is_array( $wheres )) {
+				foreach( $wheres as $where ) {
+					$orm->where( $where[0], $where[1], $where[2] ) ;
+				}
+			}
 
-        if ( $mode == self::BY_VAL) {
-            foreach( $arr as $obj ) {
-                $_output[ $obj->$key ] = $obj->pk() ;
-            }
-        } else {
-            foreach ( $arr as $obj ) {
-                $_output[ $obj->pk() ] = $obj->$key;
-            }
-        }
+			$arr = $orm->find_all() ;
+
+			if ( $mode == self::BY_VAL) {
+				foreach( $arr as $obj ) {
+					$_output[ $obj->$key ] = $obj->pk() ;
+				}
+			} else {
+				foreach ( $arr as $obj ) {
+					$_output[ $obj->pk() ] = $obj->$key;
+				}
+			}		
+		}
 
 		return $_output ;
 	}
