@@ -43,6 +43,14 @@ return array(
                 'filename' => 'ask_instructors.dat',
                 'regex' => '#\{\s*"Term"\s*:\s*"[^"]*"\s*,\s*"CRN"\s*:\s*"[^"]*"\s*,\s*"LDAP_ID"\s*:\s*"[^"]*"\s*,\s*"Primary_Ind"\s*:\s*"[^"]*"\s*\}#'
         ),
+        'test_score_codes' => array(
+                'filename' => 'ask_test_codes.dat',
+                'regex' => '#\{\s*"test_code"\s*:\s*"[^"]*"\s*,\s*"test_description"\s*:\s*"[^"]*"\s*\}#',
+        ),
+        'test_scores' => array(
+                'filename' => 'ask_test_scores.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Test_Date"\s*:\s*"[^"]*"\s*\}#',
+        ),
         'undergraduate_active' => array(
                 'filename' => 'ask_ug_active.dat',
                 'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s', 
