@@ -95,9 +95,14 @@ class DOC_Log_Mongo extends Log_Writer {
      *
      * @param array $limit additional criteria
      * @return MongoCursor
+     * @throws Kohana_Exception
      */
     public static function read($limit = 50, $filters = array('level' => 'ERROR')) {
     	
+        if ( ! is_a(self::$client, 'MongoClient')) {
+            throw new Kohana_Exception('Log Mongo not initialized properly - MongoClient.');
+        }
+        
         if ( ! self::$client->connected) {
             self::$client->connect();
         }
@@ -114,8 +119,14 @@ class DOC_Log_Mongo extends Log_Writer {
      * 
      * @param type $id
      * @return array
+     * @throws Kohana_Exception
      */
     public static function read_one($id) {
+        
+        if ( ! is_a(self::$client, 'MongoClient')) {
+            throw new Kohana_Exception('Log Mongo not initialized properly - MongoClient.');
+        }
+        
         if ( ! self::$client->connected) {
             self::$client->connect();
         }
@@ -139,6 +150,7 @@ class DOC_Log_Mongo extends Log_Writer {
      * 
      * @uses DOC_Util_Mail
      * @param array $messages
+     * @throws Kohana_Exception
      */
     public function write(array $messages) {
         
@@ -162,6 +174,11 @@ class DOC_Log_Mongo extends Log_Writer {
             );
             
             try {
+
+                if ( ! is_a(self::$client, 'MongoClient')) {
+                    throw new Kohana_Exception('Log Mongo not initialized properly - MongoClient.');
+                }
+                
                 if ( ! self::$client->connected) {
                     self::$client->connect();
                 }
