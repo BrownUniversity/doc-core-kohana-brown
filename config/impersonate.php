@@ -26,6 +26,14 @@ $config['session_type'] = 'database';
 $config['session_key'] = 'impersonate.id';
 
 /**
+ * Session key at which to store the id of the user who was last impersonated
+ * by the current user.
+ * 
+ * @var string
+ */
+$config['last_impersonated_key'] = 'impersonate.last_impersonated_id';
+
+/**
  * Session key at which to store the results of a user search
  *
  * @var string

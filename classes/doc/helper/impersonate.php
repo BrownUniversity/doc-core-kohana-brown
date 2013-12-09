@@ -31,8 +31,21 @@ class DOC_Helper_Impersonate {
         }
 
         $session->set(Kohana::$config->load('impersonate.session_key'), $id);
+        $session->set(Kohana::$config->load('impersonate.last_impersonated_key'), $id) ;
     }
 
+    /**
+     * Allow the current user to assume the identity of the last person that
+     * they have impersonated.
+     */
+    public static function assume_last_identity() {
+        $last = self::get_last_impersonated_user();
+        if ($last !== NULL) {
+            $attribute = Kohana::$config->load('impersonate.permissions_property');
+            self::assume($last->$attribute);
+        }
+    }
+    
     /**
      * Generate a link for canceling impersonation if a user is being impersonated.
      *
@@ -83,6 +96,16 @@ class DOC_Helper_Impersonate {
         		$session->get( Kohana::$config->load('impersonate.session_original_user_id'))
         ) ;
     }
+    
+    /**
+     * Remove all traces of impersonation, including the id of the last 
+     * impersonated user.
+     */
+    public static function clear_all() {
+        $session = self::session();
+        $session->delete(Kohana::$config->load('impersonate.last_impersonated_key'));
+        self::clear();
+    }
 
     /**
      * Get the results of a user impersonation search
@@ -107,6 +130,24 @@ class DOC_Helper_Impersonate {
         return $link;
     }
 
+    /**
+     * Get the last user impersonated by the current user in this session
+     */
+    public static function get_last_impersonated_user() {
+        $session = self::session();
+        
+        $id = $session->get(Kohana::$config->load('impersonate.last_impersonated_key'));
+        Kohana::$log->add(Log::INFO, 'Last Impersonated User: ' . $id);
+        $logged_in_method = Kohana::$config->load('impersonate.logged_in_method');
+        $alternate_method = Kohana::$config->load('impersonate.alternate_method');
+        $model = Kohana::$config->load('impersonate.user_model');
+        $command = NULL;
+        if ($id !== NULL) {
+            $command = "return Model_{$model}::{$alternate_method}('{$id}');";
+        }
+        return eval($command);
+    }
+    
     /**
      * Get the current user or impersonated user
      */

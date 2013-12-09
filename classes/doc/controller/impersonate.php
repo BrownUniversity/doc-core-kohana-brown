@@ -62,6 +62,15 @@ class DOC_Controller_Impersonate extends Controller_Template {
     }
     
     /**
+     * Fully clear an impersonation session, including the identity of the 
+     * last impersonated user.
+     */
+    public function action_clearall() {
+        DOC_Helper_Impersonate::clear_all();
+        $this->request->redirect($this->request->referrer());
+    }
+    
+    /**
      * Search for a user to impersonate
      */
     public function action_index()
@@ -109,4 +118,14 @@ class DOC_Controller_Impersonate extends Controller_Template {
             $this->template->content = View::factory('impersonate/search_form');
         }
     }
+    
+    /**
+     * Allow the current user to assume the identify of the person whom they 
+     * have last impersonated.
+     */
+    public function action_last() {
+        DOC_Helper_Impersonate::assume_last_identity();
+        $this->request->redirect($this->request->referrer());
+    }
+    
 } // End Impersonation Controller
