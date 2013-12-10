@@ -31,7 +31,18 @@ class DOC_Helper_Impersonate {
         }
 
         $session->set(Kohana::$config->load('impersonate.session_key'), $id);
-        $session->set(Kohana::$config->load('impersonate.last_impersonated_key'), $id) ;
+        
+        /**
+         * Add last impersonated id to impersonation history
+         */
+        $temp = $session->get(Kohana::$config->load('impersonate.last_impersonated_key'), FALSE);
+        $impersonate_history = array();
+        if ($temp !== FALSE) {
+            $impersonate_history = unserialize($temp);
+        }
+        $impersonate_history[] = $id;
+        $unique_history = array_unique($impersonate_history);
+        $session->set(Kohana::$config->load('impersonate.last_impersonated_key'), serialize($unique_history)) ;
     }
 
     /**
@@ -98,13 +109,20 @@ class DOC_Helper_Impersonate {
     }
     
     /**
+     * Remove impersonation history from the session
+     */
+    public static function clear_history() {
+        $session = self::session();
+        $session->delete(Kohana::$config->load('impersonate.last_impersonated_key'));
+    }
+    
+    /**
      * Remove all traces of impersonation, including the id of the last 
      * impersonated user.
      */
     public static function clear_all() {
-        $session = self::session();
-        $session->delete(Kohana::$config->load('impersonate.last_impersonated_key'));
         self::clear();
+        self::clear_history;
     }
 
     /**
@@ -130,6 +148,24 @@ class DOC_Helper_Impersonate {
         return $link;
     }
 
+    /**
+     * Get the history of impersonated users
+     * 
+     * @return array
+     */
+    public static function get_history() {
+        $session = self::session();
+        
+        $temp = $session->get(Kohana::$config->load('impersonate.last_impersonated_key'), FALSE);
+        
+        $impersonate_history = array();
+        if ($temp !== FALSE) {
+            $impersonate_history = unserialize($temp);
+        }
+        
+        return $impersonate_history;
+    }
+    
     /**
      * Get the last user impersonated by the current user in this session
      */

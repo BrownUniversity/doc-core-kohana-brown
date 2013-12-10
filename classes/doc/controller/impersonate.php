@@ -70,6 +70,19 @@ class DOC_Controller_Impersonate extends Controller_Template {
         $this->request->redirect($this->request->referrer());
     }
     
+    public function action_history() {
+        $key = $this->request->param('id');
+        $history = DOC_Helper_Impersonate::get_history();
+        
+        if (array_key_exists($key, $history)) {
+            DOC_Helper_Impersonate::assume($history[$key]);
+        } else {
+            DOC_Helper_Impersonate::clear_history();
+        }
+        
+        $this->request->redirect($this->request->referrer());
+    }
+    
     /**
      * Search for a user to impersonate
      */
