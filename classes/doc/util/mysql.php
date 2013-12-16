@@ -102,14 +102,20 @@ class DOC_Util_Mysql {
      * @param string $path path to local file
      * @param string $table name of table to update
      * @param array $columns ordered list of columns to update
+     * @param boolean $update_duplicates
      * @return ?
      */
-    public function load($path, $table, $columns) {
+    public function load($path, $table, $columns, $update_duplicates = TRUE) {
 
+        $mode = 'REPLACE';
+        if ($update_duplicates === FALSE) {
+            $mode = 'IGNORE';
+        }
+        
         $columns = implode(', ', $columns);
         $sql = "
             LOAD DATA LOCAL INFILE '{$path}'
-            REPLACE INTO TABLE {$table}
+            {$mode} INTO TABLE {$table}
             FIELDS TERMINATED BY '\t' ENCLOSED BY ''
             LINES TERMINATED BY '\n'
             ({$columns})
