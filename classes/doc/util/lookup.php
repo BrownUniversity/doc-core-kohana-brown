@@ -1,10 +1,16 @@
 <?php
 /**
+ * @package DOC Core Module
+ * @version 1.0
+ * @since 1.0
+ * @author Jason Orrill <Jason_Orrill@brown.edu>
+ */
+defined( 'SYSPATH' ) or die( 'No direct script access.' );
+
+/**
  * Several chunks of data are stored in the database with simple key/value/abbrev
  * in the table. This class provides a standard way to get lookup arrays so that
  * we can refer to the primary key value by the abbreviation.
- *
- * @author jorrill
  */
 class DOC_Util_Lookup {
 
@@ -20,9 +26,10 @@ class DOC_Util_Lookup {
 	 * @param string $mode Use one of the class constants here.
 	 * @param mixed $order The field to order the results by. If a string, will be on that column ascending. If an array, will expect the keys to be column names and the values to all be either 'asc' or 'desc'.
 	 * @param array $wheres An array of arrays, with each matching the arguments that are sent via the where() method.
+     * @param boolean $refresh_cache should we force replace the cached values?
 	 * @return array
 	 */
-	static function get_lut( $model, $key, $mode = self::BY_VAL, $order = NULL, $wheres = NULL) {
+	static function get_lut( $model, $key, $mode = self::BY_VAL, $order = NULL, $wheres = NULL, $refresh_cache = FALSE) {
 		$_output = array() ;
 		$cache = FALSE ;
 		if( array_key_exists( 'cache', Kohana::modules())) {
@@ -30,9 +37,9 @@ class DOC_Util_Lookup {
 		}
 		$cache_key = "{$model}.{$key}.{$mode}." . md5( serialize( $order )) . '.' . md5( serialize( $wheres )) ;
 
-		if( $cache !== FALSE && !empty( $cache_key )) {
+		if(($cache !== FALSE) && ( ! empty( $cache_key )) && ($refresh_cache == FALSE)) {
 			$_output = $cache->get($cache_key,$_output) ;
-		}
+		} 
 		
 		if( empty( $_output )) {
 			$orm = ORM::factory($model) ;
