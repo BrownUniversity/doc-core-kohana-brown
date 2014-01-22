@@ -129,6 +129,16 @@ abstract class DOC_Util_Banner_Import {
      * only happens once.
      */
     protected static function init() {}
+    
+    /**
+     * Pre-process data read in from the data files
+     * 
+     * @param string $input
+     * @return string
+     */
+    protected static function preproc($input) {
+        return trim($input);
+    }
 }
 
 // End DOC_Util_Banner_Import
