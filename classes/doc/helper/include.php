@@ -26,7 +26,7 @@ class DOC_Helper_Include {
 	 * @param array $attrs Attributes to add to the tag. Only used when generating a link, script or img tag.
 	 * @return string
 	 */
-	static function file_link( $path, $type = NULL, $attrs = NULL ) {
+	static function file_link( $path, $type = NULL, $attrs = NULL, $auto_version = FALSE ) {
 		$_output = '' ;
 		$include_url = '' ;
 		// check the include directories, find the first instance of the file
@@ -34,7 +34,13 @@ class DOC_Helper_Include {
 
 		foreach( $include_paths as $path_arr ) {
 			if(file_exists( $path_arr[ 'base_file_path' ] . $path )) {
-				$include_url = $path_arr[ 'base_url' ] . $path ;
+				if( $auto_version ) {
+					$mtime = filemtime( $path_arr[ 'base_file_path' ] . $path ) ;
+					$include_url = preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $path_arr[ 'base_url' ] . $path);
+				} else {
+					$include_url = $path_arr[ 'base_url' ] . $path ;
+				}
+				
 				break ;
 			}
 		}
