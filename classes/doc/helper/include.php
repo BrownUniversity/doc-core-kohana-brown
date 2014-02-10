@@ -24,6 +24,7 @@ class DOC_Helper_Include {
 	 * @param string $path The path fragment you want to check for.
 	 * @param string $type Use one of the class constants, or leave NULL to just get the URL with no generated HTML.
 	 * @param array $attrs Attributes to add to the tag. Only used when generating a link, script or img tag.
+	 * @param boolean $auto_version Whether to include the auto-version timestamp.
 	 * @return string
 	 */
 	static function file_link( $path, $type = NULL, $attrs = NULL, $auto_version = FALSE ) {
@@ -121,9 +122,10 @@ class DOC_Helper_Include {
 	 *
 	 * @param string $type Use one of the class constants.
 	 * @param string $include_as Use one of the class constants.
+	 * @param boolean $auto_version Whether to include the auto-version timestamp.
 	 * @return string
 	 */
-	static function companion( $type, $include_as = self::INCLUDE_LINK ) {
+	static function companion( $type, $include_as = self::INCLUDE_LINK, $auto_version = FALSE ) {
 
 		$_output = '' ;
 		$dir_and_extensions = array(
@@ -148,7 +150,7 @@ class DOC_Helper_Include {
 
 
 		if( $include_as == self::INCLUDE_LINK ) {
-			$_output = self::file_link( $file, $type ) ;
+			$_output = self::file_link( $file, $type, NULL, $auto_version ) ;
 		} else {
 			$_output = self::file_contents( $file ) ;
 		}
