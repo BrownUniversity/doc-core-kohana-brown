@@ -437,7 +437,7 @@ class DOC_Util_LaTeX {
         $_output = self::latex_html_entities($_output) ;
         
 		// remove multiple line breaks (again?)
-		$_output = preg_replace( "/\n{2,}/", "\n", $_output ) ;
+		$_output = preg_replace( "/\n{3,}/", "\n\n", $_output ) ;
 		
         // remove LaTeX line breaks after a curly brace
 		$_output = preg_replace('/\}\n(\\\\\\\\\s*\n)+/m', '}'.PHP_EOL, $_output) ;
