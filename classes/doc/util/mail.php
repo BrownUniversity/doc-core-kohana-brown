@@ -113,9 +113,9 @@ class DOC_Util_Mail {
 		$_output = array() ;
 		if( $address_list != NULL && $address_list != '') {
 			if( !is_array( $address_list)) {
-				$address_list = explode( ',', $address_list ) ;
-			}
-
+				$address_list = preg_split('/[^A-Za-z0-9._%+@-]+/i',$address_list) ;
+			}	
+			
 			foreach( $address_list as $key => $address ) {
 				$address = trim( $address ) ;
 
