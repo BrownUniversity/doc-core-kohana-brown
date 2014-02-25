@@ -37,7 +37,7 @@ class DOC_Util_Ical {
 		$_output .= "VERSION:2.0".$crlf ;
 		$_output .= "PRODID:{$this->product}".$crlf ;
 		$_output .= "BEGIN:VEVENT".$crlf ;
-		$_output .= "UID:".DOC_Util_UUID::get()."@".$_SERVER['SERVER_NAME'].$crlf ;
+		$_output .= "UID:".DOC_Util_UUID::get()."@".getenv('HOSTNAME').$crlf ;
 		$_output .= "DTSTAMP:" . gmdate('Ymd').'T'. gmdate('His') . "Z".$crlf ;
 		$_output .= "DTSTART:".$this->start_datetime->format('Ymd\THis\Z').$crlf ;
 		$_output .= "DTEND:".$this->end_datetime->format('Ymd\THis\Z').$crlf ;
