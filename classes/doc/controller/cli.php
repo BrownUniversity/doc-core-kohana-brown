@@ -27,11 +27,15 @@ class DOC_Controller_CLI extends Controller {
          * Ensure the request is actually coming from the command line
          */
         if ( ! Kohana::$is_cli) {
-            throw new Kohana_Exception('Attempting to execute CLI view a web-browser.');
+            throw new Kohana_Exception('Attempting to execute CLI view in a web browser.');
         }
         
 		ob_implicit_flush(TRUE) ;
 		ob_end_flush() ;
+
+		$log = Kohana::$log->instance() ;
+		$log::$write_on_add = TRUE ;
+		Kohana::$log->attach(new Log_StdOut()) ;
 
 		$cli_config = Kohana::$config->load('cli') ;
 		if( $cli_config[ 'cli_enabled' ] === TRUE ) {
@@ -88,9 +92,9 @@ class DOC_Controller_CLI extends Controller {
 	 * @param int $total The total number of expected iterations
 	 * @param int $break_at Number at which to output a line break
 	 */
-	protected function show_progress($count, $total, $break_at = 50 ) {
+	public static function show_progress($count, $total, $break_at = 50 ) {
 		print('.') ;
-		if( $count % $break_at == 0 ) {
+		if( $count % $break_at == 0 || $count == $total ) {
 			print( " ({$count}/{$total})\n") ;
 		}
 	}
