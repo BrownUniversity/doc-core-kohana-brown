@@ -1,4 +1,5 @@
 <?php
+use Aws\S3\S3Client ;
 
 /*
  * To change this template, choose Tools | Templates
@@ -19,7 +20,10 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 	public function __construct($config_file = self::CONFIG_FILE) {
 		parent::__construct($config_file);
 		$this->aws_config = Kohana::$config->load('aws') ;
-		$this->s3 = new AmazonS3( array( 'key' => $this->aws_config[ 'key' ], 'secret' => $this->aws_config[ 'secret' ])) ;
+//		$this->s3 = new AmazonS3( array( 'key' => $this->aws_config[ 'key' ], 'secret' => $this->aws_config[ 'secret' ])) ;
+
+		$this->s3 = S3Client::factory(array( 'key' => $this->aws_config[ 'key' ], 'secret' => $this->aws_config[ 'secret' ])) ;		
+		
 	}
 
     /**
@@ -41,13 +45,22 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 	 * @return boolean
 	 */
 	public function delete($root_dir, $filename) {
-		$response = $this->s3->delete_object( $root_dir, $filename ) ;
+		try {
+			$response = $this->s3->deleteObject( array( 
+				'Bucket' => $root_dir,
+				'Key' => $filename
+			)) ;
+		} catch( S3Exception $e ) {
+			$error = $e->parse() ;
+			throw new ErrorException("{$error['message']} (type: {$error['type']}, code: {$error['code']})");
+		}
+
 		// also delete from the cache
 		if( file_exists( $this->aws_config['cache_path'] . $filename )) {
 			unlink( $this->aws_config['cache_path'] . $filename ) ;
 		}
 
-		return $response->isOK() ;
+		return TRUE ;
 	}
 
 	/**
@@ -158,16 +171,29 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 	 * @return boolean
 	 */
 	public function save($root_dir, $filename, $source_path, $attributes = NULL) {
-		if( is_array( $attributes )) {
-			$attributes['fileUpload'] = $source_path ;
-		} else {
-			$attributes = array('fileUpload' => $source_path) ;
-		}
-		$attributes[ 'contentType' ] = $this->get_mime_type( $source_path ) ;
+	
+		try {
+			if( is_array( $attributes )) {
+				$attributes['fileUpload'] = $source_path ;
+			} else {
+				$attributes = array('fileUpload' => $source_path) ;
+			}
+			$attributes[ 'contentType' ] = $this->get_mime_type( $source_path ) ;
 
-		$response = $this->s3->create_object( $root_dir, $filename, $attributes ) ;
+			$object_args = $attributes ;
+			$object_args['Bucket'] = $root_dir ;
+			$object_args['Key'] = $filename ;
+			$object_args['SourceFile'] = $source_path ;
 
-		return $response->isOK() ;
+
+			$response = $this->s3->createObject( $object_args ) ;
+
+		} catch( S3Exception $e ) {
+			$error = $e->parse() ;
+			throw new ErrorException("{$error['message']} (type: {$error['type']}, code: {$error['code']})");
+		}	
+
+		return TRUE ;
 	}
 
 	/**
@@ -189,19 +215,23 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 				unlink( $cached_file ) ;
 			}
 		}
-		// No valid cache exists, retrieve from AWS. We'll still use the same $cached_file location.
-		$response = $this->s3->get_object(
-				$root_dir,
-				$filename,
-				array('fileDownload' => $cached_file)
-		) ;
-
-		// Check for failure. Note that the cache file will be created even if the
-		// response indicates a failure. When this happens the file gets the XML
-		// response data instead of the actual file we want, so we need to delete it.
-		if( !$response->isOK()) {
+		try {		
+			// No valid cache exists, retrieve from AWS. We'll still use the same $cached_file location.
+			$object_args = array(
+				'Bucket' => $root_dir,
+				'Key' => $filename,
+				'SaveAs' => $cached_file
+			) ;
+			$response = $this->s3->getObject( $object_args ) ;
+		} catch( S3Exception $e ) {
+			// TODO: verify that the following is true with the 2.x SDK
+			// Note that the cache file will be created even if the response indicates a 
+			// failure. When this happens the file gets the XML response data instead of 
+			// the actual file we want, so we need to delete it.
+		
+			$error = $e->parse() ;
 			unlink( $cached_file ) ;
-			throw new ErrorException('Unable to retrieve file from S3.') ;
+			throw new ErrorException("{$error['message']} (type: {$error['type']}, code: {$error['code']})");
 		}
 		
 		return $cached_file ;
