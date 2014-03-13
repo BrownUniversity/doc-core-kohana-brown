@@ -20,10 +20,7 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 	public function __construct($config_file = self::CONFIG_FILE) {
 		parent::__construct($config_file);
 		$this->aws_config = Kohana::$config->load('aws') ;
-//		$this->s3 = new AmazonS3( array( 'key' => $this->aws_config[ 'key' ], 'secret' => $this->aws_config[ 'secret' ])) ;
-
-		$this->s3 = S3Client::factory(array( 'key' => $this->aws_config[ 'key' ], 'secret' => $this->aws_config[ 'secret' ])) ;		
-		
+		$this->s3 = S3Client::factory(array( 'key' => $this->aws_config[ 'key' ], 'secret' => $this->aws_config[ 'secret' ])) ;				
 	}
 
     /**
