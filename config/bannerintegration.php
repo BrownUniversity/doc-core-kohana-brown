@@ -12,6 +12,8 @@ if( file_exists( dirname( __FILE__ ) . '/myConfig.php' )) include_once( dirname(
 defined('FTPS_SERVER') or define('FTPS_SERVER', 'ftps.example.edu');
 defined('FTPS_PATH') or define('FTPS_PATH', '/path/to/files/');
 
+defined('BANNERINTEGRATION_APIS_CONTACT') or define('BANNERINTEGRATION_APIS_CONTACT', 'Christopher_Keith@brown.edu') ;
+
 defined('BANNERINTEGRATION_APIS_IAR_SECRET') or define('BANNERINTEGRATION_APIS_IAR_SECRET', '***REMOVED***');
 defined('BANNERINTEGRATION_APIS_IAR_URL') or define('BANNERINTEGRATION_APIS_IAR_URL', '***REMOVED***');
 //defined('BANNERINTEGRATION_APIS_IAR_URL') or define('BANNERINTEGRATION_APIS_IAR_URL', '***REMOVED***');
@@ -24,6 +26,8 @@ defined('BANNERINTEGRATION_APIS_CART_SECRET') or define('BANNERINTEGRATION_APIS_
 defined('BANNERINTEGRATION_APIS_CART_URL') or define('BANNERINTEGRATION_APIS_CART_URL', '***REMOVED***');
 //defined('BANNERINTEGRATION_APIS_CART_URL') or define('BANNERINTEGRATION_APIS_CART_URL', '***REMOVED***');
 
+defined('BANNERINTEGRATION_APIS_BDMS_SECRET') or define('BANNERINTEGRATION_APIS_BDMS_SECRET','***REMOVED***') ;
+defined('BANNERINTEGRATION_APIS_BDMS_URL') or define('BANNERINTEGRATION_APIS_BDMS_URL','***REMOVED***') ;
 
 return array(
     'server'   => FTPS_SERVER,
@@ -74,17 +78,22 @@ return array(
     	'iar' => array(
     		'secret' => BANNERINTEGRATION_APIS_IAR_SECRET,
     		'url' => BANNERINTEGRATION_APIS_IAR_URL,
-    		'contact' => 'Christopher_Keith@brown.edu'
+    		'contact' => BANNERINTEGRATION_APIS_CONTACT
     	),
     	'photo' => array(
     		'secret' => BANNERINTEGRATION_APIS_PHOTO_SECRET,
     		'url' => BANNERINTEGRATION_APIS_PHOTO_URL,
-    		'contact' => 'Christopher_Keith@brown.edu'
+    		'contact' => BANNERINTEGRATION_APIS_CONTACT
     	),
 		'cart' => array(
 			'secret' => BANNERINTEGRATION_APIS_CART_SECRET,
 			'url' => BANNERINTEGRATION_APIS_CART_URL,
-			'contact' => 'Christopher_Keith@brown.edu'
+			'contact' => BANNERINTEGRATION_APIS_CONTACT
+		),
+		'bdms' => array(
+			'secret' => BANNERINTEGRATION_APIS_BDMS_SECRET,
+			'url' => BANNERINTEGRATION_APIS_BDMS_URL,
+			'contact' => BANNERINTEGRATION_APIS_CONTACT
 		)
     ),
     'meta' => array(
@@ -95,7 +104,10 @@ return array(
 			'T00004',
 			'T00005',
 			'T00006'
-    	)
+    	),
+    	// Length of time into a student's first term a non-privileged user should
+    	// have access to BDMS files. Store as a DateInterval compatible string.
+    	'bdms_cutoff' => 'P1M' // one month
     )
 );
 
