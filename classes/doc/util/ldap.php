@@ -51,6 +51,7 @@ class DOC_Util_Ldap
 		"country_code"        => 'brownsecuritycountrycode',
 		"local_address"       => 'brownlocaladdress',
         "type"                => 'browntype',
+        "barcode"             => 'brownbarcode',
 	);
 
     /**
