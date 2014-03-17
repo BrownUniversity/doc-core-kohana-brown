@@ -15,6 +15,9 @@
 			$table_id = 'tablegrid' ;
 		}
 	}
+	if( !isset( $editable_columns )) {
+		$editable_columns = array() ;
+	}
 	if( !isset( $pager_id )) {
 		$pager_id = 'pager' ;
 	}
@@ -113,6 +116,7 @@
 			$jquery->no_pager = $no_pager ;
 			$jquery->render_as = $render_as ;
 			$jquery->default_sort = $default_sort ;
+			$jquery->editable_columns = $editable_columns ;
 			$jquery->theme = $theme ;
 			$jquery->include_render_options = $include_render_options ;
 			print( $jquery->render() ) ;

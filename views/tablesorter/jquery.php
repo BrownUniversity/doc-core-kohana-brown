@@ -14,6 +14,9 @@
 	if( !isset( $default_sort )) {
 		$default_sort = '[[0,0]]' ;
 	}
+	if( !isset( $editable_columns )) {
+		$editable_columns = array() ;
+	}
 	if( !isset( $theme )) {
 		if( defined( 'JQUERY_TABLESORTER_THEME' )) {
 			$theme = JQUERY_TABLESORTER_THEME ;
@@ -24,6 +27,13 @@
 	if( !isset( $include_render_options )) {
 		$include_render_options = FALSE ;
 	}
+	
+	
+	$widgets_list = "'zebra','resizable','saveSort','stickyHeaders'" ;
+	if( count( $editable_columns ) > 0 ) {
+		$widgets_list .= ",'editable'" ;
+	}
+	
 ?>
 
 <script language="javascript">
@@ -33,9 +43,16 @@
 		<?php if( $render_as == DOC_Helper_Table::RENDER_AS_TABLE ) { ?>
 					.tablesorter({
 						sortList: <?php print( $default_sort ) ; ?>,
-						widgets: ['zebra','resizable','saveSort','stickyHeaders'],
+						widgets: [<?php print( $widgets_list ) ; ?>],
 						debug: false,
-						theme: '<?php print( $theme ) ; ?>'
+						theme: '<?php print( $theme ) ; ?>',
+						widgetOptions: {
+							<?php 
+								if( count( $editable_columns ) > 0 ) {
+									print('editable_columns: ['.implode(',',$editable_columns).']');
+								}
+							?>
+						}
 					})
 
 					<?php if( $no_pager == FALSE ) { ?>
