@@ -37,6 +37,10 @@ class DOC_Helper_Table {
 	const FORMAT_DATETIME_WITH_DAY = 'datetime_with_day' ;
 	const FORMAT_DATETIME_PRECISE = 'datetime_precise' ;
 	const FORMAT_DATETIME_SHORT = 'datetime_short' ;
+	const FORMAT_TIME_12 = 'time-12' ;
+	const FORMAT_TIME_24 = 'time-24' ;
+	const FORMAT_TIME_12_PRECISE = 'time-12-precise' ;
+	const FORMAT_TIME_24_PRECISE = 'time-24-precise' ;
 	const FORMAT_XLS_DATETIME = 'xlsdatetime' ;
 	const FORMAT_XLS_TEXT = 'xls_text' ;
 	const FORMAT_TRUNCATE = 'truncate' ;
@@ -192,9 +196,26 @@ class DOC_Helper_Table {
 							if( isset( $col_spec[ 'format' ]) && is_array( $col_spec[ 'format' ]) && count( $col_spec[ 'format' ]) > 0 ) {
 								switch ( $col_spec[ 'format' ][ 'type' ]) {
 									case self::FORMAT_DATE:
-										$value = $this->format_datetime( $value, 'm/j/Y' ) ;
+										$value = $this->format_datetime( $value, 'm/d/Y' ) ;
 										$td_attrs[ 'class' ][] = 'date' ;
 										break;
+
+									case self::FORMAT_TIME_12:
+										$value = $this->format_datetime( $value, 'h:i A' ) ;
+										$td_attrs[ 'class' ][] = 'time' ;
+										break ;
+									case self::FORMAT_TIME_24:
+										$value = $this->format_datetime( $value, 'H:i' ) ;
+										$td_attrs[ 'class' ][] = 'time' ;
+										break ;
+									case self::FORMAT_TIME_12_PRECISE:
+										$value = $this->format_datetime( $value, 'h:i:s A' ) ;
+										$td_attrs[ 'class' ][] = 'time' ;
+										break ;
+									case self::FORMAT_TIME_24_PRECISE:
+										$value = $this->format_datetime( $value, 'H:i:s' ) ;
+										$td_attrs[ 'class' ][] = 'time' ;
+										break ;
 
 									case self::FORMAT_LOOKUP:
 										$value = $this->format_lookup( $value, $col_spec[ 'format' ][ 'lookup' ]) ;
