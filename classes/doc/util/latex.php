@@ -442,6 +442,10 @@ class DOC_Util_LaTeX {
         // remove LaTeX line breaks after a curly brace
 		$_output = preg_replace('/\}\n(\\\\\\\\\s*\n)+/m', '}'.PHP_EOL, $_output) ;
 		
+		// Blank lines followed by backslashy line ends are also a problem.
+		// Turn those into just backslashy line ends.
+		$_output = preg_replace('/^\s*\n(\\\\\\\\\s*\n){2,}/m', '$1$1', $_output) ;
+		
         return $_output ;
 	}
 	
