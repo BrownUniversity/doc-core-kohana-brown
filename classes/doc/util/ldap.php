@@ -52,6 +52,7 @@ class DOC_Util_Ldap
 		"local_address"       => 'brownlocaladdress',
         "type"                => 'browntype',
         "barcode"             => 'brownbarcode',
+        "affiliations"        => 'brownaffiliation',
 	);
 
     /**
