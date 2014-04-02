@@ -311,7 +311,9 @@ class DOC_Util_Filter {
 	public static function get_data_type( $orm_object, $column ) {
 		$columns = $orm_object->list_columns() ;
 		if( isset( $columns[ $column ])) {
-			return $columns[ $column ][ 'data_type' ] ;
+			// some data types are two words (such as "smallint unsigned"), but we only want the first part
+			$data_type_description = explode( ' ', $columns[ $column ][ 'data_type' ] ) ;
+			return array_shift( $data_type_description ) ;
 		}
 
 		// just going to assume for the moment this is describing a child property

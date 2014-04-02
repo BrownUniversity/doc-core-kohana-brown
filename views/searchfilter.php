@@ -99,7 +99,7 @@
 			$saved_filter_specs_arr = Util_Filter::get_default_filter_specs() ;
 		}
 		$form_action = preg_replace('/\/+/', '/', Kohana::$base_url.Request::detect_uri()) ;
-// DOC_Util_Debug::dump( $saved_filter_specs_arr, FALSE ) ;
+//DOC_Util_Debug::dump( $saved_filter_specs_arr, FALSE ) ;
 // DOC_Util_Debug::dump( $filter_fields ) ;
 		print("<form id='filter' method='POST' action='{$form_action}'>") ;
 
@@ -173,7 +173,9 @@
 							$column_menu = Form::select("search_val_0[]", $enum_menu, $search_val_0) ;
 							$relation_menus[] = "<span class='filter_value {$filter_col}'> = {$column_menu}<input type='hidden' name='search_operator[]' value='' /></span>" ;
 						} else {
-							$option_class = preg_replace( '/^(.+?) ?/', '$1', $table_columns[ $filter_col ][ 'data_type' ] ) ;
+							// Some data types will come in two parts, such as "smallint unsigned", but we only want the first part.
+ 							$data_type_description = explode( ' ', $table_columns[ $filter_col ][ 'data_type' ] ) ;
+							$option_class = array_shift( $data_type_description ) ;
 						}
 
 					} else {
@@ -226,7 +228,7 @@
 						$this_data_type = $filter_fields[ $saved_filter_specs[ 'filter_column' ]][ 'data_type' ] ;
 					}
 				}
-	//Util_Debug::dump( $this_data_type, false ) ;
+//	DOC_Util_Debug::dump( $this_data_type, false ) ;
 				if( Util_Filter::data_type_is_text( $this_data_type )) {
 					$text_default = isset( $saved_filter_specs[ 'search_val_0' ]) ? $saved_filter_specs[ 'search_val_0' ] : '' ;
 				}

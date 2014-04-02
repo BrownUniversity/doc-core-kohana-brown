@@ -714,36 +714,12 @@ class DOC_Helper_Table {
 		if( Kohana::$profiling === TRUE ) {
 			$bm = Profiler::start(__CLASS__,__METHOD__) ;
 		}
-// 		$key_array = explode('->', $key) ;
-// 
-// 		if( $key == 'ROOT') {
-// 			if( isset( $bm )) Profiler::stop($bm);
-// 			return $data_root ;
-// 		} else {
-// 			if( property_exists($data_root, $key) || $data_root->supports_property( $key_array[0] )) {
-// 				$_output = @$data_root->{$key_array[0]};
-// 			} elseif (method_exists($data_root, $key_array[0])) {
-// 				$_output = @$data_root->{$key_array[0]}() ;
-// 			} else {
-// 				$_output = 'ERR: unknown data source' ;
-// 			}
-// 
-// 			if( count( $key_array ) > 1 ) {
-// 				$key = preg_replace("/^{$key_array[0]}->/", '', $key) ;
-// 				if( isset( $bm )) Profiler::stop($bm);
-// 				return $this->generate_content( $_output, $key ) ;
-// 			}
-// 		}
-
 
 		if( $key == 'ROOT' ) {
 			$_output = $data_root ;	
 		} else {
 			$_output = eval("return \$data_root->{$key};");
 		}
-
-
-
 
 		if( isset( $bm )) Profiler::stop($bm);
 
