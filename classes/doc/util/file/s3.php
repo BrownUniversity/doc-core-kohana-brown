@@ -235,6 +235,23 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 	}
 
 	/**
+	 * Verify that the given file exists on S3.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @return boolean
+	 */
+	public function file_exists( $root_dir, $filename ) {
+		try {
+			$_output = $this->s3->doesObjectExist($root_dir, $filename) ;
+		} catch (Exception $ex) {
+			$_output = FALSE ;
+			Kohana::$log->add(Log::WARNING,'Error communicating with AWS: ' . $ex->getMessage()) ;
+		}
+		return $_output ;
+	}
+	
+	/**
 	 * Get the AmazonS3 property from this object.
 	 * 
 	 * @return AmazonS3
