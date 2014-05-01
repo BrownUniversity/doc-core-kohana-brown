@@ -67,6 +67,10 @@ return array(
                 'filename' => 'ask_ug_grad.dat',
                 'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
         ),
+		'institutions' => array(
+			'filename' => 'ask_institutions.dat',
+			'regex' => '#\{\s*"inst_code"\s*:\s*"[^"]*"\s*,\s*"inst_description"\s*:\s*"[^"]*"\s*\}#',
+		)
     ),
     'exports' => array(
         'writing'		=> array(
