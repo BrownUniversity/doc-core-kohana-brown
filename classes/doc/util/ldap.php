@@ -377,6 +377,62 @@ class DOC_Util_Ldap
     }
 
     /**
+     * Provide a more specific person search by allowing us to pass in an 
+     * array of attributes
+     * 
+     * @param array $attributes (ldap attribute name => search value)
+     * @param int $limit
+     * @throws Exception
+     * @return array
+     */
+    public function search_people_by_attributes($attributes, $limit = 20) {
+        $result = array();
+        
+        if (count($attributes) == 0) {
+            throw new Exception('No attributes specified for search');
+        }
+        
+        // search the people objects
+        $base = "ou=People,dc=brown,dc=edu";
+        
+        /**
+         * Attempt a exact match to start of string comparison
+         */
+        $filters = array();
+        foreach ($attributes as $key => $value) {
+            $filters[] = "({$key}=" . trim($value) . "*)";
+        }
+        
+        
+        $filters = implode('', $filters);
+        $filter = "(&{$filters})";
+
+        try {
+            $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $limit);
+        } catch (Exception $e) {
+            $result['status']['ok'] = false;
+            $result['status']['message'] = $e->getMessage();
+            return $result;
+        }
+
+        $result['count'] = array_shift($search_result);
+
+        // get the results
+        $results = array();
+        foreach ( $search_result as $sr )
+        {
+            $id = $sr['brownshortid'][0];
+            $results[$id] = $this->parse_person_array($sr);
+        }
+
+        $result['results'] = $results;
+        $result['status']['ok'] = true;
+
+        return $result;
+
+    }
+    
+    /**
      * Lookup department codes from LDAP
      *
      * @author Christopher Keith <Christopher_Keith@brown.edu>
