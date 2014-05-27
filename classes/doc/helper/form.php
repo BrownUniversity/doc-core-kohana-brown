@@ -319,7 +319,7 @@ class DOC_Helper_Form {
 		foreach( $radio_array as $key => $value ) {
 			$unique_id = "{$radio_name}_{$key}" ;
 			if( $mode == self::MODE_EDITABLE ) {
-				$radio = Form::radio($radio_name, $key, $selected == $key, array('id' => $unique_id )) ;
+				$radio = Form::radio($radio_name, $key, $selected === $key, array('id' => $unique_id )) ;
 			} else {
 				if( $selected == $key ) {
 					$radio = "<span id='{$unique_id}' class='checkmark-checked'>&nbsp;</span>" ;
