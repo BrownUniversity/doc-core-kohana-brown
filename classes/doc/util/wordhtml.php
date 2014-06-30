@@ -28,8 +28,21 @@ class DOC_Util_WordHTML {
 	 */
 	public static function clean( $str, $allow_tags = self::ALLOWABLE_TAGS_DEFAULT, $ignore_attributes_in_tags = self::IGNORE_ATTRS_IN_TAGS ) {
 		$_output = $str ;
-		$_output = strip_tags($str, $allow_tags) ;
-
+		
+		/* 
+		 * Some of the content cleaned here is WYSIWYG generated,
+		 * but pre-cleaned by DOMDocument. This converts <br> tags to <br/>
+		 * which is not caught by strip_tags unless explicitly included in
+		 * the $allow_tags list. However, including the <br/> tag messes up the
+		 * preg_replace regular expression below, so we add it only here if the
+		 * <br> tag is included in $allow_tags.
+		 */
+		if (strpos($allow_tags, '<br>') !== FALSE) {
+			$_output = strip_tags($str, $allow_tags . '<br/>') ;
+		} else {
+			$_output = strip_tags($str, $allow_tags) ;
+		}
+		
 		preg_match_all( "/<([^>]+)>/i", $allow_tags, $all_tags, PREG_PATTERN_ORDER ) ;
 		preg_match_all( "/<([^>]+)>/i", $ignore_attributes_in_tags, $ignore_tag_attrs, PREG_PATTERN_ORDER ) ;
 		foreach( $all_tags[1] as $tag ) {
