@@ -126,7 +126,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	 * @return string
 	 */
 	public function get_root_dir($root_key = NULL, $dir_key = NULL) {
-		return $file_config[ 'default' ][ $root_key ] . $file_config[ 'default' ][ $dir_key ] ;
+		return $this->file_config[ 'default' ][ $root_key ] . $this->file_config[ 'default' ][ $dir_key ] ;
 	}
 
 	/**
@@ -142,5 +142,18 @@ class DOC_Util_File_Local extends DOC_Util_File {
 
 		move_uploaded_file($source_path, $file_path) ;
 	}
-
+	
+	/**
+	 * Save string to local filesystem.
+	 * 
+	 * @param string $root_dir
+	 * @param string $filename
+	 * @param string $contents
+	 */
+	public function save_string_to_file($root_dir, $filename, $contents, $append = FALSE) {
+		$file_path = $root_dir . $filename . self::UPLOAD_SUFFIX ;
+		if (file_put_contents($file_path, $contents, $append ? FILE_APPEND : 0) !== FALSE) {
+			return $file_path ;
+		}
+	}
 }
