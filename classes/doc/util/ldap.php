@@ -180,12 +180,18 @@ class DOC_Util_Ldap
      * ID can be auth_id and brown_id (or, apparently, SISID or BRUID).
      *
      * @param string|int $id The id to search for.
+     * @param string property to use in limiting the search
      * @return Array An associative array of values stripped from the LDAP response.
      */
-    public function get_person_info($id) {
+    public function get_person_info($id, $id_property = NULL) {
         // search the people objects
         $base = "ou=People,dc=brown,dc=edu";
-        $filter = "(|(brownShortID=$id)(brownNetID=$id)(brownBruID=$id)(brownSISID=$id)(brownUUID=$id))";
+        
+        if (( $id_property !== NULL) && (array_key_exists($id_property, $this->person_attributes))) {
+            $filter = "(" . $this->person_attributes[$id_property] . "={$id})";
+        } else {
+            $filter = "(|(brownShortID=$id)(brownNetID=$id)(brownBruID=$id)(brownSISID=$id)(brownUUID=$id))";
+        }
 
         try {
 			$search_result = $this->run_search($base, $filter, array_values($this->person_attributes));

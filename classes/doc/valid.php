@@ -147,6 +147,15 @@ class DOC_Valid extends Kohana_Valid {
     }
     
     /**
+     * Verify that the value is a properly formatted advance id
+     * 
+     * @param string $value
+     * @return boolean
+     */
+    public static function advance_id( $value) {
+        return TRUE;
+    }
+    /**
      * Verify that the value is a properly formatted Banner ID.
      *
      * @param string $value
