@@ -424,7 +424,7 @@ class DOC_Util_Filter {
 		$_output = $arr ;
 
 		if( !is_array( $arr ) || count( $arr ) == 0 ) {
-			$_output = array(-1) ;
+			$_output = array( $substitute ) ;
 		}
 
 		foreach( $_output as $key => $val ) {

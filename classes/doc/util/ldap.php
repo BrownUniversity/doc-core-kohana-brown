@@ -182,6 +182,7 @@ class DOC_Util_Ldap
      * @param string|int $id The id to search for.
      * @param string property to use in limiting the search
      * @return Array An associative array of values stripped from the LDAP response.
+	 * @todo modify to allow specifying the id to search (brown UUID, net id, etc) (should still default to using the current approach)
      */
     public function get_person_info($id, $id_property = NULL) {
         // search the people objects
