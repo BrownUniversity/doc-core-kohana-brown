@@ -122,7 +122,7 @@ class DOC_ORM extends Kohana_ORM {
      * @return string
      */
     public function as_json() {
-		return json_encode( $this->as_array() ) ;
+		return json_encode( $this->as_array(), JSON_HEX_APOS | JSON_HEX_QUOT ) ;
 	}
     
     /**
