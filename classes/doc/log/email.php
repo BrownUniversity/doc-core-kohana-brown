@@ -99,7 +99,13 @@ class DOC_Log_Email extends Log_Writer {
             $recipients = $this->addresses[ self::$levels[ $message[ 'level' ]]];
 			$subject = "[ {$this->environment} | {$this->application} ] -  " . self::$levels[$message['level']];
 			$body = text::auto_p($error_prefix) . text::auto_p($message['body']);
-			$result = DOC_Util_Mail::send($subject, $body, $recipients, NULL, $this->from);
+            
+            /**
+             * Only actually email the error if it is not a 404
+             */
+            if (strpos($message['body'], 'HTTP_Exception_404') === FALSE) {
+                $result = DOC_Util_Mail::send($subject, $body, $recipients, NULL, $this->from);
+            }
         }
     }
     
