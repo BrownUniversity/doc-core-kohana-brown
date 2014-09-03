@@ -124,20 +124,39 @@ class DOC_Util_Ldap
 
     /**
      * Class constructor
+     * @param array config
 	 * @todo make constructor private
 	 * @deprecated use get_instance() instead
      */
-    public function __construct()
-    {
+    public function __construct($config = array()) {
+        
+        if (isset($config['host'])) {
+            $this->ldap_host_url = $config['host'];
+        }
+        
+        if (isset($config['dn'])) {
+            $this->ldap_query_bind_rdn = $config['dn'];
+        }
+        
+        if (isset($config['password'])) {
+            $this->ldap_query_bind_password = $config['password'];
+        }
+        
         $this->cn = ldap_connect('ldaps://'.$this->ldap_host_url);
         ldap_bind($this->cn,
                   $this->ldap_query_bind_rdn,
                   $this->ldap_query_bind_password);
     }
 
-	public static function instance() {
+    /**
+     * Allow singleton type usage with option configuration
+     * 
+     * @param array $config
+     * @return DOC_Util_Ldap
+     */
+	public static function instance($config = array()) {
 		if( !isset( self::$instance )) {
-			self::$instance = new DOC_Util_Ldap() ;
+			self::$instance = new DOC_Util_Ldap($config) ;
 		}
 		return self::$instance ;
 	}
