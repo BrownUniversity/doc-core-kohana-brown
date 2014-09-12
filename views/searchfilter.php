@@ -94,7 +94,7 @@
 		$session = Session::instance('database') ;
 		$table_columns = $filter_model->list_columns() ;
 
-		$saved_filter_specs_arr = $session->get( Util_Filter::get_filter_key() ) ;
+		$saved_filter_specs_arr = $session->get( Util_Filter::get_filter_key( Util_Filter::KEY_FULL ) ) ;
 		if( $saved_filter_specs_arr == NULL ) {
 			$saved_filter_specs_arr = Util_Filter::get_default_filter_specs() ;
 		}

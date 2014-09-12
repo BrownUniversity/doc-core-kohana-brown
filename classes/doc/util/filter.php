@@ -8,6 +8,8 @@
  */
 class DOC_Util_Filter {
 	const FILTER_SUFFIX = '_search_filter' ;
+	const KEY_FRAGMENT = 'fragment' ;
+	const KEY_FULL = 'full' ;
 	const WILDCARDS_ON = TRUE ;
 	const WILDCARDS_OFF = FALSE ;
 
@@ -16,14 +18,20 @@ class DOC_Util_Filter {
 	 *
 	 * @return string
 	 */
-	public static function get_filter_key() {
+	public static function get_filter_key( $return_type = self::KEY_FRAGMENT ) {
+		if( $return_type == self::KEY_FULL ) {
+			$base = Kohana::$base_url . '/' ;
+		} elseif( $return_type == self::KEY_FRAGMENT ) {
+			$base = '/' ;
+		}
+		
 		$route_arr = Request::process_uri( Request::current()->uri()) ;
 		if( !is_array( $route_arr )) {
-			return '/' ;
+			return $base ;
 		}
 		$base_params = array_intersect_key( $route_arr['params'], array('directory' => '', 'controller' => '', 'action' => '' ));
 
-		return '/' . $route_arr['route']->uri( $base_params ) . self::FILTER_SUFFIX ;
+		return $base . $route_arr['route']->uri( $base_params ) . self::FILTER_SUFFIX ;
 	}
 
 	/**
@@ -93,7 +101,7 @@ class DOC_Util_Filter {
 	 */
 	public static function filter_exists() {
 		$session = Session::instance( 'database' ) ;
-		$stored_filter = $session->get( self::get_filter_key() ) ;
+		$stored_filter = $session->get( self::get_filter_key( self::KEY_FULL ) ) ;
 		$new_filter = Request::current()->post('setFilter') == 'Search' ;
 		return !empty( $stored_filter ) || $new_filter ;
 	}
@@ -105,7 +113,7 @@ class DOC_Util_Filter {
 	 * @return array
 	 */
 	public static function get_current_filter_specs() {
-		$filter_key = self::get_filter_key() ;
+		$filter_key = self::get_filter_key( self::KEY_FULL ) ;
 		$session = Session::instance( 'database' ) ;
 
 		return $session->get( $filter_key ) ;
@@ -122,7 +130,8 @@ class DOC_Util_Filter {
 	public static function add_filter($orm_base, $substitutions = NULL) {
 
 		$_output = $orm_base ;
-		$filter_key = self::get_filter_key() ;
+		$filter_key = self::get_filter_key( self::KEY_FULL ) ;
+		$search_filter_key = self::get_filter_key( self::KEY_FRAGMENT ) ;
 		$filter_specs_arr = NULL ;
 		$request = Request::current() ;
 		$session = Session::instance( 'database' ) ;
@@ -173,7 +182,7 @@ class DOC_Util_Filter {
 					$bool_connector = $filter_specs[ 'boolean_connector' ] ;
 				}
 
-                if( isset( $search_filters[ $filter_key ] ) && isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]] )) {
+                if( isset( $search_filters[ $search_filter_key ] ) && isset( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]] )) {
 					if(($filter_specs[ 'search_val_0' ] != '') || ( $filter_specs[ 'search_val_1' ] != '')) {
                     
 						$replacement_0 = $filter_specs[ 'search_val_0' ] ;
@@ -181,7 +190,7 @@ class DOC_Util_Filter {
 						$operator = self::get_operator( $filter_specs[ 'search_operator' ]) ;
 
 						// run the query to get the list of IDs, then add to the where clause
-						$sql = $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'sql' ] ;
+						$sql = $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'sql' ] ;
 
 						$sql = str_replace(	array( '{operator}' ), array( $operator ), $sql ) ;
                         
@@ -195,7 +204,7 @@ class DOC_Util_Filter {
                         
                         $query = DB::query( Database::SELECT, $sql ) ;
                         
-						if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'date') {
+						if( isset( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'date') {
 							if( empty( $replacement_0 )) {
 								$replacement_0 = '2000-01-01 00:00:00' ;
 							} else {
@@ -216,7 +225,7 @@ class DOC_Util_Filter {
 								':search_val_0' => $replacement_0,
 								':search_val_1' => $replacement_1,
 							)) ;
-						} elseif(isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'numeric') {
+						} elseif(isset( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'numeric') {
 							$query->parameters( array(
 								':search_val_0' => $replacement_0,
 								':search_val_1' => $replacement_1,
@@ -229,8 +238,8 @@ class DOC_Util_Filter {
 						}
 
 						$db = Database::instance() ;
-						if( isset( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) && !empty( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ])) {
-							$db = Database::instance($search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) ;
+						if( isset( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) && !empty( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ])) {
+							$db = Database::instance($search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) ;
 						}
 	//					DOC_Util_Debug::dump( $query->compile($db), false) ;
 						$result = $query->execute( $db ) ;
@@ -241,7 +250,7 @@ class DOC_Util_Filter {
 							$ids[] = $row['id'] ;
 						}
 
-						$_output = $_output->$orm_connectors[ $bool_connector ]( $search_filters[ $filter_key ][ $filter_specs[ 'filter_column' ]][ 'id_column' ], 'in', $ids ) ;
+						$_output = $_output->$orm_connectors[ $bool_connector ]( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'id_column' ], 'in', $ids ) ;
 
 					} else {
 						$_output = $_output->$orm_connectors[ $bool_connector ](DB::expr('1'),'=',DB::expr('1')) ;
