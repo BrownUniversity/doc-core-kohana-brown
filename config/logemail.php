@@ -12,7 +12,9 @@ return array(
         'EMERGENCY' => array(),
         'ALERT' => array(),
         'CRITICAL' => array(),
-        'ERROR' => array(),
+        'ERROR' => array(
+        	'Christopher_Keith@brown.edu',
+        ),
         'WARNING' => array(),
         'NOTICE' => array(),
         'INFO' => array(),
