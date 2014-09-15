@@ -283,7 +283,7 @@ class DOC_Util_Filter {
 							$date_string_0 = Date::formatted_time($filter_specs[ 'search_val_0' ] . ' 00:00:00') ;
 						}
 						if( preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $date_string_1) == 0 ) {
-							$date_string_1 = Date::formatted_time($filter_specs[ 'search_val_1' ] . ' 00:00:00') ;
+							$date_string_1 = Date::formatted_time($filter_specs[ 'search_val_1' ] . ' 23:59:59') ;
 						}
 
 						$_output = $_output->and_where( $query_column, '>=', $date_string_0 ) ;
