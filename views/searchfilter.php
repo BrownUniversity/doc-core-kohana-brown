@@ -245,7 +245,7 @@
 			print("<span class='filter_value filter_text'>
 						like
 						<input type='hidden' name='search_operator[]' value='' />
-						<input type='text' value='{$text_default}' name='search_val_0[]' />
+						<input type='text' value='{$text_default}' name='search_val_0[]' autocorrect='off' autocapitalize='off' spellcheck='false' />
 						<input type='hidden' value='' name='search_val_1[]' />
 						</span>") ;
 			print("<span class='filter_value filter_date'>
@@ -269,7 +269,7 @@
 					</span>") ;
 
 // DOC_Util_Debug::dump( $search_operator, false ) ;
-			print("<span class='filter_value filter_numeric'>".Form::select("search_operator[]", $operators, $search_operator)."<input type='text' value='{$numeric_default}' name='search_val_0[]' /><input type='hidden' value='' name='search_val_1[]' /></span>") ;
+			print("<span class='filter_value filter_numeric'>".Form::select("search_operator[]", $operators, $search_operator)."<input type='text' value='{$numeric_default}' name='search_val_0[]' autocorrect='off' autocapitalize='off' spellcheck='false' /><input type='hidden' value='' name='search_val_1[]' /></span>") ;
 
 
 			foreach( $relation_menus as $relation_menu ) {
