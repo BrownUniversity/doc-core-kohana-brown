@@ -13,15 +13,21 @@
 class DOC_Valid extends Kohana_Valid {
 
     /**
+     * Validating a date format
      * 
      * @param type $date
      * @param type $format
      * @return boolean
      */
     public static function date_format( $date, $format) {
-        $d = DateTime::createFromFormat($format, $date);
-        Kohana::$log->add(Log::DEBUG, "{$date} | {$format}");
-        return $d && $d->format($format) == $date;
+        
+        if ($date === NULL) {
+            return TRUE;
+        } else {
+            $d = DateTime::createFromFormat($format, $date);
+            Kohana::$log->add(Log::DEBUG, "{$date} | {$format}");
+            return $d && $d->format($format) == $date;
+        }
     }
     
 	/**
