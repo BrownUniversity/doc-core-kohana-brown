@@ -42,7 +42,7 @@ class DOC_Controller_CLI extends Controller {
 			$auth = CLI::options('username', 'password') ;
 			$task_args = CLI::options('task','data') ;
 
-			if( isset( $auth[ 'username' ] ) && isset( $auth[ 'password' ] )) {
+			if( isset( $auth[ 'username' ] ) && isset( $auth[ 'password' ] ) && isset( $cli_config[ 'cli_users'][ $auth[ 'username' ]])) {
 
 				if( $cli_config[ 'cli_users' ][ $auth[ 'username' ]] == crypt( $auth[ 'password' ], $cli_config['cli_salt'] )) {
 
@@ -63,7 +63,7 @@ class DOC_Controller_CLI extends Controller {
 					die("\nInvalid username/password.\n") ;
 				}
 			} else {
-				die("\nBoth username and password are required\n") ;
+				die("\nInvalid username/password.\n") ;
 			}
 		} else {
 			die("\nCLI is not enabled for this application\n") ;
