@@ -26,7 +26,7 @@ class DOC_Util_Arraytoul {
 
 		foreach( $var as $v) {
 			if( is_array( $v )) {
-				$_output .= self::create($v, FALSE) ;
+				$_output .= self::create($v, FALSE, $suppress_duplicates) ;
 			} else {
 				$_output .= "<li>{$v}</li>" ;
 			}
