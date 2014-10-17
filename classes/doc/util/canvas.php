@@ -72,14 +72,6 @@ class DOC_Util_Canvas {
     private static $host_url = NULL;
     
     /**
-     * Used as a hack to indicate that there is more data pending from an API request
-     *
-     * @todo refactor
-     * @var boolean
-     */
-    private static $more_data = NULL;
-    
-    /**
      * Has this class been initialized yet?
      * 
      * @var boolean
@@ -201,7 +193,6 @@ class DOC_Util_Canvas {
      */
     public static function coursespec_to_sisid($coursespec) {
         $parts = explode(':', $coursespec);
-        $term_parts = explode('-', $parts[2]);
         
         $_output = 'brown.' . strtolower($parts[0]) . '.' 
                  . strtolower($parts[1]) . '.' . strtolower($parts[2]);
@@ -336,7 +327,7 @@ class DOC_Util_Canvas {
      * Execute the CURL request
      * 
      * @param array $options additional CURL options
-     * @param boolean $include token
+     * @param boolean $include_token
      * @return array JSON-decoded response
      */
     private static function execute_curl($options, $include_token = TRUE) {
@@ -355,9 +346,11 @@ class DOC_Util_Canvas {
 
 		$link_header = self::check_headers_for_link($header);
 		
-		self::$more_data = NULL;
 		if ($link_header != NULL) {
-			self::$more_data = self::process_link_header($link_header);
+			$more_data = self::process_link_header($link_header);
+			if ($more_data != NULL) {
+				return array_merge(json_decode($body, TRUE), self::execute_curl(array(CURLOPT_URL => $more_data)));
+			}
 		}
 		
 		return json_decode($body, TRUE);
@@ -410,7 +403,7 @@ class DOC_Util_Canvas {
      * Use the CANVAS course enrollment API
      * 
      * @param int $course_id
-     * @param mixed $role
+     * @param mixed $roles
      * @param mixed $types
      * @return array
      */
@@ -452,17 +445,7 @@ class DOC_Util_Canvas {
         
         $options[CURLOPT_URL] = $url;
         
-        /**
-         * Does this double assignment work and is it confusing?
-         */
         $all_results = self::execute_curl($options);
-        
-        while (self::$more_data != NULL) {
-    		$options[CURLOPT_URL] = self::$more_data;
-    		$results = self::execute_curl($options);
-    		
-    		$all_results = array_merge($all_results, $results);
-    	}
         
         $output = array();
         if ($all_results != NULL) {
@@ -573,18 +556,8 @@ class DOC_Util_Canvas {
     	
     	$options = array();
     	$options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/assignments/{$assignment_id}/submissions";
-    	
-    	/**
-         * Does this double assignment work and is it confusing?
-         */
+		
         $all_results = self::execute_curl($options);
-        
-        while (self::$more_data != NULL) {
-    		$options[CURLOPT_URL] = self::$more_data;
-    		$results = self::execute_curl($options);
-    		
-    		$all_results = array_merge($all_results, $results);
-    	}
     	
     	return $all_results;
     }
