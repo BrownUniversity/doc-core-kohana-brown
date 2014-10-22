@@ -421,10 +421,11 @@ class DOC_Util_LaTeX {
 			if( count( $matches[1] ) > 0 ) {
 				foreach( $matches[1] as $match ) {
 					if ($plain_text_input) {
-						$_output = str_replace("\n\n", '\newline' . PHP_EOL . '\newline' . PHP_EOL, $_output) ;
+						$replacement = str_replace("\n\n", '\newline' . PHP_EOL . '\newline' . PHP_EOL, $match) ;
 					} else {
-						$_output = str_replace("\n\n", '\\\\' . PHP_EOL . '\\\\' . PHP_EOL, $_output) ;
+						$replacement = str_replace("\n\n", '\\\\' . PHP_EOL . '\\\\' . PHP_EOL, $match) ;
 					}
+					$_output = str_replace($match, $replacement, $_output) ;
 				}
 			}
 		}
