@@ -12,6 +12,7 @@ class DOC_Util_Filter {
 	const KEY_FULL = 'full' ;
 	const WILDCARDS_ON = TRUE ;
 	const WILDCARDS_OFF = FALSE ;
+	const NOT_SET = '-1' ;
 
 	/**
 	 * Get the key we are using for the filter data on the current page (URI).
@@ -250,7 +251,11 @@ class DOC_Util_Filter {
 							$ids[] = $row['id'] ;
 						}
 
-						$_output = $_output->$orm_connectors[ $bool_connector ]( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'id_column' ], 'in', $ids ) ;
+						$in = 'in' ;
+						if( $replacement_0 === self::NOT_SET ) {
+							$in = 'not in' ;
+						}
+						$_output = $_output->$orm_connectors[ $bool_connector ]( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'id_column' ], $in, $ids ) ;
 
 					} else {
 						$_output = $_output->$orm_connectors[ $bool_connector ](DB::expr('1'),'=',DB::expr('1')) ;
