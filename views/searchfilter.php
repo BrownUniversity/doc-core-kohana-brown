@@ -306,5 +306,13 @@
 		print("</div>") ;
 
 		print("</form>") ;
+		
+		if( isset( $quick_filters )) {
+			print("<div id='quick-filters'>") ;
+			foreach( $quick_filters as $label => $config ) {
+				print("<button class='quick-filter' data-filter-config='" . json_encode($config) . "'>{$label}</button>") ;
+			}
+			print("</div>") ;
+		}
 	}
 ?>
