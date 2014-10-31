@@ -79,11 +79,16 @@
 	 * Handle the "Check All" checkbox.
 	 */
 
-		 $('#<?php print( $table_id ) ; ?> .check_all').on('click', function() {
-			 var container = $(this).closest('table') ;
-			 var checkbox_name = $(this).attr('name').replace(/^_/,'') + '[]' ;
-			 container.find('input[name="' + checkbox_name + '"]').prop('checked', $(this).prop('checked')) ;
-		 }) ;
+		$('#<?php print( $table_id ) ; ?> .check_all').on('click', function() {
+			var container = $(this).closest('table') ;
+			var checkbox_name = $(this).attr('name').replace(/^_/,'') + '[]' ;
+			var new_state = $(this).prop('checked') ;
+			container.find('input[name="' + checkbox_name + '"]').each(function(){
+				if( $(this).prop('disabled') !== true ) {
+					$(this).prop('checked', new_state) ; 
+				}
+			});
+		}) ;
 
 	<?php if( $include_render_options ) { ?>
 		/*
