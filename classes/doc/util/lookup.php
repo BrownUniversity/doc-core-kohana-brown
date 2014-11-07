@@ -35,12 +35,18 @@ class DOC_Util_Lookup {
 		if( array_key_exists( 'cache', Kohana::modules())) {
 			$cache = Cache::instance() ;
 		}
+
+		Kohana::$log->add(Log::DEBUG, Debug::vars($cache)) ;
+		
 		$cache_key = "{$model}.{$key}.{$mode}." . md5( serialize( $order )) . '.' . md5( serialize( $wheres )) ;
 
 		if(($cache !== FALSE) && ( ! empty( $cache_key )) && ($refresh_cache == FALSE)) {
 			$_output = $cache->get($cache_key,$_output) ;
+			
+			Kohana::$log->add(Log::DEBUG, "cached value for {$model}.{$key}:") ;
+			Kohana::$log->add(Log::DEBUG, Debug::vars( $_output )) ;
 		} 
-		
+
 		if( empty( $_output )) {
 			$orm = ORM::factory($model) ;
 			if( !empty( $order )) {
@@ -77,7 +83,11 @@ class DOC_Util_Lookup {
 			
 			}
 		}
-
+				
+		if( $cache !== FALSE && !empty( $cache_key )) {
+			$cache->set($cache_key,$_output) ;
+		}
+		
 		return $_output ;
 	}
 
@@ -135,6 +145,10 @@ class DOC_Util_Lookup {
 		$cache_key = "singlelookup.{$model}.{$prop_key}.{$prop_val}.{$return_prop}" ;
 		if( $cache !== FALSE && !empty( $cache_key )) {
 			$_output = $cache->get($cache_key,'') ;
+			
+			Kohana::$log->add(Log::DEBUG, "cached value for {$model}.{$prop_key}.{$prop_val}:") ;
+			Kohana::$log->add(Log::DEBUG, Debug::vars( $_output )) ;
+			
 		}
 
 		if( empty( $_output )) {
