@@ -85,7 +85,11 @@ class DOC_Util_Lookup {
 		}
 				
 		if( $cache !== FALSE && !empty( $cache_key )) {
-			$cache->set($cache_key,$_output) ;
+			try {
+				$cache->set($cache_key,$_output) ;
+			} catch( Exception $e ) {
+				Kohana::$log->add(Log::WARNING, "Unable to write to cache: " . $e->getMessage()) ;
+			}
 		}
 		
 		return $_output ;
@@ -162,7 +166,11 @@ class DOC_Util_Lookup {
 			}
 
 			if( $cache !== FALSE && !empty( $cache_key )) {
-				$cache->set($cache_key,$_output) ;
+				try {
+					$cache->set($cache_key,$_output) ;
+				} catch( Exception $e ) {
+					Kohana::$log->add(Log::WARNING, "Unable to write to cache: " . $e->getMessage()) ;
+				}
 			}
 		}
 
