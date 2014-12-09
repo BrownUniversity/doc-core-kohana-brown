@@ -199,11 +199,12 @@ class DOC_Util_Ldap
      * ID can be auth_id and brown_id (or, apparently, SISID or BRUID).
      *
      * @param string|int $id The id to search for.
-     * @param string property to use in limiting the search
+     * @param string $property to use in limiting the search
+     * @param boolean $people_only determines which ou's to search against
      * @return Array An associative array of values stripped from the LDAP response.
 	 * @todo modify to allow specifying the id to search (brown UUID, net id, etc) (should still default to using the current approach)
      */
-    public function get_person_info($id, $id_property = NULL) {
+    public function get_person_info($id, $id_property = NULL, $people_only = TRUE) {
         // search the people objects
         $base = "ou=People,dc=brown,dc=edu";
         
@@ -211,6 +212,10 @@ class DOC_Util_Ldap
             $filter = "(" . $this->person_attributes[$id_property] . "={$id})";
         } else {
             $filter = "(|(brownShortID=$id)(brownNetID=$id)(brownBruID=$id)(brownSISID=$id)(brownUUID=$id))";
+        }
+        
+        if ( ! $people_only) {
+        	$base = "dc=brown,dc=edu";
         }
 
         try {
