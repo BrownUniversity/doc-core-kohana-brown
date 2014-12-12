@@ -17,6 +17,13 @@ class DOC_Util_Lookup {
 	const BY_KEY = 'byKey' ;
 	const BY_VAL = 'byVal' ;
 	const PRIMARY_KEY_PROP = 'pkProp' ;
+	
+	/**
+	 * Used to provide extra control over debug logging within the class.
+	 * 
+	 * @var boolean 
+	 */
+	static $verbose = FALSE ;
 
 	/**
 	 * Get a lookup array for the given model and key.
@@ -36,15 +43,19 @@ class DOC_Util_Lookup {
 			$cache = Cache::instance() ;
 		}
 
-		Kohana::$log->add(Log::DEBUG, Debug::vars($cache)) ;
+		if( self::$verbose ) {
+			Kohana::$log->add(Log::DEBUG, Debug::vars($cache)) ;
+		}
 		
 		$cache_key = "{$model}.{$key}.{$mode}." . md5( serialize( $order )) . '.' . md5( serialize( $wheres )) ;
 
 		if(($cache !== FALSE) && ( ! empty( $cache_key )) && ($refresh_cache == FALSE)) {
 			$_output = $cache->get($cache_key,$_output) ;
-			
-			Kohana::$log->add(Log::DEBUG, "cached value for {$model}.{$key}:") ;
-			Kohana::$log->add(Log::DEBUG, Debug::vars( $_output )) ;
+		
+			if( self::$verbose ) {
+				Kohana::$log->add(Log::DEBUG, "cached value for {$model}.{$key}:") ;
+				Kohana::$log->add(Log::DEBUG, Debug::vars( $_output )) ;
+			}
 		} 
 
 		if( empty( $_output )) {
@@ -150,8 +161,10 @@ class DOC_Util_Lookup {
 		if( $cache !== FALSE && !empty( $cache_key )) {
 			$_output = $cache->get($cache_key,'') ;
 			
-			Kohana::$log->add(Log::DEBUG, "cached value for {$model}.{$prop_key}.{$prop_val}:") ;
-			Kohana::$log->add(Log::DEBUG, Debug::vars( $_output )) ;
+			if( self::$verbose ) {
+				Kohana::$log->add(Log::DEBUG, "cached value for {$model}.{$prop_key}.{$prop_val}:") ;
+				Kohana::$log->add(Log::DEBUG, Debug::vars( $_output )) ;				
+			}
 			
 		}
 
