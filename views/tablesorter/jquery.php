@@ -65,7 +65,7 @@
 							pagerArrows: true
 						})
 
-					<? } ?>
+					<?php } ?>
 
 		<?php } else { ?>
 					.pager({
