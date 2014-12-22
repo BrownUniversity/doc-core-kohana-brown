@@ -38,6 +38,11 @@ defined('BANNERINTEGRATION_APIS_GREENSHEETS_READ_URL') or define('BANNERINTEGRAT
 defined('BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_SECRET') or define('BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_SECRET','***REMOVED***') ;
 defined('BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_URL') or define('BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_URL','***REMOVED***') ;
 
+defined('BANNERINTEGRATION_ORDS_BASE_URL') or define('BANNERINTEGRATION_ORDS_BASE_URL','') ;
+defined('BANNERINTEGRATION_ORDS_CLIENT_ID') or define('BANNERINTEGRATION_ORDS_CLIENT_ID','') ;
+defined('BANNERINTEGRATION_ORDS_CLIENT_SECRET') or define('BANNERINTEGRATION_ORDS_CLIENT_SECRET','') ;
+defined('BANNERINTEGRATION_ORDS_AUTH_CODE') or define('BANNERINTEGRATION_ORDS_AUTH_CODE','') ;
+defined('BANNERINTEGRATION_ORDS_MODEL') or define('BANNERINTEGRATION_ORDS_MODEL','') ;
 
 return array(
     'server'   => FTPS_SERVER,
@@ -141,7 +146,14 @@ return array(
     	// Length of time into a student's first term a non-privileged user should
     	// have access to BDMS files. Store as a DateInterval compatible string.
     	'bdms_cutoff' => 'P1M' // one month
-    )
+    ),
+	'ords' => array(
+		'base-url' => BANNERINTEGRATION_ORDS_BASE_URL,
+		'client-id' => BANNERINTEGRATION_ORDS_CLIENT_ID,
+		'client-secret' => BANNERINTEGRATION_ORDS_CLIENT_SECRET, // move to database?
+		'auth-code' => BANNERINTEGRATION_ORDS_AUTH_CODE,
+		'model' => BANNERINTEGRATION_ORDS_MODEL
+	)
 );
 
 // End Banner Integration Configuration File
