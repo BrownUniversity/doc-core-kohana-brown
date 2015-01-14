@@ -7,6 +7,7 @@
  */
 defined('SYSPATH') or die('No direct access allowed.');
 
+if( file_exists( APPPATH . 'config/myConfig.php' )) include_once( APPPATH . 'config/myConfig.php' ) ;
 if( file_exists( dirname( __FILE__ ) . '/myConfig.php' )) include_once( dirname( __FILE__ ) . '/myConfig.php') ;
 
 defined('FTPS_SERVER') or define('FTPS_SERVER', 'ftps.example.edu');

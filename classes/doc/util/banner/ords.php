@@ -58,6 +58,9 @@ class DOC_Util_Banner_ORDS {
 	 * expiration date, use the refresh token to get a fresh token.
 	 */
 	private function get_access_token(){
+		
+		Kohana::$log->add(Log::DEBUG, "Loading OAuth ORM model: {$this->model_name}") ;
+		
 		$oauth = ORM::factory( $this->model_name )
 				->where('client_id','=',$this->client_id)
 				->where('client_secret','=',$this->client_secret)
@@ -98,18 +101,20 @@ class DOC_Util_Banner_ORDS {
 			$resp = curl_exec( $curl_handle ) ;
 			$info = curl_getinfo( $curl_handle, CURLINFO_HEADER_OUT ) ;
 			$http_code = curl_getinfo($curl_handle, CURLINFO_HTTP_CODE) ;
-			
+		
 			if ( $http_code != 200 ) {
-				Kohana::$log->add(Log::Error,"Error updating OAuth access token: HTTP code={$http_code}, response={$resp}") ;
+				Kohana::$log->add(Log::ERROR,"Error updating OAuth access token: HTTP code={$http_code}, response={$resp}") ;
 				throw new ErrorException('There was an error updating the OAuth access token.');
 			}
 			
 			$access = json_decode( $resp ) ;
 			
+			Kohana::$log->add(Log::DEBUG, 'OAuth token data received: ' . print_r( $access, TRUE )) ;
+			
 			// store in object
 			$this->access_token = $access->access_token ;
 			$this->refresh_token = $access->refresh_token ;
-			$this->token_expires = date('Y-m-d H:i:s',strtotime("+{$access->expires} seconds")) ;
+			$this->token_expires = date('Y-m-d H:i:s',strtotime("+{$access->expires_in} seconds")) ;
 			
 			// update model
 			$oauth->access_token = $this->access_token ;
