@@ -91,10 +91,11 @@
 	
 
 	if( isset( $filter_fields ) && isset( $filter_model )) {
-		$session = Session::instance('database') ;
 		$table_columns = $filter_model->list_columns() ;
+		
+		$storage = Util_Filter::storage_instance() ;
+		$saved_filter_specs_arr = $storage->get( Util_Filter::get_filter_key( Util_Filter::KEY_FULL ) ) ;
 
-		$saved_filter_specs_arr = $session->get( Util_Filter::get_filter_key( Util_Filter::KEY_FULL ) ) ;
 		if( $saved_filter_specs_arr == NULL ) {
 			$saved_filter_specs_arr = Util_Filter::get_default_filter_specs() ;
 		}

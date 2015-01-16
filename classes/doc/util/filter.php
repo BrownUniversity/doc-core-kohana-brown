@@ -14,6 +14,23 @@ class DOC_Util_Filter {
 	const WILDCARDS_OFF = FALSE ;
 	const NOT_SET = '-1' ;
 
+	static $storage_object = NULL ;
+	
+	/**
+	 * Checks the filter config file for the storage class to be used, and returns
+	 * an instance of that object.
+	 * 
+	 * @return mixed
+	 */
+	public static function storage_instance() {
+		if( empty( self::$storage_object )) {
+			$storage_object_class = Kohana::$config->load('filter.storage_class') ;
+			self::$storage_object = $storage_object_class::instance() ;
+		}
+		
+		return self::$storage_object ;
+	}
+	
 	/**
 	 * Get the key we are using for the filter data on the current page (URI).
 	 *
@@ -95,34 +112,35 @@ class DOC_Util_Filter {
 	}
 
 	/**
-	 * Checks both session data and the POST array to determine whether
+	 * Checks both stored data and the POST array to determine whether
 	 * there is a filter in place.
 	 *
 	 * @return boolean
 	 */
 	public static function filter_exists() {
-		$session = Session::instance( 'database' ) ;
-		$stored_filter = $session->get( self::get_filter_key( self::KEY_FULL ) ) ;
+		$storage = self::storage_instance() ;
+		$stored_filter = $storage->get( self::get_filter_key( self::KEY_FULL )) ;
+
 		$new_filter = Request::current()->post('setFilter') == 'Search' ;
 		return !empty( $stored_filter ) || $new_filter ;
 	}
 
 	/**
-	 * Return the current filter specs from the session. This is primarily for use
+	 * Return the current filter specs from storage. This is primarily for use
 	 * with external code that might want to examine the filters...
 	 *
 	 * @return array
 	 */
 	public static function get_current_filter_specs() {
 		$filter_key = self::get_filter_key( self::KEY_FULL ) ;
-		$session = Session::instance( 'database' ) ;
-
-		return $session->get( $filter_key ) ;
+		
+		$storage = self::storage_instance() ;
+		return $storage->get( $filter_key ) ;		
 	}
 
 	/**
 	 * Modifies and returns the passed in ORM object, adding in search filters
-	 * based on the current parameters. Defaults to data in the session, but
+	 * based on the current parameters. Defaults to data in storage, but
 	 * uses POST data if present.
 	 *
 	 * @param ORM $orm_base
@@ -135,7 +153,9 @@ class DOC_Util_Filter {
 		$search_filter_key = self::get_filter_key( self::KEY_FRAGMENT ) ;
 		$filter_specs_arr = NULL ;
 		$request = Request::current() ;
-		$session = Session::instance( 'database' ) ;
+		
+		$storage = self::storage_instance() ;
+		
 		$search_filters = Kohana::$config->load('searchfilters') ;
 		$orm_connectors = array(
 			'OR' => 'or_where',
@@ -145,13 +165,16 @@ class DOC_Util_Filter {
         // DOC_Util_Debug::dump( array( $filter_key, $search_filters )) ;
 		// check for a reset...
 		if( $request->post('setFilter') == 'Clear' ) {
-			$session->delete( $filter_key ) ;
+			
+			$storage->delete( $filter_key ) ;
 			return $_output ;
 		}
 
-		// start with session data, if it exists
-		$filter_specs_arr = $session->get( $filter_key ) ;
-
+		
+		
+		// start with stored data, if it exists
+		$filter_specs_arr = $storage->get( $filter_key ) ;
+		
 		// do we have a new filter request?
 		if( $request->post('setFilter') == 'Search' ) {
 			$filter_column_arr = $request->post( 'filter_column' ) ;
@@ -171,8 +194,7 @@ class DOC_Util_Filter {
 				) ;
 			}
             
-            $session->set( $filter_key, $filter_specs_arr ) ;
-			$session->write() ;
+			$storage->set( $filter_key, $filter_specs_arr ) ;			
 		}
 
         if( $filter_specs_arr != NULL ) {
