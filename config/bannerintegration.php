@@ -90,7 +90,11 @@ return array(
         'previous_institutions' => array(
             'filename' => 'ask_prev_inst.dat',
             'regex' => '#\{\s*"Brown_ID".*?\}#',
-        )
+        ),
+		'buildings' => array(
+			'filename' => 'facilities/FM_BUILDINGS_20150120.txt',
+			'regex' => '#\{\s*"SITE"\s*:.*?\}#',
+		)
     ),
     'exports' => array(
         'writing'		=> array(
