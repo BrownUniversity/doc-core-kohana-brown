@@ -92,7 +92,7 @@ return array(
             'regex' => '#\{\s*"Brown_ID".*?\}#',
         ),
 		'buildings' => array(
-			'filename' => 'facilities/FM_BUILDINGS_20150120.txt',
+			'filename' => 'facilities/FM_BUILDING.txt',
 			'regex' => '#\{\s*"SITE"\s*:.*?\}#',
 		)
     ),
