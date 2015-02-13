@@ -128,9 +128,20 @@ class DOC_Valid extends Kohana_Valid {
 	 * @return boolean
 	 */
 	public static function uuid( $value ) {
-		return preg_match( '/^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$/', $value ) ;
+		return preg_match( '/^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$/', $value ) === 1;
 	}
 
+	/**
+	 * Verify that the value is a properly formatted BAT key (used for financial
+	 * accounts with WorkDay).
+	 * 
+	 * @param string $value
+	 * @return type
+	 */
+	public static function bat_key( $value ) {
+		return preg_match('/^[A-Za-z]{2,3}\d{5,6}(\.\d{4})?$/', $value ) === 1 ;
+	}
+	
 	/**
 	 * Test an array to verify that we have at least one non-zero element. This
 	 * is intended primarily for use with relations where we are processing

@@ -31,6 +31,19 @@ class DOC_Helper_Form {
 	const UNCHECKED_EXPLICIT = 'unchecked-explicit' ;
 	
 	/**
+	 * Place the label tag after the input element.
+	 */
+	const LABEL_AFTER = 'label-after' ;
+	/**
+	 * Place the label tag before the input element.
+	 */
+	const LABEL_BEFORE = 'label-before' ;
+	/**
+	 * Wrap label tags around input element.
+	 */
+	const LABEL_SURROUND = 'label-surround' ;
+	
+	/**
 	 * Given a standard datetime string (such as that returned from MySQL), create
 	 * a set of form fields to edit the data.
 	 *
@@ -245,7 +258,7 @@ class DOC_Helper_Form {
 	 * @param array $selected
 	 * @return array
 	 */
-	public static function checkbox_group( $checkbox_name, $checkbox_array, $selected, $mode = self::MODE_EDITABLE, $unchecked = self::UNCHECKED_BLANK ) {
+	public static function checkbox_group( $checkbox_name, $checkbox_array, $selected, $mode = self::MODE_EDITABLE, $unchecked = self::UNCHECKED_BLANK, $label_placement = self::LABEL_AFTER ) {
 		$_output = array() ;
 		$unchecked_class = 'checkmark-unchecked' ;
 		if( $unchecked == self::UNCHECKED_EXPLICIT ) {
@@ -256,19 +269,30 @@ class DOC_Helper_Form {
 			$selected = array( $selected ) ;
 		}
 		foreach( $checkbox_array as $key => $value ) {
+			$cb = '' ;
 			$unique_id = "{$checkbox_name}_{$key}" ;
+			$label_tag = "<label for='{$unique_id}'>{$value}</label>" ;
+			if( $label_placement == self::LABEL_SURROUND ) {
+				$cb .= '<label>' ;
+			} elseif( $label_placement == self::LABEL_BEFORE ) {
+				$cb .= $label_tag ;
+			}
+			
 			if( $mode == self::MODE_EDITABLE ) {
-				$cb = Form::checkbox($checkbox_group_name, $key, in_array($key, $selected), array('id' => $unique_id)) ;
+				$cb .= Form::checkbox($checkbox_group_name, $key, in_array($key, $selected), array('id' => $unique_id)) ;
 			} else {
 				if( in_array( $key, $selected )) {
-					$cb = "<span id='{$unique_id}' class='checkmark-checked'>&nbsp;</span>" ;
+					$cb .= "<span id='{$unique_id}' class='checkmark-checked'>&nbsp;</span>" ;
 				} else {
-					$cb = "<span id='{$unique_id}' class='{$unchecked_class}'>&nbsp;</span>" ;
+					$cb .= "<span id='{$unique_id}' class='{$unchecked_class}'>&nbsp;</span>" ;
 				}
 
 			}
-
-			$cb .= "<label for='{$unique_id}'>{$value}</label>" ;
+			if( $label_placement == self::LABEL_SURROUND ) {
+				$cb .= $value.'</label>' ;
+			} elseif( $label_placement == self::LABEL_AFTER) {
+				$cb .= $label_tag ;
+			}
 			$_output[$key] = $cb ;
 		}
 
@@ -286,20 +310,33 @@ class DOC_Helper_Form {
 	 * @param string $unchecked
 	 * @return string
 	 */
-	public static function checkbox_single( $name, $value, $label, $selected, $mode = self::MODE_EDITABLE, $unchecked = self::UNCHECKED_BLANK ) {
+	public static function checkbox_single( $name, $value, $label, $selected, $mode = self::MODE_EDITABLE, $unchecked = self::UNCHECKED_BLANK, $label_placement = self::LABEL_AFTER ) {
 		$_output = '' ;
 		$unchecked_class = 'checkmark-unchecked' ;
 		if( $unchecked == self::UNCHECKED_EXPLICIT ) {
 			$unchecked_class = 'checkmark-unchecked-explicit' ;
 		}
 		$css_id = preg_replace('/[^A-Za-z0-9]/', '-', $name) ;
+		$label_tag = "<label for='{$css_id}'>{$label}</label>" ;
+		
+		
+		if( $label_placement == self::LABEL_SURROUND ) {
+			$_output .= '<label>' ;
+		} elseif ( $label_placement == self::LABEL_BEFORE) {
+			$_output .= $label_tag ;
+		}
 		if( $mode == self::MODE_EDITABLE ) {
 			$_output .= Form::checkbox($name, $value, $selected, array('id' => $css_id )) ;
 		} else {
 			$css_class = $selected ? 'checkmark-checked' : $unchecked_class ;
 			$_output .= "<span id='{$name}' class='{$css_class}'>&nbsp;</span>" ;
 		}
-		$_output .= "<label for='{$css_id}'>{$label}</label>" ;
+		if( $label_placement == self::LABEL_SURROUND ) {
+			$_output .= $label.'</label>' ;
+		} elseif( $label_placement == self::LABEL_AFTER) {
+			$_output .= $label_tag ;
+		}
+		
 		return $_output ;
 	}
 	
