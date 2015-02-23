@@ -142,10 +142,14 @@ class DOC_Util_Ldap
             $this->ldap_query_bind_password = $config['password'];
         }
         
+        $bm = Profiler::start('LDAP', 'Constructor - connect');
         $this->cn = ldap_connect('ldaps://'.$this->ldap_host_url);
+        Profiler::stop($bm);
+        $bm1 = Profiler::start('LDAP', 'Constructor - bind');
         ldap_bind($this->cn,
                   $this->ldap_query_bind_rdn,
                   $this->ldap_query_bind_password);
+    	Profiler::stop($bm1);
     }
 
     /**
@@ -206,6 +210,7 @@ class DOC_Util_Ldap
      */
     public function get_person_info($id, $id_property = NULL, $people_only = TRUE) {
         // search the people objects
+        $bm2 = Profiler::start('LDAP', 'Setup search');
         $base = "ou=People,dc=brown,dc=edu";
         
         if (( $id_property !== NULL) && (array_key_exists($id_property, $this->person_attributes))) {
@@ -217,9 +222,11 @@ class DOC_Util_Ldap
         if ( ! $people_only) {
         	$base = "dc=brown,dc=edu";
         }
-
+		Profiler::stop($bm2);
         try {
+        	$bm1 = Profiler::start('LDAP', 'search');
 			$search_result = $this->run_search($base, $filter, array_values($this->person_attributes));
+			Profiler::stop($bm1);
 		}
         catch (Exception $e)
         {
@@ -243,9 +250,11 @@ class DOC_Util_Ldap
 
         // get the results
         //$result['info'] = $this->parse_person_array($search_result[0]);
+        
+        $bm3 = Profiler::start('LDAP', 'Parse response');
         $result['info'] = $this->parse_result_array($this->person_attributes, $search_result[0]);
         $result['status']['ok'] = true;
-
+		Profiler::stop($bm3);
         return $result;
     }
 
@@ -299,7 +308,7 @@ class DOC_Util_Ldap
      * @param int $limit Maximum number of results to return.  Defaults to 20.
      * @param string|Array $paffil primary_affiliations to limit to.
      */
-    public function search_people($s, $limit = 20, $paffil = null) {
+    public function search_people($s, $limit = 20, $paffil = null, $attribute = 'displayname') {
         $result = array();
         $s_trim = trim($s);
 
@@ -311,7 +320,7 @@ class DOC_Util_Ldap
          * Attempt a exact match to start of string comparison
          */
         $filters = array();
-        $filters[] = "(displayname=" . implode('*', $ss) . "*)";
+        $filters[] = "({$attribute}=" . implode('*', $ss) . "*)";
 
         if ( ! is_null($paffil) ) {
             $affiliations = is_array($paffil) ? $paffil : explode(',', $paffil);
