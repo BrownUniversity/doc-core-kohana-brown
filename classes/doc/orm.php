@@ -334,6 +334,9 @@ class DOC_ORM extends Kohana_ORM {
 		if( array_key_exists( $prop_name, $this->_has_one)) {
 			return TRUE ;
 		}
+		if( array_key_exists( $prop_name, $this->_object )) {
+			return TRUE ;
+		}
 		
 		return FALSE ;
 	}
