@@ -119,7 +119,10 @@ abstract class DOC_Util_Banner_Import {
         if (isset ($_output[0])) {
             return $_output[0];
         } else {
-            return array();
+			$msg = "No regex match in [{$local}] file." ;
+			Kohana::$log->add(Log::ERROR, $msg) ;
+			throw new Kohana_Exception($msg) ;
+            
         }
     }
 
