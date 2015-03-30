@@ -531,6 +531,7 @@ class DOC_Util_LaTeX {
 		// render the pdf and return the appropriate file info. 
 		$pdf_file = "{$latex_config->tmp_path}{$safe_filename}.pdf" ;
 		$command = "{$latex_config->bin_path}pdflatex -jobname {$safe_filename} -output-directory {$latex_config->tmp_path} {$latex_file}" ;
+		Kohana::$log->add(Log::DEBUG, "LaTeX command: {$command}") ;
 		$result = exec( $command, $full_result ) ;
 		
 		$_output = DOC_Util_File::get_file_specs( $pdf_file, $filename ) ;
