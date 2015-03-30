@@ -31,7 +31,15 @@ class DOC_Util_File_S3 extends DOC_Util_File {
      * @return string
      */
     public function cache_file($root_dir, $filename) {
-        return $this->retrieve_file( $root_dir, $filename );
+		$_output = NULL ;
+		try {
+			$_output = $this->retrieve_file( $root_dir, $filename );
+		} catch (ErrorException $ex) {
+			throw $ex ;
+		}
+		
+		
+        return $_output ;
     }
 
 	/**
@@ -212,7 +220,9 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 				unlink( $cached_file ) ;
 			}
 		}
-		try {		
+
+		if( $this->s3->doesObjectExist($root_dir, $filename )) {
+			
 			// No valid cache exists, retrieve from AWS. We'll still use the same $cached_file location.
 			$object_args = array(
 				'Bucket' => $root_dir,
@@ -220,16 +230,14 @@ class DOC_Util_File_S3 extends DOC_Util_File {
 				'SaveAs' => $cached_file
 			) ;
 			$response = $this->s3->getObject( $object_args ) ;
-		} catch( S3Exception $e ) {
-			// TODO: verify that the following is true with the 2.x SDK
-			// Note that the cache file will be created even if the response indicates a 
-			// failure. When this happens the file gets the XML response data instead of 
-			// the actual file we want, so we need to delete it.
-		
-			$error = $e->parse() ;
-			unlink( $cached_file ) ;
-			throw new ErrorException("{$error['message']} (type: {$error['type']}, code: {$error['code']})");
+				
+		} else {
+			if( file_exists( $cached_file )) {
+				unlink( $cached_file ) ;
+			}
+			throw new ErrorException("Cannot find {$filename} in bucket {$root_dir}");
 		}
+		
 		
 		return $cached_file ;
 	}

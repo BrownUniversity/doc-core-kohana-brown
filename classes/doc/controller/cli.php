@@ -92,8 +92,8 @@ class DOC_Controller_CLI extends Controller {
 	 * @param int $total The total number of expected iterations
 	 * @param int $break_at Number at which to output a line break
 	 */
-	public static function show_progress($count, $total, $break_at = 50 ) {
-		print('.') ;
+	public static function show_progress($count, $total, $break_at = 50, $char = '.' ) {
+		print( $char ) ;
 		if( $count % $break_at == 0 || $count == $total ) {
 			print( " ({$count}/{$total})\n") ;
 		}
