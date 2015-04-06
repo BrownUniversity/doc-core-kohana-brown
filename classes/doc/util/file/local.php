@@ -69,10 +69,10 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	 */
 	public function download($root_dir, $filename, $new_filename = NULL) {
 		$file_path = $root_dir . $filename ;
+		
 		if( !file_exists( $file_path )) {
 			$file_path .= self::UPLOAD_SUFFIX ;
 		}
-
 
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
@@ -125,7 +125,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	 * @param string $dir_key
 	 * @return string
 	 */
-	public function get_root_dir($root_key = NULL, $dir_key = NULL) {
+	public function get_root_dir($root_key = 'root', $dir_key = 'dir') {
 		return $this->file_config[ 'default' ][ $root_key ] . $this->file_config[ 'default' ][ $dir_key ] ;
 	}
 
