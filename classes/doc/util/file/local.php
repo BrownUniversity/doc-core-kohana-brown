@@ -8,8 +8,6 @@
  */
 class DOC_Util_File_Local extends DOC_Util_File {
 
-	const UPLOAD_SUFFIX = '.upload' ;
-
 	/**
 	 * Delete the file.
 	 * 
@@ -18,9 +16,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	 */
 	public function delete($root_dir, $filename) {
 		$file_path = $root_dir . $filename ;
-		if( !file_exists( $file_path )) {
-			$file_path .= self::UPLOAD_SUFFIX ;
-		}
+		
 		if( file_exists( $file_path )) {
 			unlink( $file_path ) ;
 		} else {
@@ -38,9 +34,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	 */
 	public function display($root_dir, $filename, $new_filename = NULL) {
 		$file_path = $root_dir . $filename ;
-		if( !file_exists( $file_path )) {
-			$file_path .= self::UPLOAD_SUFFIX ;
-		}
+		
 		if( empty( $new_filename )) {
 			$new_filename = $filename ;
 		}
@@ -74,9 +68,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	public function download($root_dir, $filename, $new_filename = NULL) {
 		$file_path = $root_dir . $filename ;
 		
-		if( !file_exists( $file_path )) {
-			$file_path .= self::UPLOAD_SUFFIX ;
-		}
+		
 
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
@@ -107,9 +99,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	 */
 	public function get_attachment($root_dir, $filename, $new_filename = NULL) {
 		$file_path = $root_dir . $filename ;
-		if( !file_exists( $file_path )) {
-			$file_path .= self::UPLOAD_SUFFIX ;
-		}
+		
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
 		}
@@ -145,7 +135,6 @@ class DOC_Util_File_Local extends DOC_Util_File {
 		$file_path = $root_dir . $filename ;
 
 		Kohana::$log->add(Log::DEBUG, "Attempting file save, source path = {$source_path}, file path = {$file_path}") ;
-		
 		
 		copy($source_path, $file_path) ;
 	}
