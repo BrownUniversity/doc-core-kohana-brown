@@ -21,7 +21,11 @@ class DOC_Util_File_Local extends DOC_Util_File {
 		if( !file_exists( $file_path )) {
 			$file_path .= self::UPLOAD_SUFFIX ;
 		}
-		unlink( $file_path ) ;
+		if( file_exists( $file_path )) {
+			unlink( $file_path ) ;
+		} else {
+			Kohana::$log->add(Log::WARNING, "Cannot delete-- file not found: {$file_path}") ;
+		}
 	}
 
 	/**
@@ -138,9 +142,12 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	 * @param array $attributes
 	 */
 	public function save($root_dir, $filename, $source_path, $attributes = NULL) {
-		$file_path = $root_dir . $filename . self::UPLOAD_SUFFIX ;
+		$file_path = $root_dir . $filename ;
 
-		move_uploaded_file($source_path, $file_path) ;
+		Kohana::$log->add(Log::DEBUG, "Attempting file save, source path = {$source_path}, file path = {$file_path}") ;
+		
+		
+		copy($source_path, $file_path) ;
 	}
 	
 	/**
@@ -151,7 +158,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 	 * @param string $contents
 	 */
 	public function save_string_to_file($root_dir, $filename, $contents, $append = FALSE) {
-		$file_path = $root_dir . $filename . self::UPLOAD_SUFFIX ;
+		$file_path = $root_dir . $filename ;
 		if (file_put_contents($file_path, $contents, $append ? FILE_APPEND : 0) !== FALSE) {
 			return $file_path ;
 		}

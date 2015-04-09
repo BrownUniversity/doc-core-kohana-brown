@@ -139,7 +139,7 @@ class DOC_Valid extends Kohana_Valid {
 	 * @return type
 	 */
 	public static function bat_key( $value ) {
-		return preg_match('/^[A-Za-z]{2,3}\d{5,6}(\.\d{4})?$/', $value ) === 1 ;
+		return preg_match('/^[A-Za-z]{2,3}\d{5,7}(\.\d{4})?$/', $value ) === 1 ;
 	}
 	
 	/**
