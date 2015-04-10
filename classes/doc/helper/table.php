@@ -325,7 +325,7 @@ class DOC_Helper_Table {
 											$args = $col_spec[ 'format' ][ 'args' ] ;
 											if( count( $args ) > 0 ) {
 												foreach( $args as $key => $arg ) {
-													if( strpos( $arg, '{' ) !== FALSE ) {
+													if( is_string( $arg ) && strpos( $arg, '{' ) !== FALSE ) {
 														$args[$key] = $this->parse_string($object, $arg, FALSE) ;
 													}
 												}
