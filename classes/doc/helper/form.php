@@ -237,9 +237,9 @@ class DOC_Helper_Form {
 			$_output .= '<span class="related-item-label">'.$label.'</span>' ;
 			if( $mode == self::MODE_EDITABLE ) {
 				if( $removable ) {
-					$_output .= '<span class="related-item-link">(<a class="removal-link">remove</a>)</span>' ;
+					$_output .= '<span class="related-item-link">(<a class="removal-link">Remove</a>)</span>' ;
 				} else {
-					$_output .= '<span class="related-item-link">(<a class="disabled">remove</a>)</span>' ;
+					$_output .= '<span class="related-item-link">(<a class="disabled">Remove</a>)</span>' ;
 				}
 				$_output .= '<input type="hidden" name="'.$field_name.'[]" value="'.$value.'" />' ;
 			}
