@@ -100,4 +100,13 @@ class DOC_Util_WordHTML {
 		return $str ;
 		
 	}
+	
+	public static function clean_all($str, $allow_tags = self::ALLOWABLE_TAGS_DEFAULT, $ignore_attributes_in_tags = self::IGNORE_ATTRS_IN_TAGS, $strip_html_body = TRUE) {
+		$_output = $str ;
+		$_output = self::convert_problem_chars($_output) ;
+		$_output = self::clean($_output, $allow_tags, $ignore_attributes_in_tags) ;
+		$_output = self::domdocument_tidy($_output, $strip_html_body) ;
+		
+		return $_output ;
+	}
 }
