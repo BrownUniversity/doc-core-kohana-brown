@@ -42,6 +42,10 @@ class DOC_Helper_Form {
 	 * Wrap label tags around input element.
 	 */
 	const LABEL_SURROUND = 'label-surround' ;
+	/**
+	 * Wrap label tags around input element and add appropriate bootstrap inline class.
+	 */
+	const LABEL_INLINE = 'label-inline' ;
 	
 	/**
 	 * Given a standard datetime string (such as that returned from MySQL), create
@@ -273,7 +277,9 @@ class DOC_Helper_Form {
 			$unique_id = "{$checkbox_name}_{$key}" ;
 			$label_tag = "<label for='{$unique_id}'>{$value}</label>" ;
 			if( $label_placement == self::LABEL_SURROUND ) {
-				$cb .= '<label>' ;
+				$cb .= "<label for='{$unique_id}'>" ;
+			} elseif ( $label_placement == self::LABEL_INLINE) {
+				$_output .= "<label for='{$unique_id}' class='checkbox-inline'>" ;
 			} elseif( $label_placement == self::LABEL_BEFORE ) {
 				$cb .= $label_tag ;
 			}
@@ -290,6 +296,8 @@ class DOC_Helper_Form {
 			}
 			if( $label_placement == self::LABEL_SURROUND ) {
 				$cb .= $value.'</label>' ;
+			} elseif( $label_placement == self::LABEL_INLINE ) {
+				$_output .= " {$value}</label>" ;
 			} elseif( $label_placement == self::LABEL_AFTER) {
 				$cb .= $label_tag ;
 			}
@@ -321,7 +329,9 @@ class DOC_Helper_Form {
 		
 		
 		if( $label_placement == self::LABEL_SURROUND ) {
-			$_output .= '<label>' ;
+			$_output .= "<label for='{$css_id}'>" ;
+		} elseif ( $label_placement == self::LABEL_INLINE) {
+			$_output .= "<label for='{$css_id}' class='checkbox-inline'>" ;
 		} elseif ( $label_placement == self::LABEL_BEFORE) {
 			$_output .= $label_tag ;
 		}
@@ -333,6 +343,8 @@ class DOC_Helper_Form {
 		}
 		if( $label_placement == self::LABEL_SURROUND ) {
 			$_output .= $label.'</label>' ;
+		} elseif( $label_placement == self::LABEL_INLINE ) {
+			$_output .= " {$label}</label>" ;
 		} elseif( $label_placement == self::LABEL_AFTER) {
 			$_output .= $label_tag ;
 		}
@@ -350,7 +362,7 @@ class DOC_Helper_Form {
 	 * @param string $mode
 	 * @return array
 	 */
-	public static function radio_group( $radio_name, $radio_array, $selected, $mode = self::MODE_EDITABLE ) {
+	public static function radio_group( $radio_name, $radio_array, $selected, $mode = self::MODE_EDITABLE, $label_placement = self::LABEL_AFTER ) {
 		$_output = array() ;
 
 		foreach( $radio_array as $key => $value ) {
@@ -364,7 +376,16 @@ class DOC_Helper_Form {
 					$radio = "<span id='{$unique_id}' class='checkmark-unchecked'>&nbsp;</span>" ;
 				}
 			}
-			$radio .= "<label for='{$unique_id}'>{$value}</label>" ;
+			$label_tag = "<label for='{$unique_id}'>{$value}</label>" ;
+			if( $label_placement === self::LABEL_SURROUND ) {
+				$radio = "<label for='{$unique_id}'>{$radio} {$value}</label>" ;
+			} elseif( $label_placement === self::LABEL_INLINE ) {
+				$radio = "<label for='{$unique_id}' class='radio-inline'>{$radio} {$value}</label>" ;
+			} elseif( $label_placement === self::LABEL_BEFORE ) {
+				$radio = $label_tag . $radio ;
+			} elseif( $label_placement === self::LABEL_AFTER ) {
+				$radio .= $label_tag ;
+			}
 			$_output[ $key ] = $radio ;
 		}
 
