@@ -672,6 +672,16 @@ class DOC_Helper_Table {
 					$replacement = '$1 ($2) $3-$4' ;
 					break;
 
+				case 12:
+					$pattern = '/(\d{3})[\. -](\d{3})[\. -](\d{4})/' ;
+					$replacement = '($1) $2-$3' ;
+					break;
+				
+				case 13:
+					$pattern = '/\((\d{3})\)(\d{3})[\. -](\d{4})/' ;
+					$replacement = '($1) $2-$3' ;
+					break;
+				
 				default:
 					break;
 			}
