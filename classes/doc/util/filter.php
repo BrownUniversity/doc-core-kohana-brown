@@ -164,7 +164,9 @@ class DOC_Util_Filter {
 
         // DOC_Util_Debug::dump( array( $filter_key, $search_filters )) ;
 		// check for a reset...
-		if( $request->post('setFilter') == 'Clear' ) {
+		if (($request->post('setFilter') == 'Clear' ) || 
+            ($request->post('setFilter') == 'Reset' ))
+        {
 			
 			$storage->delete( $filter_key ) ;
 			return $_output ;
