@@ -647,51 +647,7 @@ class DOC_Helper_Table {
 	 * @return string
 	 */
 	protected function format_phone( $value ) {
-
-		if( $value != NULL && $value != '' ) {
-			$pattern = '' ;
-			$replacement = '' ;
-			switch (strlen($value)) {
-				case 5:
-					$pattern = '/(\d{1})(\d{4})/' ;
-					$replacement = '$1-$2' ;
-					break;
-
-				case 7:
-					$pattern = '/(\d{3})(\d{4})/' ;
-					$replacement = '$1-$2' ;
-					break;
-
-				case 10:
-					$pattern = '/(\d{3})(\d{3})(\d{4})/' ;
-					$replacement = '($1) $2-$3' ;
-					break;
-
-				case 11:
-					$pattern = '/(\d{1})(\d{3})(\d{3})(\d{4})/' ;
-					$replacement = '$1 ($2) $3-$4' ;
-					break;
-
-				case 12:
-					$pattern = '/(\d{3})[\. -](\d{3})[\. -](\d{4})/' ;
-					$replacement = '($1) $2-$3' ;
-					break;
-				
-				case 13:
-					$pattern = '/\((\d{3})\)(\d{3})[\. -](\d{4})/' ;
-					$replacement = '($1) $2-$3' ;
-					break;
-				
-				default:
-					break;
-			}
-
-			if( !empty( $pattern )) {
-				$value = preg_replace($pattern, $replacement, $value) ;
-			}
-
-		}
-		return $value ;
+		return DOC_Helper_Text::phone($value) ;
 	}
 
 	/**

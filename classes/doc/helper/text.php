@@ -117,4 +117,51 @@ class DOC_Helper_Text extends Kohana_Text {
 
     }
 
+	public static function phone( $phone ) {
+		if( $phone != NULL && $phone != '' ) {
+			$pattern = '' ;
+			$replacement = '' ;
+			switch (strlen($phone)) {
+				case 5:
+					$pattern = '/(\d{1})(\d{4})/' ;
+					$replacement = '$1-$2' ;
+					break;
+
+				case 7:
+					$pattern = '/(\d{3})(\d{4})/' ;
+					$replacement = '$1-$2' ;
+					break;
+
+				case 10:
+					$pattern = '/(\d{3})(\d{3})(\d{4})/' ;
+					$replacement = '($1) $2-$3' ;
+					break;
+
+				case 11:
+					$pattern = '/(\d{1})(\d{3})(\d{3})(\d{4})/' ;
+					$replacement = '$1 ($2) $3-$4' ;
+					break;
+
+				case 12:
+					$pattern = '/(\d{3})[\. -](\d{3})[\. -](\d{4})/' ;
+					$replacement = '($1) $2-$3' ;
+					break;
+				
+				case 13:
+					$pattern = '/\((\d{3})\)(\d{3})[\. -](\d{4})/' ;
+					$replacement = '($1) $2-$3' ;
+					break;
+				
+				default:
+					break;
+			}
+
+			if( !empty( $pattern )) {
+				$phone = preg_replace($pattern, $replacement, $phone) ;
+			}
+
+		}
+		return $phone ;
+	}
+	
 }
