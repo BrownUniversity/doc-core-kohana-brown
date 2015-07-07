@@ -383,7 +383,7 @@ class DOC_Helper_Form {
 				$radio = "<label for='{$unique_id}' class='radio-inline'>{$radio} {$value}</label>" ;
 			} elseif( $label_placement === self::LABEL_BEFORE ) {
 				$radio = $label_tag . $radio ;
-			} elseif( $label_placement === self::LABEL_AFTER ) {
+			} else {
 				$radio .= $label_tag ;
 			}
 			$_output[ $key ] = $radio ;
