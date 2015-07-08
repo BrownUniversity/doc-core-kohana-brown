@@ -77,6 +77,10 @@ class DOC_Controller_CLI extends Controller {
 	public function action_index() {
 		if(array_key_exists($this->task_name, $this->task_map)) {
 			$this->{$this->task_name}() ;
+			// When using the log for output the carriage return comes at the beginning of the
+			// line, which causes the prompt to be in an awkward location. Add a
+			// final carriage return just to get the prompt where it belongs.
+			print("\n") ;
 		} else {
 			print( "\nUnrecognized CLI task.\n") ;
 			$this->show_help() ;
