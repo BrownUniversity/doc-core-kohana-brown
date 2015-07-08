@@ -128,8 +128,7 @@ class DOC_Util_Spreadsheet {
 					for( $i = 0; $i < $tds->length; $i++ ) {
 						$cell_node = $tds->item($i) ;
 						$cell_value = $dom->saveXML($cell_node) ;
-						$cell_value = str_replace('&gt;', '>', $cell_value) ;
-						$cell_value = str_replace('&lt;', '<', $cell_value) ;
+						$cell_value = html_entity_decode($cell_value) ;
 						$cell_value = preg_replace('/<\/?((p)|(br)|(div)).*?\/?>/',"\r", $cell_value ) ; 
 						$cell_value = DOC_Util_WordHTML::clean($cell_value,'') ;
 
