@@ -19,6 +19,7 @@ class DOC_Controller_CLI extends Controller {
 	protected $task_map = array() ;
 
 	const HELP = 'help' ;
+	const TASK_LIST_JSON = 'list-json' ;
 
 	public function before() {
 		parent::before() ;
@@ -50,23 +51,25 @@ class DOC_Controller_CLI extends Controller {
 						$this->task_name = $task_args[ 'task' ] ;
 						if( $this->task_name == self::HELP ) {
 							$this->show_help() ;
+						} elseif( $this->task_name == self::TASK_LIST_JSON ) {
+							$this->list_tasks('json') ;
 						}
 						if( isset( $task_args[ 'data' ] ) && !empty( $task_args[ 'data' ] )) {
 							$this->task_data = json_decode( $task_args[ 'data' ]) ;
 						}
 
 					} else {
-						print("\nNo task specified.\n") ;
+						print("\nERROR: No task specified.\n") ;
 						$this->show_help() ;
 					}
 				} else {
-					die("\nInvalid username/password.\n") ;
+					die("\nERROR: Invalid username/password.\n") ;
 				}
 			} else {
-				die("\nInvalid username/password.\n") ;
+				die("\nERROR: Invalid username/password.\n") ;
 			}
 		} else {
-			die("\nCLI is not enabled for this application\n") ;
+			die("\nERROR: CLI is not enabled for this application\n") ;
 		}
 	}
 
@@ -115,6 +118,15 @@ class DOC_Controller_CLI extends Controller {
 				print( "\t{$task_info['help']}\n\n" ) ;
 			}
 		}
+		exit() ;
+	}
+	
+	protected function list_tasks($format) {
+		$_output = '' ;
+		if( $format == 'json' ) {
+			$_output = json_encode($this->task_map) ;
+		}
+		print( $_output ) ;
 		exit() ;
 	}
 }
