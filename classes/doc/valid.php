@@ -165,6 +165,16 @@ class DOC_Valid extends Kohana_Valid {
 		return $_output ;
 	}
 
+	/**
+	 * Verify the value is a properly formatted net id
+	 * 
+	 * @param string $value
+	 * @return boolean
+	 */
+	public static function net_id( $value ) {
+		return preg_match('/^[-_a-zA-Z0-9]+$/', $value);
+	}
+	
     /**
      * Verify that the value is a properly formatted auth id
      *
