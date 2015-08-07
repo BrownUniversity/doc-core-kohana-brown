@@ -36,50 +36,50 @@ class DOC_Util_Banner_Export {
      */
     public static function put_file($local_path, $remote_path) {
     	
-    	$server = Kohana::$config->load('bannerintegration.server');
-        $user = Kohana::$config->load('bannerintegration.username');
-        $pass = Kohana::$config->load('bannerintegration.password');
+	$server = Kohana::$config->load('bannerintegration.server');
+	$user = Kohana::$config->load('bannerintegration.username');
+	$pass = Kohana::$config->load('bannerintegration.password');
 
-    	/**
-         * Connect to FTPs server
-         */
-        $ftps = ftp_ssl_connect($server);
-        if ($ftps === FALSE) {
-            $msg = "Failed to connect via FTPs to [{$server}] in Banner data exchange.";
-            Kohana::$log->add(Log::ERROR, $msg);
-            throw new Kohana_Exception($msg);
-        }
+	/**
+	 * Connect to FTPs server
+	 */
+	$ftps = ftp_ssl_connect($server);
+	if ($ftps === FALSE) {
+		$msg = "Failed to connect via FTPs to [{$server}] in Banner data exchange.";
+		Kohana::$log->add(Log::ERROR, $msg);
+		throw new Kohana_Exception($msg);
+	}
 
-        /**
-         * Login to FTPs server
-         * - ignoring errors to prevent PHP warning
-         */
-        $login = @ftp_login($ftps, $user, $pass);
-        if ($login === FALSE) {
-            $msg = "Failed to login to [{$server}] as user [{$user}] in Banner data exchange.";
-            Kohana::$log->add(Log::ERROR, $msg);
-            throw new Kohana_Exception($msg);
-        }
+	/**
+	 * Login to FTPs server
+	 * - ignoring errors to prevent PHP warning
+	 */
+	$login = @ftp_login($ftps, $user, $pass);
+	if ($login === FALSE) {
+		$msg = "Failed to login to [{$server}] as user [{$user}] in Banner data exchange.";
+		Kohana::$log->add(Log::ERROR, $msg);
+		throw new Kohana_Exception($msg);
+	}
 
-		$pasv = ftp_pasv($ftps, TRUE) ;
+	$pasv = ftp_pasv($ftps, TRUE) ;
 
-        /**
-         * Put the specified file to FTPs server
-         */
-        $op = ftp_put($ftps, $remote_path, $local_path, FTP_ASCII);
-        if ($op === FALSE) {
-            $msg = "Failed to put [{$local_path}] to [{$path}] in Banner data exchange.";
-            Kohana::$log->add(Log::ERROR, $msg);
-            throw new Kohana_Exception($msg);
-        }
+	/**
+	 * Put the specified file to FTPs server
+	 */
+	$op = ftp_put($ftps, $remote_path, $local_path, FTP_ASCII);
+	if ($op === FALSE) {
+		$msg = "Failed to put [{$local_path}] to [{$remote_path}] in Banner data exchange.";
+		Kohana::$log->add(Log::ERROR, $msg);
+		throw new Kohana_Exception($msg);
+	}
 
-        /**
-         * Clean-up FTP connection
-         */
-        ftp_close($ftps);
-        unset($ftps);
-    	
-    	return TRUE;
+	/**
+	 * Clean-up FTP connection
+	 */
+	ftp_close($ftps);
+	unset($ftps);
+
+	return TRUE;
     }
 }
 
