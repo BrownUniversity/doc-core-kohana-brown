@@ -33,28 +33,68 @@ class DOC_Controller_Cron extends Controller {
 		Kohana::$log->add(Log::INFO, 'Executing monthly cron script') ;
 	}
     
-    /**
-     * Slight modification to daily cron in that this happens once a day,
-     * but in the evenings rather than the mornings.
-     */
-    public function action_nightly() {
-        Kohana::$log->add(Log::INFO, 'Executing nightly cron script');
-    }
+	/**
+	 * Slight modification to daily cron in that this happens once a day,
+	 * but in the evenings rather than the mornings.
+	 */
+	public function action_nightly() {
+		Kohana::$log->add(Log::INFO, 'Executing nightly cron script');
+	}
     
 	public function action_index() {}
     
-    /**
-     * Class Kohana psuedo-constructor
-     */
-    public function before() {
-        
-        /**
-         * Ensure the request is actually coming from the command line
-         */
-        if ( ! Kohana::$is_cli) {
-            throw new Kohana_Exception('Attempting to execute CRON view a web-browser.');
-        }
-    }
+	/**
+	 * Return whether or not the day (relative to $now) is the provided $day.
+	 * 
+	 * @param string $day Day for which to test.
+	 * @param integer $now Date for generating day string.
+	 * @return boolean
+	 */
+	protected function is_day($day, $now = NULL) {
+		return $this->check_date_component('l', $day, $now)
+		    || $this->check_date_component('D', $day, $now);
+	}
+	
+	/**
+	 * Return whether or not the hour (relative to $now) is the provided $hour.
+	 * 
+	 * @param string $hour Hour for which to test.
+	 * @param integer $now Date for generating hour string.
+	 * @return boolean
+	 */
+	protected function is_hour($hour, $now = NULL) {
+		return $this->check_date_component('H', $hour, $now)
+		    || $this->check_date_component('ha', strtolower($hour), $now)
+		    || $this->check_date_component('h a', strtolower($hour), $now)
+		    || $this->check_date_component('ga', strtolower($hour), $now)
+		    || $this->check_date_component('g a', strtolower($hour), $now);
+	}
+	
+	/**
+	 * Test a date $format (relative to $now) against the provided $test string.
+	 * 
+	 * @param string $format Date format.
+	 * @param string $test Test string for comparison.
+	 * @param integer $now Date for generating format string.
+	 * @return boolean
+	 */
+	protected function check_date_component($format, $test, $now = NULL) {
+		$now = $now ? $now : strtotime('now');
+		return date($format, $now) === $test;
+	}
+	
+	/**
+	 * Class Kohana psuedo-constructor
+	 */
+	public function before() {
+
+		/**
+		 * Ensure the request is actually coming from the command line
+		 */
+		if ( ! Kohana::$is_cli) {
+			throw new Kohana_Exception('Attempting to execute CRON view a web-browser.');
+		}
+	}
 
 }
 
