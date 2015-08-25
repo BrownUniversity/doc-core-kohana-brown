@@ -17,25 +17,25 @@ class DOC_Util_Banner_ORDS {
 	private $token_expires = NULL ;
 	private $model_name = NULL ;
 	
-	private function __construct($base_url, $client_id, $client_secret, $auth_code, $model_name) {
+	private function __construct($base_url, $client_id, $client_secret, $model_name, $auth_code) {
 		$this->base_url = $base_url ;
 		$this->client_id = $client_id ;
 		$this->client_secret = $client_secret ;
 		$this->auth_code = $auth_code ;
 		$this->model_name = $model_name ;
 
-		$this->get_access_token() ;
+		$this->get_access_token($auth_code) ;
 	}
 	
-	public static function instance($base_url, $client_id, $client_secret, $auth_code, $model_name) {
+	public static function instance($base_url, $client_id, $client_secret, $model_name, $auth_code = NULL) {
 		$instance_key = $base_url . $client_id . $client_secret . $auth_code ;
 
 		
 		if( !isset( self::$instances[ $instance_key ])) {
-			$instance = new DOC_Util_Banner_ORDS($base_url, $client_id, $client_secret, $auth_code, $model_name) ;
+			$instance = new DOC_Util_Banner_ORDS($base_url, $client_id, $client_secret, $model_name, $auth_code) ;
 		} else {
 			$instance = self::$instances[ $instance_key ] ;
-			$instance->get_access_token() ;
+			$instance->get_access_token($auth_code) ;
 		}
 		self::$instances[ $instance_key ] = $instance ;
 		
@@ -50,8 +50,10 @@ class DOC_Util_Banner_ORDS {
 	 * Pull access token data from the database. If there's no record, then request
 	 * the initial access token from ORDS. If there's a record but we're past the
 	 * expiration date, use the refresh token to get a fresh token.
+	 * 
+	 * @param string auth_code If NULL, pull the auth_code from the db record (if it exists).
 	 */
-	private function get_access_token(){
+	private function get_access_token($auth_code = NULL){
 		
 		Kohana::$log->add(Log::DEBUG, "Loading OAuth ORM model: {$this->model_name}") ;
 		
@@ -65,6 +67,9 @@ class DOC_Util_Banner_ORDS {
 			$this->access_token = $oauth->access_token ;
 			$this->refresh_token = $oauth->refresh_token ;
 			$this->token_expires = $oauth->token_expires ;
+			if ($auth_code === NULL) {
+				$this->auth_code = $oauth->auth_code ;
+			}
 		} else {
 			
 			$curl_handle = curl_init() ;
@@ -129,7 +134,7 @@ class DOC_Util_Banner_ORDS {
 	 * @todo Make _much_ more robust. Currently only handles simple GETs.
 	 */
 	public function execute_request($endpoint, $data, $method = 'GET') {
-		$this->get_access_token() ;
+		$this->get_access_token($this->auth_code) ;
 		
 		$data = DOC_Util_REST::ordered_query_string($data) ;
 		

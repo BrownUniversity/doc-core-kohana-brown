@@ -86,7 +86,7 @@ class DOC_Controller_OAuth extends Controller_Base_Admin {
 			if ($oauth->loaded()) {
 				$oauth->delete();
 			}
-			DOC_Util_Banner_ORDS::instance($config['base-url'], $config['client-id'], $config['client-secret'], $auth_code, $config['model']);
+			DOC_Util_Banner_ORDS::instance($config['base-url'], $config['client-id'], $config['client-secret'], $config['model'], $auth_code);
 			$this->session->set('messages', array('Auth code successfully obtained.'));
 			Database::instance()->commit();
 		} catch (ErrorException $e) {
@@ -111,7 +111,7 @@ class DOC_Controller_OAuth extends Controller_Base_Admin {
 		}
 		
 		try {
-			DOC_Util_Banner_ORDS::instance($config['base-url'], $oauth->client_id, $oauth->client_secret, $oauth->auth_code, $config['model']);
+			DOC_Util_Banner_ORDS::instance($config['base-url'], $oauth->client_id, $oauth->client_secret, $config['model']);
 			$this->session->set('messages', array('Access code successfully refreshed.'));
 		} catch (ErrorException $e) {
 			$this->session->set('errors', array('Unable to refresh access token. You probably need to obtain a new auth code.'));
