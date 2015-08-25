@@ -1,11 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of ords
  *
@@ -88,8 +82,9 @@ class DOC_Util_Banner_ORDS {
 				$oauth = ORM::factory( $this->model_name ) ;
 				$oauth->client_id = $this->client_id ;
 				$oauth->client_secret = $this->client_secret ;
+				$oauth->auth_code = $this->auth_code ;
 
-//				// get access token from server
+				// get access token from server
 				curl_setopt($curl_handle, CURLOPT_POSTFIELDS, "grant_type=authorization_code&code={$this->auth_code}") ;
 				
 			} else {
