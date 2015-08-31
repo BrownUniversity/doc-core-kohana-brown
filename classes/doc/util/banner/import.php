@@ -185,7 +185,7 @@ abstract class DOC_Util_Banner_Import {
 		foreach ($files as $f) {
 			$matches = array();
 			if (preg_match('#^(\d\d-\d\d-\d\d\s+\d\d:\d\d[AP]M)\s+\S+\s+(' . $latest . '.*)$#', $f, $matches)) {
-				$timestamp = strtotime($matches[1]);
+				$timestamp = date_timestamp_get(date_create_from_format('m-d-y  h:iA', $matches[1]));
 				if ($timestamp >= $max_timestamp) {
 					$max_timestamp = $timestamp;
 					$remote = $path . $matches[2];
