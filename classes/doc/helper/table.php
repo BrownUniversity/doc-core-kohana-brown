@@ -453,7 +453,7 @@ class DOC_Helper_Table {
 				}
 
 				if( count( $supplemental_data ) > 0 ) {
-					if( $this->context == self::CONTEXT_WEB ) {
+					if( !in_array($this->context, array( self::CONTEXT_PDF, self::CONTEXT_SPREADSHEET )) ) {
 						$supplemental_data_json = json_encode( $supplemental_data, JSON_HEX_QUOT | JSON_HEX_APOS ) ;
 						$row_cells .= "<{$this->render_tags[$render_as]['cell']} class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></{$this->render_tags[$render_as]['cell']}>" ;
 
@@ -464,7 +464,7 @@ class DOC_Helper_Table {
 					}
 				}
 
-				if( count( $row_data ) > 0 && $this->context == self::CONTEXT_WEB ) {
+				if( count( $row_data ) > 0 && !in_array($this->context, array( self::CONTEXT_PDF, self::CONTEXT_SPREADSHEET ))) {
 
 					$row_data_json = htmlentities( DOC_Helper_JSON::get_json($row_data), ENT_QUOTES ) ;
 					$_output .= "<{$this->render_tags[$render_as]['row']} class='row-equiv' data-row-data='{$row_data_json}'>" ;
