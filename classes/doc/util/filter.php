@@ -139,6 +139,41 @@ class DOC_Util_Filter {
 	}
 
 	/**
+	 * Update stored filter specs with data from POST if it exists.
+	 */
+	public static function update_filter_specs() {
+		$storage = self::storage_instance() ;
+		$request = Request::current() ;
+		$filter_key = self::get_filter_key( self::KEY_FULL ) ;
+		if (($request->post('setFilter') == 'Clear' ) || ($request->post('setFilter') == 'Reset' )) {
+			$storage->delete( $filter_key ) ;
+		}
+		
+		// do we have a new filter request?
+		if( $request->post('setFilter') == 'Search' ) {
+			$filter_column_arr = $request->post( 'filter_column' ) ;
+			$search_val_0_arr = $request->post( 'search_val_0' ) ;
+			$search_val_1_arr = $request->post( 'search_val_1' ) ;
+			$search_operator_arr = $request->post( 'search_operator' ) ;
+			$boolean_connector = $request->post( 'boolean_connector' ) ;
+
+			$filter_specs_arr = array() ;
+			foreach( $filter_column_arr as $key => $filter_column ) {
+				$filter_specs_arr[] = array(
+					'filter_column' => $filter_column_arr[ $key ],
+					'search_val_0' => $search_val_0_arr[ $key ],
+					'search_val_1' => isset($search_val_1_arr[ $key ]) ? $search_val_1_arr[ $key ] : '',
+					'search_operator' => isset($search_operator_arr[ $key ]) ? $search_operator_arr[ $key ] : '',
+					'boolean_connector' => $boolean_connector
+				) ;
+			}
+            
+			$storage->set( $filter_key, $filter_specs_arr ) ;			
+		}
+
+	}
+	
+	/**
 	 * Modifies and returns the passed in ORM object, adding in search filters
 	 * based on the current parameters. Defaults to data in storage, but
 	 * uses POST data if present.
@@ -172,32 +207,9 @@ class DOC_Util_Filter {
 			return $_output ;
 		}
 
-		
-		
-		// start with stored data, if it exists
+		// update and retrieve filter specs
+		self::update_filter_specs() ;
 		$filter_specs_arr = $storage->get( $filter_key ) ;
-		
-		// do we have a new filter request?
-		if( $request->post('setFilter') == 'Search' ) {
-			$filter_column_arr = $request->post( 'filter_column' ) ;
-			$search_val_0_arr = $request->post( 'search_val_0' ) ;
-			$search_val_1_arr = $request->post( 'search_val_1' ) ;
-			$search_operator_arr = $request->post( 'search_operator' ) ;
-			$boolean_connector = $request->post( 'boolean_connector' ) ;
-
-			$filter_specs_arr = array() ;
-			foreach( $filter_column_arr as $key => $filter_column ) {
-				$filter_specs_arr[] = array(
-					'filter_column' => $filter_column_arr[ $key ],
-					'search_val_0' => $search_val_0_arr[ $key ],
-					'search_val_1' => isset($search_val_1_arr[ $key ]) ? $search_val_1_arr[ $key ] : '',
-					'search_operator' => isset($search_operator_arr[ $key ]) ? $search_operator_arr[ $key ] : '',
-					'boolean_connector' => $boolean_connector
-				) ;
-			}
-            
-			$storage->set( $filter_key, $filter_specs_arr ) ;			
-		}
 
         if( $filter_specs_arr != NULL ) {
 			$_output = $_output->and_where_open() ;
