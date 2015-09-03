@@ -158,7 +158,7 @@ return array(
 	'ords' => array(
 		'base-url' => BANNERINTEGRATION_ORDS_BASE_URL,
 		'client-id' => BANNERINTEGRATION_ORDS_CLIENT_ID,
-		'client-secret' => BANNERINTEGRATION_ORDS_CLIENT_SECRET, // move to database?
+		'client-secret' => BANNERINTEGRATION_ORDS_CLIENT_SECRET,
 		'model' => BANNERINTEGRATION_ORDS_MODEL
 	)
 );
