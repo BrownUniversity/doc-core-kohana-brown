@@ -32,7 +32,7 @@ class DOC_Helper_Help {
 		if( $no_float ) {
 			$trigger_classes[] = self::NO_FLOAT_CLASS ;
 		}
-		print("<span id='{$trigger_id}' class='".implode(' ', $trigger_classes)."'>?</span>") ;
+		print("<span id='{$trigger_id}' class='".implode(' ', $trigger_classes)."' role='button' aria-label='show help'>?</span>") ;
 	}
 	
 	
