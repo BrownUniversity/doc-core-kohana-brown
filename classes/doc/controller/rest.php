@@ -156,6 +156,7 @@ class DOC_Controller_REST extends Controller {
 		}
 
 		// this was originally in the index() method
+
 		if ( ! array_key_exists($this->accept_type, $this->definitions)) {
 			$this->send_response(415);
 		}
@@ -275,22 +276,9 @@ class DOC_Controller_REST extends Controller {
 	/**
 	 * Process requested HTTP accept types. This will give preference to the query
 	 * string if it contains a mimeType and a version. If these are missing, it
-	 * will use the $_SERVER[ 'HTTP_ACCEPT' ] value. The algorithm used to select
-	 * a type is as follows:
-	 * 
-	 * 1. Sort (descending) accept types according to provided quality factor
-	 * 2. Intersect this list with the supported types
-	 * 3. If the resulting list is non-empty, use the first type
-	 * 4. If the resulting list is empty and "*\/*" was provided as an acceptable
-	 *    type, then use the first supported type
-	 * 5. If the resulting list is empty and "text/html" was provided as an acceptable
-	 *    type, then use "text/html"
-	 * 6. If the resulting list is empty and neither "*\/*" nor "text/html" were
-	 *    provided as acceptable types, then use the first acceptable type (as we
-	 *    will most likely be returning a 415 error in this case)
+	 * will use the $_SERVER[ 'HTTP_ACCEPT' ] value.
 	 *
 	 * @todo Create a way to more flexibly set a default accept_type.
-	 * @todo The sort used in step 1 is not stable. We may want to use a stable sort.
 	 */
 	final protected function process_accept_type()
 	{
@@ -303,31 +291,18 @@ class DOC_Controller_REST extends Controller {
 			$raw = (isset($_SERVER['HTTP_ACCEPT'])) ? $_SERVER['HTTP_ACCEPT'] : NULL;
 		}
 
-		$types = explode(',', $raw);
-		$sorted = array();
-		foreach( $types as $type ) {
-			$parts = explode(';', $type);
-			if( count($parts) === 1 ) {
-				$sorted[$parts[0]] = 1.0;
-			} else {
-				$quality = explode('=', $parts[1]);
-				$sorted[$parts[0]] = floatval($quality[1]);
-			}
+		$raw_array = explode(';', $raw);
+		$types = explode(',', $raw_array[0]);
+		if (count($types) == 1)
+		{
+			$this->accept_type = $raw;
 		}
-		asort($sorted, SORT_NUMERIC);
-		$descending = array_reverse($sorted);
-		
-		$definitions = array_keys($this->definitions);
-		$accepts = array_intersect(array_keys($descending), $definitions);
-		if( count($accepts) > 0 ) {
-			$this->accept_type = $accepts[0];
-		} else if( array_key_exists('*/*', $descending) ) {
-			$this->accept_type = reset($definitions);
-		} else {
-			if( array_key_exists('text/html', $descending) ) {
+		else
+		{
+			if (array_search('text/html', $types) !== FALSE) {
 				$this->accept_type = 'text/html';
 			} else {
-				$this->accept_type = reset($descending);
+				$this->accept_type = $types[0];
 			}
 		}
 	}

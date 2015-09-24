@@ -20,6 +20,7 @@
 	}
 
 	print( $_output ) ;
+	exit() ;
 
 function parse_data( $data ) {
 	$_output = $data ;
