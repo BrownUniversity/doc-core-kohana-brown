@@ -96,7 +96,7 @@ return array(
 		),
 		'concentration_advisors' => array(
 			'filename' => 'conc_advisors_processed.dat',
-			'columns' => array('student_id', 'advisor_id', 'concentration_code', 'degree_code', 'action', 'pairing_id', 'msg', 'date'),
+			'columns' => array('student_id', 'advisor_id', 'concentration_code', 'action', 'pairing_id', 'msg', 'date'),
 		),
     ),
     'exports' => array(
