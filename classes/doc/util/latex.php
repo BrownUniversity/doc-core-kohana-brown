@@ -514,6 +514,11 @@ class DOC_Util_LaTeX {
 //		print("<pre>{$latex_str}</pre>") ;
 //		die() ;
 		
+		if( substr(trim($filename),-4) != '.pdf') {
+			$filename = trim($filename).'.pdf' ;
+		}
+		
+		
 		$latex_config = Kohana::$config->load('latex') ;
 		
 		$safe_filename = DOC_Util_File::safe_filename($filename) ;
