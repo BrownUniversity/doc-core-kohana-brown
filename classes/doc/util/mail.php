@@ -19,7 +19,7 @@ class DOC_Util_Mail {
 	 * @param Swift_FileSpool $spool
 	 * @return int
 	 */
-	public static function send_message($message, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE ) {
+	public static function send_message($message, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE, $attachments = array() ) {
 		$_output = FALSE ;
 
 		$mail_config = Kohana::$config->load('mail') ;
@@ -63,6 +63,15 @@ class DOC_Util_Mail {
 				$message->setCc($cc) ;
 			}
 		}
+
+		if( count( $attachments ) > 0) {
+		    foreach($attachments as $attachment) {
+		        Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment}. ");
+				$message->attach(Swift_Attachment::fromPath($attachment));
+			}
+		} else {
+		    Kohana::$log->add(Log::DEBUG, "It appears that there are no attachments. ");
+		}
 		
 		$_output = $mailer->send($message) ;
 		Kohana::$log->add(Log::DEBUG, "Message sent with subject '".$message->getSubject()."' at ".date('Y-m-d H:i:s')) ;
@@ -81,11 +90,11 @@ class DOC_Util_Mail {
 	 * @param string $cc
 	 * @return int
 	 */
-	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE ) {
+	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE, $attachments = array() ) {
 		$message = Swift_Message::newInstance($subject, $body) ;
 		$message->setContentType('text/html') ;
 
-		return self::send_message($message, $recipients, $cc, $from, $reply_to, $spool) ;
+		return self::send_message($message, $recipients, $cc, $from, $reply_to, $spool, $attachments) ;
 	}
 
 	/**
