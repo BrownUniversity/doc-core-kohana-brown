@@ -11,7 +11,7 @@
 <h1>User Impersonation Search</h1>
 <p>
     <b>Search String:</b><br />
-    <?php echo form::input('search_string') ?>
+    <?php echo form::input('search_string',NULL,array('autocorrect' => 'off', 'autocomplete' => 'off')) ?>
 </p>
 
 <p>
