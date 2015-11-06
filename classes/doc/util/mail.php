@@ -66,8 +66,13 @@ class DOC_Util_Mail {
 
 		if( count( $attachments ) > 0) {
 		    foreach($attachments as $attachment) {
-		        Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment}. ");
-				$message->attach(Swift_Attachment::fromPath($attachment));
+				if( is_array( $attachment )) {
+					Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment['path']}, with new name {$attachment['new_name']}") ;
+					$message->attach(Swift_Attachment::fromPath($attachment['path'])->setFilename($attachment['new_name']));
+				} else {
+					Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment}. ");
+					$message->attach(Swift_Attachment::fromPath($attachment));
+				}
 			}
 		} else {
 		    Kohana::$log->add(Log::DEBUG, "It appears that there are no attachments. ");
