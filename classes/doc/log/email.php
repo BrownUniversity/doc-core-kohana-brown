@@ -101,9 +101,13 @@ class DOC_Log_Email extends Log_Writer {
 			$body = text::auto_p($error_prefix) . text::auto_p($message['body']);
             
             /**
-             * Only actually email the error if it is not a 404
+             * Only actually email the error if it is not a 404, And recipients
+             * have been defined for this log level
              */
-            if (strpos($message['body'], 'HTTP_Exception_404') === FALSE) {
+            if ((is_array($recipients)) &&
+                (count($recipients) > 0) && 
+                (strpos($message['body'], 'HTTP_Exception_404') === FALSE))
+            {
                 $result = DOC_Util_Mail::send($subject, $body, $recipients, NULL, $this->from);
             }
         }
