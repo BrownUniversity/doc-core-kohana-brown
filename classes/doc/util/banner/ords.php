@@ -138,7 +138,9 @@ class DOC_Util_Banner_ORDS {
 		$this->get_access_token($this->auth_code) ;
 
 		$start = microtime(TRUE);
-		$data = DOC_Util_REST::ordered_query_string($data) ;
+		if ( ! is_string($data) ) {
+			$data = DOC_Util_REST::ordered_query_string($data) ;
+		}
 		
 		$curl_handle = curl_init() ;
 		
@@ -160,13 +162,10 @@ class DOC_Util_Banner_ORDS {
 		curl_setopt( $curl_handle, CURLOPT_REFERER, url::base()) ;
 		curl_setopt( $curl_handle, CURLOPT_SSL_VERIFYPEER, FALSE ) ;
 		curl_setopt( $curl_handle, CURLINFO_HEADER_OUT, TRUE ) ;
-		$headers = array_merge($headers, array( "Authorization: Bearer " . $this->access_token ));
-		curl_setopt( $curl_handle, CURLOPT_HTTPHEADER, $headers) ;
+		curl_setopt( $curl_handle, CURLOPT_HTTPHEADER, array_merge($headers, array( "Authorization: Bearer " . $this->access_token ))) ;
 
 		$response = curl_exec( $curl_handle ) ;
 		
-		$info = curl_getinfo( $curl_handle, CURLINFO_HEADER_OUT ) ;
-			
 		if( curl_getinfo( $curl_handle, CURLINFO_HTTP_CODE ) != 200 ) {
 			Kohana::$log->add(Log::ERROR, "Error accessing REST endpoint {$this->base_url}{$endpoint}, data={$data}, HTTP code=".curl_getinfo( $curl_handle, CURLINFO_HTTP_CODE )) ; 
 			throw new ErrorException('There was a problem executing the specified REST request.' ) ;
