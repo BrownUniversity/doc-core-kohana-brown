@@ -29,7 +29,6 @@ class DOC_Util_Banner_ORDS {
 	
 	public static function instance($base_url, $client_id, $client_secret, $model_name, $auth_code = NULL) {
 		$instance_key = $base_url . $client_id . $client_secret . $auth_code ;
-
 		
 		if( !isset( self::$instances[ $instance_key ])) {
 			$instance = new DOC_Util_Banner_ORDS($base_url, $client_id, $client_secret, $model_name, $auth_code) ;
@@ -54,6 +53,7 @@ class DOC_Util_Banner_ORDS {
 	 * @param string auth_code If NULL, pull the auth_code from the db record (if it exists).
 	 */
 	private function get_access_token($auth_code = NULL){
+		$start = microtime(TRUE);
 		
 		Kohana::$log->add(Log::DEBUG, "Loading OAuth ORM model: {$this->model_name}") ;
 		
@@ -122,7 +122,8 @@ class DOC_Util_Banner_ORDS {
 			$oauth->token_expires = $this->token_expires ;
 			
 			$oauth->save() ;
-		}		
+		}
+		Kohana::$log->add(Log::WARNING, "ORDS: Refreshed OAuth token in " . (microtime(TRUE) - $start) . " seconds.");
 	}
 	
 	/**
@@ -133,9 +134,10 @@ class DOC_Util_Banner_ORDS {
 	 * @throws ErrorException
 	 * @todo Make _much_ more robust. Currently only handles simple GETs.
 	 */
-	public function execute_request($endpoint, $data, $method = 'GET') {
+	public function execute_request($endpoint, $data, $method = 'GET', $headers = array()) {
 		$this->get_access_token($this->auth_code) ;
-		
+
+		$start = microtime(TRUE);
 		$data = DOC_Util_REST::ordered_query_string($data) ;
 		
 		$curl_handle = curl_init() ;
@@ -151,15 +153,16 @@ class DOC_Util_Banner_ORDS {
 			default:
 				throw new ErrorException('Unknown HTTP method specified in '.__CLASS__ ) ;
 		}
-		
-		curl_setopt( $curl_handle, CURLOPT_URL, $this->base_url . $endpoint) ;		
+
+		curl_setopt( $curl_handle, CURLOPT_URL, $this->base_url . $endpoint) ;
 		curl_setopt( $curl_handle, CURLOPT_TIMEOUT, 20 ) ;
 		curl_setopt( $curl_handle, CURLOPT_RETURNTRANSFER, TRUE ) ;
-		curl_setopt( $curl_handle, CURLINFO_HEADER_OUT, TRUE ) ;
 		curl_setopt( $curl_handle, CURLOPT_REFERER, url::base()) ;
 		curl_setopt( $curl_handle, CURLOPT_SSL_VERIFYPEER, FALSE ) ;
-		curl_setopt( $curl_handle, CURLOPT_HTTPHEADER, array( "Authorization: Bearer " . $this->access_token )) ;
-		
+		curl_setopt( $curl_handle, CURLINFO_HEADER_OUT, TRUE ) ;
+		$headers = array_merge($headers, array( "Authorization: Bearer " . $this->access_token ));
+		curl_setopt( $curl_handle, CURLOPT_HTTPHEADER, $headers) ;
+
 		$response = curl_exec( $curl_handle ) ;
 		
 		$info = curl_getinfo( $curl_handle, CURLINFO_HEADER_OUT ) ;
@@ -168,7 +171,9 @@ class DOC_Util_Banner_ORDS {
 			Kohana::$log->add(Log::ERROR, "Error accessing REST endpoint {$this->base_url}{$endpoint}, data={$data}, HTTP code=".curl_getinfo( $curl_handle, CURLINFO_HTTP_CODE )) ; 
 			throw new ErrorException('There was a problem executing the specified REST request.' ) ;
 		}
-		
+
+		curl_close( $curl_handle ) ;
+		Kohana::$log->add(Log::WARNING, "ORDS: Executed $method request in " . (microtime(TRUE) - $start) . " seconds.");
 		return json_decode( $response ) ;		
 	}
 	
