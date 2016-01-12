@@ -9,7 +9,7 @@
  */
 class DOC_Util_Ldap
 {
-    private $ldap_host_url = "registry.brown.edu";
+    private $ldap_host_url = null;
 //  	private $ldap_host_url = "localhost:5327" ;
     private $ldap_query_bind_rdn = null;
     private $ldap_query_bind_password = null;
@@ -223,6 +223,9 @@ class DOC_Util_Ldap
         if ( ! $people_only) {
         	$base = "dc=brown,dc=edu";
         }
+
+		Kohana::$log->add( Log::DEBUG, "LDAP Search: base={$base}, filter={$filter}") ;
+		
 		Profiler::stop($bm2);
         try {
         	$bm1 = Profiler::start('LDAP', 'search');
