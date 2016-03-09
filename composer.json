@@ -1,0 +1,26 @@
+{
+    "name": "brownuniversity/doc-core",
+    "description": "DOC-Core for Kohana applications.",
+    "keywords": ["doc", "core", "kohana"],
+    "authors": [
+        {
+            "name": "Christopher Keith",
+            "email": "christopher_keith@brown.edu"
+        },
+        {
+            "name": "Jason Orrill",
+            "email": "jason_orrill@brown.edu"
+        },
+        {
+            "name": "Sumner Warren",
+            "email": "sumner_warren@brown.edu"
+        }
+    ],
+    "require": {
+      "php": ">=5.3"
+    },
+    "suggest": {
+      "swiftmailer/swiftmailer": "Provides email functionality via DOC_Util_Mail.",
+      "phpoffice/phpexcel": "Provides Excel read/write support via DOC_Util_Spreadsheet."
+    }
+}
