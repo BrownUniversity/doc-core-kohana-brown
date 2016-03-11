@@ -192,7 +192,7 @@ class DOC_Valid extends Kohana_Valid {
      * @return boolean
      */
     public static function advance_id( $value ) {
-        return TRUE;
+		return preg_match('/^\d{10}$/', $value);
     }
     
     /**
