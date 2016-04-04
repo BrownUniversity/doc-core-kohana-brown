@@ -389,6 +389,7 @@ class DOC_Util_LaTeX {
 		}
 		
 		$_output = preg_replace("~>\n*\s*\n*<~", '><', $_output) ;
+		$_output = trim( $_output ) ;
 
 		// deal with most characters LaTeX needs modified
 		
@@ -399,7 +400,9 @@ class DOC_Util_LaTeX {
 
         // remove any empty paragraphs, these definitely make LaTeX crabby
         $_output = preg_replace_callback('/<p>(.*?)<\/p>/', 'DOC_Util_LaTeX::strip_empty', $_output);
-        
+		$_output = preg_replace_callback('/<div>(.*?)<\/div>/', 'DOC_Util_LaTeX::strip_empty', $_output);
+
+
 		// the rich text editor sometimes leaves breaks at the end of a list item, which is redundant
 		$_output = preg_replace('/<li>(.*?)<br.*?>\s*?<\/li>/s','<li>$1</li>',$_output) ; 
 		// parse the html
