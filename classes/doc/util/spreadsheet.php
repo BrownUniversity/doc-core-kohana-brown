@@ -83,6 +83,43 @@ class DOC_Util_Spreadsheet {
         return $values;
     }
     
+    	/**
+        * Given a data array, returns a spreadsheet object. Prints header if one is provided.
+        * @param array $data Array of associative array. Associate array contains the field and corresponding value.
+        * @param array $header contains mapping between key of associative array and header value to be printed in file. 
+	* Later we can use this array to pass additional information
+        * @return PHPExcel
+	 */
+	public static function spreadsheet_via_array($data = array(), $header = array()){
+		$obj_phpexcel = new PHPExcel() ;
+		$obj_phpexcel->setActiveSheetIndex(0) ;
+		$active_sheet = $obj_phpexcel->getActiveSheet() ;
+		
+		$row_index = 0 ;
+		//create header if $header array is not null
+		if(count($header) > 0){
+			$row_index++ ;
+			$i=0;
+			foreach($header as  $head){
+				$active_sheet->getCellByColumnAndRow($i, $row_index)
+							 ->setValueExplicit($head, PHPExcel_Cell_DataType::TYPE_STRING);
+				$i++;
+			}
+		}	
+		if(count($data) > 0){	
+			foreach($data as $row){
+				$i=0;
+				$row_index++;
+				foreach($row as $key => $column){
+					$active_sheet->getCellByColumnAndRow($i, $row_index)
+                                 ->setValueExplicit($column, PHPExcel_Cell_DataType::TYPE_STRING);
+					$i++;
+				}
+			}
+		}		
+		return $obj_phpexcel ;
+	}
+    
 	/**
 	 * Given a set of data, returns a spreadsheet object. Note that this makes
 	 * use of the Table class, and uses the same type of formatting data that we
