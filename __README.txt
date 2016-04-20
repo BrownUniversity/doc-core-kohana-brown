@@ -10,6 +10,6 @@ Kohana 3 DOC Module README
 	will need to pull those in from elsewhere. The code has been tested against 
 	jQuery 1.5.x through 1.6.1 and so far seems solid with both.
 
-Document history: 
+Document history:  
 
 - 2011-06-01 Initial notes
