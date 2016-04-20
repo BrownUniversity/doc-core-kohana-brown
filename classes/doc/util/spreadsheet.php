@@ -83,12 +83,12 @@ class DOC_Util_Spreadsheet {
         return $values;
     }
     
-    	/**
-        * Given a data array, returns a spreadsheet object. Prints header if one is provided.
-        * @param array $data Array of associative array. Associate array contains the field and corresponding value.
-        * @param array $header contains mapping between key of associative array and header value to be printed in file. 
-	* Later we can use this array to pass additional information
-        * @return PHPExcel
+    /**
+     * Given a data array, returns a spreadsheet object. Prints header if one is provided.
+     * @param array $data Array of associative array. Associate array contains the field and corresponding value.
+     * @param array $header contains mapping between key of associative array and header value to be printed in file.
+	 * Later we can use this array to pass additional information
+     * @return PHPExcel
 	 */
 	public static function spreadsheet_via_array($data = array(), $header = array()){
 		$obj_phpexcel = new PHPExcel() ;
