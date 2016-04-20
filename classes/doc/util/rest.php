@@ -22,7 +22,6 @@ class DOC_Util_REST {
 	 *
 	 * @param array $arr
 	 * @return string
-	 * @todo Deal with cases where we might be using the array ("[]") syntax
 	 */
 	 public static function ordered_query_string($arr) {
 		 $_output = '' ;
@@ -31,7 +30,13 @@ class DOC_Util_REST {
 			 ksort($arr) ;
 			 $new_array = array() ;
 			 foreach( $arr as $key => $value ) {
-				 $new_array[] = "{$key}={$value}" ;
+				 if( is_array( $value )) {
+					foreach( $value as $item) {
+						$new_array[] = "{$key}[]={$item}" ;
+					}
+				 } else {
+					 $new_array[] = "{$key}={$value}" ;
+				 }
 			 }
 			 $_output = implode('&',$new_array) ;
 		 }
