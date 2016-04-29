@@ -2,28 +2,28 @@
 	form#filter {
 		width: 780px ;
 	}
-	.search-group-manipulation {
+	form#filter .search-group-manipulation {
 		float:right;
 	}
-	.add-search-group, .remove-search-group {
+	form#filter .add-search-group, form#filter .remove-search-group {
 		float: right ;
 	}
-	.add-search-group span, .remove-search-group span {
+	form#filter .add-search-group span, form#filter .remove-search-group span {
 		margin-top: 4px ;
 	}
-	.submits {
+	form#filter .submits {
 		clear: right ;
 	}
-	.submits-main, .submits-alternate {
+	form#filter .submits-main, form#filter .submits-alternate {
 		padding: 4px 0px;
 	}
-	.submits-main {
+	form#filter .submits-main {
 		float: right ;
 	}
-	.submits-alternate {
+	form#filter .submits-alternate {
 		float: left ;
 	}
-	.manipulator-placeholder {
+	form#filter .manipulator-placeholder {
 		display: block ;
 		float: right ;
 		width: 16px ;
@@ -32,13 +32,22 @@
 	#search-groups {
 		overflow: auto ;
 	}
-	.search-group {
+	#search-groups .search-group {
 		float:left ;
 		width: 88% ;
 	}
-	.boolean-connector {
+	#search-groups .boolean-connector {
 		float: right ;
 		width: 10% ;
+	}
+	form#filter .sr-only {
+	/* hide from screen, but allow screen readers to access */
+		position:absolute;
+		left:-10000px;
+		top:auto;
+		width:1px;
+		height:1px;
+		overflow:hidden;
 	}
 
 </style>
@@ -113,9 +122,11 @@
 
 		print("<div id='search-groups'>") ;
 		foreach( $saved_filter_specs_arr as $key => $saved_filter_specs ) {
+			$label_search_operator = array('aria-label' => "Operator") ;
+
 			print("<div id='search-group-{$key}' class='search-group'>") ;
 			$relation_menus = array() ;
-			print("<select name='filter_column[]'>") ;
+			print("<select id='filter-column-{$key}' name='filter_column[]' aria-label='Property to filter'>") ;
 			$search_operator = '' ;
 			foreach( $filter_fields as $filter_col => $filter_specs ) {
 				$option_value = $filter_col ;
@@ -138,18 +149,18 @@
 				// for related tables
 				if( isset( $filter_specs[ 'relation_name' ])) {
 					$option_class = $filter_specs[ 'relation_name' ] ;
-					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
+					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0, array('aria-label' => 'Property value')) ;
 					
-					$relation_menus[] = "<span class='filter_value {$filter_specs[ 'relation_name' ]}'> " . 
-							Form::select("search_operator[]", $relation_operators[$relation_menu_type], $search_operator) . 
+					$relation_menus[] = "<span class='filter_value {$filter_specs[ 'relation_name' ]}'> " .
+							Form::select("search_operator[]", $relation_operators[$relation_menu_type], $search_operator, $label_search_operator) .
 							" {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
 
 				// in case we have a special array for the menu but not a special label (likely for enum fields)
 				} elseif( isset( $filter_specs[ 'relation_options' ])) {
 					$option_class = $filter_col ;
-					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0) ;
-					$relation_menus[] = "<span class='filter_value {$option_class}'> " . 
-							Form::select("search_operator[]", $relation_operators[$relation_menu_type], $search_operator) . 
+					$column_menu = Form::select("search_val_0[]", $filter_specs[ 'relation_options' ], $search_val_0, array('aria-label' => 'Property value')) ;
+					$relation_menus[] = "<span class='filter_value {$option_class}'> " .
+							Form::select("search_operator[]", $relation_operators[$relation_menu_type], $search_operator, $label_search_operator) .
 							" {$column_menu}<input type='hidden' value='' name='search_val_1[]' /></span>" ;
 
 				} elseif( isset( $filter_specs[ 'custom_query' ]) && $filter_specs[ 'custom_query'] == TRUE ) {
@@ -171,7 +182,7 @@
 							}
 
 							$option_class = $filter_col ;
-							$column_menu = Form::select("search_val_0[]", $enum_menu, $search_val_0) ;
+							$column_menu = Form::select("search_val_0[]", $enum_menu, $search_val_0, array('aria-label' => 'Property value')) ;
 							$relation_menus[] = "<span class='filter_value {$filter_col}'> = {$column_menu}<input type='hidden' name='search_operator[]' value='' /></span>" ;
 						} else {
 							// Some data types will come in two parts, such as "smallint unsigned", but we only want the first part.
@@ -197,7 +208,7 @@
 							}
 
 							$option_class = $filter_col ;
-							$column_menu = Form::select("search_val_0[]", $enum_menu, $search_val_0) ;
+							$column_menu = Form::select("search_val_0[]", $enum_menu, $search_val_0, array('aria-label' => 'Property value')) ;
 							$relation_menus[] = "<span class='filter_value {$filter_col}'> = {$column_menu}<input type='hidden' name='search_operator[]' value='' /></span>" ;
 						} else {
 							$option_class = preg_replace( '/^(.+?) ?/', '$1', $property_columns[ $column ][ 'data_type' ] ) ;
@@ -246,15 +257,15 @@
 			print("<span class='filter_value filter_text'>
 						like
 						<input type='hidden' name='search_operator[]' value='' />
-						<input type='text' value='{$text_default}' name='search_val_0[]' autocorrect='off' autocapitalize='off' spellcheck='false' />
+						<input type='text' value='{$text_default}' name='search_val_0[]' autocorrect='off' autocapitalize='off' spellcheck='false' aria-label='Property value'/>
 						<input type='hidden' value='' name='search_val_1[]' />
 						</span>") ;
 			print("<span class='filter_value filter_date'>
 						<input type='hidden' name='search_operator[]' value='' />
 						from
-						<input type='text' value='{$date_default_0}' name='search_val_0[]' class='datepicker' />
+						<input type='text' value='{$date_default_0}' name='search_val_0[]' class='datepicker' aria-label='Start date'/>
 						to
-						<input type='text' value='{$date_default_1}' name='search_val_1[]' class='datepicker' />
+						<input type='text' value='{$date_default_1}' name='search_val_1[]' class='datepicker' aria-label='End date'/>
 					</span>") ;
 
 			$datetime_0 = DOC_Helper_Form::datetime_input_fields( $date_default_0, 'datetime_0', $minute_increment, 'datepicker-filter', FALSE ) ;
@@ -270,7 +281,12 @@
 					</span>") ;
 
 // DOC_Util_Debug::dump( $search_operator, false ) ;
-			print("<span class='filter_value filter_numeric'>".Form::select("search_operator[]", $operators, $search_operator)."<input type='text' value='{$numeric_default}' name='search_val_0[]' autocorrect='off' autocapitalize='off' spellcheck='false' /><input type='hidden' value='' name='search_val_1[]' /></span>") ;
+			print("<span class='filter_value filter_numeric'>".
+					Form::select("search_operator[]", $operators, $search_operator, $label_search_operator).
+					"<input type='text' value='{$numeric_default}' name='search_val_0[]' autocorrect='off' autocapitalize='off' spellcheck='false' aria-label='Property value'/>
+					<input type='hidden' value='' name='search_val_1[]' />
+					</span>"
+			) ;
 
 
 			foreach( $relation_menus as $relation_menu ) {
@@ -278,8 +294,10 @@
 			}
 			print("<span class='search-group-manipulation'>") ;
 			print("<span class='manipulator-placeholder'></span>") ;
-			print("<a class='add-search-group'><span class='ui-icon ui-icon-circle-plus'></span></a>") ;
-			print("<a class='remove-search-group'><span class='ui-icon ui-icon-circle-minus'></span></a>") ;
+
+			print("<a class='add-search-group' role='button' aria-label='Add criteria'><span class='ui-icon ui-icon-circle-plus'></span></a>") ;
+			print("<a class='remove-search-group' role='button' aria-label='Remove criteria'><span class='ui-icon ui-icon-circle-minus'></span></a>") ;
+
 			print("</span>") ;
 			print("</div>") ;
 		}
