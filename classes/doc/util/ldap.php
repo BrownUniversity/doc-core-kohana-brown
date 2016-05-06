@@ -617,19 +617,23 @@ class DOC_Util_Ldap
     		);
     	}
 
-    	$group = "COURSE:{$coursespec}:{$role}";
-    	$base = "ou=Groups,dc=brown,dc=edu";
-    	$filter = "(brownGroupRDN={$group})";
-    	$attribute = "hasmember";
+	    $course_string = "COURSE:{$coursespec}" ;
+	    $group = "{$course_string}:{$role}";
+	    $base = "ou=People,dc=brown,dc=edu";
+	    $filter = "(ismemberof={$group})";
+	    $attribute = "ismemberof";
 
-    	$attributes = array(
+	    $attributes = array(
     		0 => $attribute,
-    		1 => 'browngrouprdn',
+    		1 => 'ismemberof',
+		    2 => 'displayname',
+		    3 => 'mail',
+		    4 => 'brownshortid'
     	);
 
     	// Execute Find
     	try {
-    		$find_result = $this->run_search($base, $filter, $attributes);
+			$find_result = $this->run_search($base, $filter, $attributes);
     	}
     	catch (Exception $e) {
     		return array(
@@ -645,19 +649,19 @@ class DOC_Util_Ldap
     	$result['members'] = array();
     	if ($count > 0) {
     		foreach ($find_result as $fr) {
-    			$rdn = $fr['browngrouprdn'][0];
-    			$fields = explode(':', $rdn);
-    			$member_count = array_shift($fr[$attribute]);
-    			foreach ($fr[$attribute] as $data) {
-    				if ($data !== '') {
-    					$short_id = $this->convert_uuid($data);
-    					if ($role == '*') {
-    						$result['members'][$fields[5]][] = $short_id;
-    					} else {
-    						$result['members'][] = $short_id;
-    					}
-    				}
-    			}
+			    if( isset( $fr['brownshortid'])) {
+				    $result['members'][] = $fr['brownshortid'][0] ;
+			    }
+
+				if( $role == '*' ) {
+					foreach( $fr['ismemberof'] as $membership_string ) {
+						if( strpos($membership_string,$course_string) !== FALSE ) {
+							$fields = explode(':', $membership_string) ;
+							$membership_group = array_pop($fields) ;
+							$result['members'][$membership_group][] = $fr['brownshortid'][0] ;
+						}
+					}
+				}
     		}
     	}
 
