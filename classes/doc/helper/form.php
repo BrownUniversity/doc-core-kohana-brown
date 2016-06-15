@@ -316,6 +316,7 @@ class DOC_Helper_Form {
 	 * @param boolean $selected
 	 * @param string $mode
 	 * @param string $unchecked
+	 * @param string $label_placement
 	 * @return string
 	 */
 	public static function checkbox_single( $name, $value, $label, $selected, $mode = self::MODE_EDITABLE, $unchecked = self::UNCHECKED_BLANK, $label_placement = self::LABEL_AFTER ) {
