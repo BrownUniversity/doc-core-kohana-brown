@@ -27,7 +27,7 @@ class DOC_Util_LaTeX {
 	
 		// ISO 8859-1 Symbols
 		'&nbsp;'      => ' ', // non-breaking space
-		'&iexcl;'     => '\textexclamdown ', // inverted exclamation mark
+		'&iexcl;'     => '\textexclamdown{}', // inverted exclamation mark
 		'&cent;'      => ' ', // cent
 		'&pound;'     => ' ', // pound
 		'&curren;'    => ' ', // currency
@@ -35,95 +35,95 @@ class DOC_Util_LaTeX {
 		'&brvbar;'    => ' ', // broken vertical bar
 		'&sect;'      => ' ', // section
 		'&uml;'       => ' ', // spacing diaeresis
-		'&copy;'      => '\copyright ', // copyright
+		'&copy;'      => '\copyright{}', // copyright
 		'&ordf;'      => ' ', // feminine ordinal indicator
 		'&laquo;'     => ' ', // angle quotation mark (left)
 		'&not;'       => ' ', // negation
 		'&shy;'       => ' ', // soft hyphen
 		'&reg;'       => ' ', // registered trademark
-		'&macr;'      => '\={} ', // spacing macron
-		'&deg;'       => '$^{\circ}$ ', // degree
-		'&plusmn;'    => '${\pm}$ ', // plus-or-minus
-		'&sup2;'      => '$^{2}$ ', // superscript 2
-		'&sup3;'      => '$^{3}$ ', // superscript 3
-		'&acute;'     => "\'{} ", // spacing acute
+		'&macr;'      => '\={}', // spacing macron
+		'&deg;'       => '$^{\circ}$', // degree
+		'&plusmn;'    => '${\pm}$', // plus-or-minus
+		'&sup2;'      => '$^{2}$', // superscript 2
+		'&sup3;'      => '$^{3}$', // superscript 3
+		'&acute;'     => "\'{}", // spacing acute
 		'&micro;'     => ' ', // micro
 		'&para;'      => ' ', // paragraph
-		'&middot;'    => '\textbullet ', // middle dot
+		'&middot;'    => '\textbullet{}', // middle dot
 		'&cedil;'     => ' ', // spacing cedilla
-		'&sup1;'      => '$^{1}$ ', // superscript 1
+		'&sup1;'      => '$^{1}$', // superscript 1
 		'&ordm;'      => ' ', // masculine ordinal indicator
 		'&raquo;'     => ' ', // angle quotaion mark (right)
-		'&frac14;'    => '$\frac{1}{4}$ ', // fraction 1/4
-		'&frac12;'    => '$\frac{1}{2}$ ', // fraction 1/2
-		'&frac34;'    => '$\frac{3}{4}$ ', // fraction 3/4
+		'&frac14;'    => '$\frac{1}{4}$', // fraction 1/4
+		'&frac12;'    => '$\frac{1}{2}$', // fraction 1/2
+		'&frac34;'    => '$\frac{3}{4}$', // fraction 3/4
 		'&iquest;'    => ' ', // inverted question mark
 		'&times;'     => ' ', // multiplication
 		'&divide;'    => ' ', // division
 	
 		// ISO 8859-1 Characters
-		'&Agrave;'    => '\`{A} ', // capital a, grave accent
-		'&Aacute;'    => "\'{A} ", // capital a, acute accent
-		'&Acirc;'     => '\^{A} ', // capital a, circumflex accent
-		'&Atilde;'    => '\~{A} ', // capital a, tilde
-		'&Auml;'      => '\"{A} ', // capital a, umlaut mark
-		'&Aring;'     => '\r{A} ', // capital a, ring
-		'&AElig;'     => '\AE ', // capital ae
-		'&Ccedil;'    => '\c{C} ', // capital c, cedilla
-		'&Egrave;'    => '\`{E} ', // capital e, grave accent
-		'&Eacute;'    => "\'{E} ", // capital e, acute accent
-		'&Ecirc;'     => '\^{E} ', // capital e, circumflex accent
-		'&Euml;'      => '\"{E} ', // capital e, umlaut mark
-		'&Igrave;'    => '\`{I} ', // capital i, grave accent
-		'&Iacute;'    => "\'{I} ", // capital i, accuate accent
-		'&Icirc;'     => '\^{I} ', // capital i, circumflex accent
-		'&Iuml;'      => '\"{I} ', // capital i, umlaut mark
+		'&Agrave;'    => '\`{A}', // capital a, grave accent
+		'&Aacute;'    => "\'{A}", // capital a, acute accent
+		'&Acirc;'     => '\^{A}', // capital a, circumflex accent
+		'&Atilde;'    => '\~{A}', // capital a, tilde
+		'&Auml;'      => '\"{A}', // capital a, umlaut mark
+		'&Aring;'     => '\r{A}', // capital a, ring
+		'&AElig;'     => '\AE', // capital ae
+		'&Ccedil;'    => '\c{C}', // capital c, cedilla
+		'&Egrave;'    => '\`{E}', // capital e, grave accent
+		'&Eacute;'    => "\'{E}", // capital e, acute accent
+		'&Ecirc;'     => '\^{E}', // capital e, circumflex accent
+		'&Euml;'      => '\"{E}', // capital e, umlaut mark
+		'&Igrave;'    => '\`{I}', // capital i, grave accent
+		'&Iacute;'    => "\'{I}", // capital i, accuate accent
+		'&Icirc;'     => '\^{I}', // capital i, circumflex accent
+		'&Iuml;'      => '\"{I}', // capital i, umlaut mark
 		'&ETH;'       => ' ', // capital eth, Icelandic
-		'&Ntilde;'    => '\~{N} ', // capital n, tilde
-		'&Ograve;'    => '\`{O} ', // capital o, grave accent
-		'&Oacute;'    => "\'{O} ", // capital o, acute accent
-		'&Ocirc;'     => '\^{O} ', // capital o, circumflex accent
-		'&Otilde;'    => '\~{O} ', // capital o, tilde
-		'&Ouml;'      => '\"{O} ', // capital o, umlaut mark
-		'&Oslash;'    => ' ', // capital o, slash
-		'&Ugrave;'    => '\`{U} ', // capital u, grave accent
-		'&Uacute;'    => "\'{U} ", // capital u, acute accent
-		'&Ucirc;'     => '\^{U} ', // capital u, circumflex accent
-		'&Uuml;'      => '\"{U} ', // capital u, umlaut mark
-		'&Yacute;'    => '\'{Y} ', // capital y, acute accent
+		'&Ntilde;'    => '\~{N}', // capital n, tilde
+		'&Ograve;'    => '\`{O}', // capital o, grave accent
+		'&Oacute;'    => "\'{O}", // capital o, acute accent
+		'&Ocirc;'     => '\^{O}', // capital o, circumflex accent
+		'&Otilde;'    => '\~{O}', // capital o, tilde
+		'&Ouml;'      => '\"{O}', // capital o, umlaut mark
+		'&Oslash;'    => '\O', // capital o, slash
+		'&Ugrave;'    => '\`{U}', // capital u, grave accent
+		'&Uacute;'    => "\'{U}", // capital u, acute accent
+		'&Ucirc;'     => '\^{U}', // capital u, circumflex accent
+		'&Uuml;'      => '\"{U}', // capital u, umlaut mark
+		'&Yacute;'    => '\'{Y}', // capital y, acute accent
 		'&THORN;'     => ' ', // capital THORN, Icelandic
 		'&szlig;'     => ' ', // small sharp s, German
-		'&agrave;'    => '\`{a} ', // small a, grave accent
-		'&aacute;'    => "\'{a} ", // small a, accute accent
-		'&acirc;'     => '\^{a} ', // small a, circumflex accent
-		'&atilde;'    => '\~{a} ', // small a, tilde
-		'&auml;'      => '\"{a} ', // small a, umlaut mark
-		'&aring;'     => '\r{a} ', // small a, ring
-		'&aelig;'     => '\ae ', // small ae
-		'&ccedil;'    => '\c{c} ', // small c, cedilla
-		'&egrave;'    => '\`{e} ', // small e, grave accent
-		'&eacute;'    => "\'{e} ", // small e, acute accent
-		'&ecirc;'     => '\^{e} ', // small e, circumflex accent
-		'&euml;'      => '\"{e} ', // small e, umlaut mark
-		'&igrave;'    => '\`{i} ', // small i, grave accent
-		'&iacute;'    => "\'{i} ", // small i, acute accent
-		'&icirc;'     => '\^{I} ', // small i, circumflex accent
-		'&iuml;'      => '\"{I} ', // small i, umlaut mark
+		'&agrave;'    => '\`{a}', // small a, grave accent
+		'&aacute;'    => "\'{a}", // small a, accute accent
+		'&acirc;'     => '\^{a}', // small a, circumflex accent
+		'&atilde;'    => '\~{a}', // small a, tilde
+		'&auml;'      => '\"{a}', // small a, umlaut mark
+		'&aring;'     => '\r{a}', // small a, ring
+		'&aelig;'     => '\ae', // small ae
+		'&ccedil;'    => '\c{c}', // small c, cedilla
+		'&egrave;'    => '\`{e}', // small e, grave accent
+		'&eacute;'    => "\'{e}", // small e, acute accent
+		'&ecirc;'     => '\^{e}', // small e, circumflex accent
+		'&euml;'      => '\"{e}', // small e, umlaut mark
+		'&igrave;'    => '\`{i}', // small i, grave accent
+		'&iacute;'    => "\'{i}", // small i, acute accent
+		'&icirc;'     => '\^{I}', // small i, circumflex accent
+		'&iuml;'      => '\"{I}', // small i, umlaut mark
 		'&eth;'       => ' ', // small eth, Icelandic
-		'&ntilde;'    => '\~{n} ', // small n, tilde
-		'&ograve;'    => '\`{o} ', // small o, grave accent
-		'&oacute;'    => "\'{o} ", // small o, acute accent
-		'&ocirc;'     => '\^{o} ', // small o, circumflex accent
-		'&otilde;'    => '\~{o} ', // small o, tilde
-		'&ouml;'      => '\"{o} ', // small o, umlaut mark
-		'&oslash;'    => ' ', // small o, slash
-		'&ugrave;'    => '\`{u} ', // small u, grave accent
-		'&uacute;'    => "\'{u} ", // small u, acute accent
-		'&ucirc;'     => '\^{u} ', // small u, circumflex accent
-		'&uuml;'      => '\"{u} ', // small u, umlaut mark
-		'&yacute;'    => '\'{y} ', // small y, acute accent
+		'&ntilde;'    => '\~{n}', // small n, tilde
+		'&ograve;'    => '\`{o}', // small o, grave accent
+		'&oacute;'    => "\'{o}", // small o, acute accent
+		'&ocirc;'     => '\^{o}', // small o, circumflex accent
+		'&otilde;'    => '\~{o}', // small o, tilde
+		'&ouml;'      => '\"{o}', // small o, umlaut mark
+		'&oslash;'    => '\o', // small o, slash
+		'&ugrave;'    => '\`{u}', // small u, grave accent
+		'&uacute;'    => "\'{u}", // small u, acute accent
+		'&ucirc;'     => '\^{u}', // small u, circumflex accent
+		'&uuml;'      => '\"{u}', // small u, umlaut mark
+		'&yacute;'    => '\'{y}', // small y, acute accent
 		'&thorn;'     => ' ', // small thorn, Icelandic
-		'&yuml;'      => '\"{y} ', // small y, umlaut mark
+		'&yuml;'      => '\"{y}', // small y, umlaut mark
 	
 		// Math Symbols Supported by HTML
 		'&forall;'    => ' ', // for all
@@ -235,8 +235,8 @@ class DOC_Util_LaTeX {
 		'&zwj;'       => ' ', // zero width joiner
 		'&lrm;'       => ' ', // left-to-right mark
 		'&rlm;'       => ' ', // right-to-left mark
-		'&ndash;'     => '\textemdash ', // en dash
-		'&mdash;'     => '\textemdash ', // em dash
+		'&ndash;'     => '\textemdash{}', // en dash
+		'&mdash;'     => '\textemdash{}', // em dash
 		'&lsquo;'     => ' ', // left single quotation mark
 		'&rsquo;'     => ' ', // right single quotation mark
 		'&sbquo;'     => ' ', // single low-9 quotation mark
@@ -245,7 +245,7 @@ class DOC_Util_LaTeX {
 		'&bdquo;'     => ' ', // double low-9 quotation mark
 		'&dagger;'    => ' ', // dagger
 		'&Dagger;'    => ' ', // double dagger
-		'&bull;'      => '\textbullet ', // bullet
+		'&bull;'      => '\textbullet{}', // bullet
 		'&hellip;'    => ' ', // horizontal ellipsis
 		'&permil;'    => ' ', // per mile
 		'&prime;'     => ' ', // minutes
@@ -436,10 +436,12 @@ class DOC_Util_LaTeX {
 		// Having a line break at the very end can cause problems if it's part 
 		// of a \begin{x}\end{x} block, so we'll get rid of those.
 		$_output = preg_replace('/\n\\\\\\\\\s+$/','',$_output) ;
-		
-        $_output = htmlentities($_output);
+
+        $_output = htmlentities($_output, ENT_COMPAT, 'UTF-8');
+//      print("<pre>{$_output}</pre>") ; die() ;
         $_output = self::latex_html_entities($_output) ;
-        
+//		print("<pre>{$_output}</pre>") ; die() ;
+
 		// remove multiple line breaks (again?)
 		$_output = preg_replace( "/\n{3,}/", "\n\n", $_output ) ;
 		
