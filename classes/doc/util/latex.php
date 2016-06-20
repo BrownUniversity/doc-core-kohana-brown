@@ -437,7 +437,13 @@ class DOC_Util_LaTeX {
 		// of a \begin{x}\end{x} block, so we'll get rid of those.
 		$_output = preg_replace('/\n\\\\\\\\\s+$/','',$_output) ;
 
-        $_output = htmlentities($_output, ENT_COMPAT, 'UTF-8');
+		// We get best results by specifying the UTF-8 character set, but sometimes
+		// get errors. Catch those and try again with default options.
+		try {
+			$_output = htmlentities($_output, ENT_COMPAT, 'UTF-8');
+		} catch( ErrorException $e ) {
+			$_output = htmlentities($_output);
+		}
 //      print("<pre>{$_output}</pre>") ; die() ;
         $_output = self::latex_html_entities($_output) ;
 //		print("<pre>{$_output}</pre>") ; die() ;
