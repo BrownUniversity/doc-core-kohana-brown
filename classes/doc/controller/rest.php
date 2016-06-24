@@ -43,6 +43,7 @@ class DOC_Controller_REST extends Controller {
 
 	/**
 	 * List of HTTP Status Codes
+	 * @todo Replace this with functionality in DOC_Util_HTTP
 	 */
 	private $status_codes = array(
 		100 => 'Continue',
