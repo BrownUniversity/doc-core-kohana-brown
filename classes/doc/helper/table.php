@@ -239,8 +239,20 @@ class DOC_Helper_Table {
 										if( isset( $col_spec[ 'format' ][ 'separator' ])) {
 											$separator = $col_spec[ 'format' ][ 'separator' ] ;
 										}
+										$cache_lifetime = 0 ;
+										if( isset( $col_spec[ 'format' ][ 'cache_lifetime' ])) {
+											$cache_lifetime = $col_spec[ 'format' ][ 'cache_lifetime' ] ;
+										}
 
-										$value = $this->format_list($object, $root_key, $col_spec[ 'format' ][ 'relation_name' ], $col_spec[ 'format' ][ 'property_name' ], $order_by, $empty_content, $separator) ;
+										$value = $this->format_list(
+												$object,
+												$root_key,
+												$col_spec[ 'format' ][ 'relation_name' ],
+												$col_spec[ 'format' ][ 'property_name' ],
+												$order_by,
+												$empty_content,
+												$separator,
+												$cache_lifetime) ;
 										break ;
 
 									case self::FORMAT_LINK:
@@ -504,32 +516,63 @@ class DOC_Helper_Table {
 	 * @param string $order_by
 	 * @param string $empty_content Default string if there are no relations.
 	 * @param string $separator The separator to use in output.
+	 * @param int $cache_lifetime Cache lifetime, set to zero for no cache
 	 * @return string
 	 */
-	protected function format_list( $object, $root_key, $relation_name, $property_name, $order_by = NULL, $empty_content = '--', $separator = '<br />') {
-		$content = array() ;
+	protected function format_list( $object, $root_key, $relation_name, $property_name, $order_by = NULL, $empty_content = '--', $separator = '<br />', $cache_lifetime = 0) {
+		$_output = '' ;
+		$cache = FALSE ;
 
-		if( empty( $root_key )) {
-			$root = $object ;
-		} else {
-			$root = $this->generate_content( $object, $root_key ) ;
+		if( $cache_lifetime > 0 && array_key_exists('cache', Kohana::modules())) {
+			$cache = Cache::instance() ;
+		}
+		if( $cache !== FALSE ) {
+			$cache_key = md5(implode('::',array(
+				serialize($object),
+				empty( $root_key ) ? 'root' : $root_key,
+				$relation_name,
+				$property_name,
+				empty( $order_by ) ? 'nosort' : $order_by,
+				$empty_content,
+				$separator
+			))) ;
+
+			$_output = $cache->get($cache_key,NULL) ;
+
 		}
 
-		if( empty( $order_by )) {
-			$order_by = $property_name ;
-		}
+		if( empty( $_output )) {
+			$content = array() ;
 
-		$data = $root->$relation_name->order_by($order_by)->find_all() ;
-
-		if( $data->count() > 0 ) {
-			foreach( $data as $item ) {
-				$content[] = $this->generate_content( $item, $property_name ) ;
+			if( empty( $root_key )) {
+				$root = $object ;
+			} else {
+				$root = $this->generate_content( $object, $root_key ) ;
 			}
-		} else {
-			$content[] = "<em>{$empty_content}</em>" ;
+
+			if( empty( $order_by )) {
+				$order_by = $property_name ;
+			}
+
+			$data = $root->$relation_name->order_by($order_by)->find_all() ;
+
+			if( $data->count() > 0 ) {
+				foreach( $data as $item ) {
+					$content[] = $this->generate_content( $item, $property_name ) ;
+				}
+			} else {
+				$content[] = "<em>{$empty_content}</em>" ;
+			}
+
+			$_output = implode( $separator, $content ) ;
+
+			if( $cache !== FALSE && !empty( $_output)) {
+				$cache->set($cache_key, $_output) ;
+			}
 		}
 
-		return implode( $separator, $content ) ;
+
+		return $_output ;
 	}
 
 	/**
