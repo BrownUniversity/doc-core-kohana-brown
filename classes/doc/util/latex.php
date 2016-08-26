@@ -19,7 +19,7 @@ class DOC_Util_LaTeX {
 	public static $html_entities = array(
         
         // Reserved Characters in HTML
-		'&quot;'      => ' ', // quotation mark
+		'&quot;'      => '"', // quotation mark
 		'&apos;'      => ' ', // apostrophe
 		'&amp;'       => ' ', // ampersand
 		'&lt;'        => ' ', // less-than
@@ -237,11 +237,11 @@ class DOC_Util_LaTeX {
 		'&rlm;'       => ' ', // right-to-left mark
 		'&ndash;'     => '\textemdash{}', // en dash
 		'&mdash;'     => '\textemdash{}', // em dash
-		'&lsquo;'     => ' ', // left single quotation mark
-		'&rsquo;'     => ' ', // right single quotation mark
+		'&lsquo;'     => "'", // left single quotation mark
+		'&rsquo;'     => "'", // right single quotation mark
 		'&sbquo;'     => ' ', // single low-9 quotation mark
-		'&ldquo;'     => ' ', // left double quotation mark
-		'&rdquo;'     => ' ', // right double quotation mark
+		'&ldquo;'     => '"', // left double quotation mark
+		'&rdquo;'     => '"', // right double quotation mark
 		'&bdquo;'     => ' ', // double low-9 quotation mark
 		'&dagger;'    => ' ', // dagger
 		'&Dagger;'    => ' ', // double dagger
@@ -343,7 +343,9 @@ class DOC_Util_LaTeX {
 	 */
 	public static function parse_html($html, $supported_tags = DOC_Util_WordHTML::ALLOWABLE_TAGS_DEFAULT, $plain_text_input = FALSE) {
 		$_output = $html ;
-		
+
+		$_output = utf8_encode( $_output ) ;
+
 		$replacements = array(
             '/\t/s' => '',
 			'/<div.*?>(.*?)<\/div>/s' => '$1'.self::LATEX_LINE_END . PHP_EOL,
@@ -365,23 +367,19 @@ class DOC_Util_LaTeX {
 		) ;		
 			
 		// strip out any tags we don't support
-		
 		$_output = DOC_Util_WordHTML::clean($_output) ;
-		
+
 		// deal with the usual smart quote headache and cousins
-		
 		$_output = DOC_Util_WordHTML::convert_problem_chars($_output) ;
-		
+
 		// tidy the document
-		
 		$_output = DOC_Util_WordHTML::domdocument_tidy($_output) ;
-        
+
         // run through html_entity_decode
-        
-		$_output = html_entity_decode($_output) ;
-		
+		$_output = html_entity_decode($_output, ENT_NOQUOTES, 'UTF-8') ;
+
         $_output = self::fix_bad_utf8($_output) ;
-				
+
 		// tighten up any extra whitespace
 		
 		if ($plain_text_input == FALSE) {
@@ -393,8 +391,9 @@ class DOC_Util_LaTeX {
 
 		// deal with most characters LaTeX needs modified
 		
-		$_output = self::latex_special_chars($_output) ;
-        
+//		$_output = self::latex_special_chars($_output) ;
+//		print("<pre>{$_output}</pre>") ; die() ;
+
         // remove any empty blockquotes, since they run the risk of making LaTeX crabby
 		$_output = preg_replace_callback('/<blockquote>(.*?)<\/blockquote>/','DOC_Util_LaTeX::strip_empty',$_output) ;
 
@@ -412,11 +411,11 @@ class DOC_Util_LaTeX {
 			$pre_replace = $_output ;
 			$_output = preg_replace( array_keys( $replacements ), array_values( $replacements ), $pre_replace ) ;
 		}
-		
+
 		// deal with the < and > characters
 		
 		$_output = str_replace( array('<','>'), array('{\textless}','{\textgreater}'), $_output ) ;
-		
+
 		// Whitespace inside text property commands such as \textbf{} causes barfage, 
 		// so replace standard paragraph breaks with alternative line ends.
 		preg_match_all('/\{(.+?)\}/s', $_output, $matches) ;
@@ -440,7 +439,7 @@ class DOC_Util_LaTeX {
 		// We get best results by specifying the UTF-8 character set, but sometimes
 		// get errors. Catch those and try again with default options.
 		try {
-			$_output = htmlentities($_output, ENT_COMPAT, 'UTF-8');
+			$_output = htmlentities($_output, ENT_COMPAT | ENT_IGNORE, 'UTF-8');
 		} catch( ErrorException $e ) {
 			$_output = htmlentities($_output);
 		}
