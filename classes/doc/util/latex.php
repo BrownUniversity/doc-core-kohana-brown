@@ -391,7 +391,7 @@ class DOC_Util_LaTeX {
 
 		// deal with most characters LaTeX needs modified
 		
-//		$_output = self::latex_special_chars($_output) ;
+		$_output = self::latex_special_chars($_output) ;
 //		print("<pre>{$_output}</pre>") ; die() ;
 
         // remove any empty blockquotes, since they run the risk of making LaTeX crabby
