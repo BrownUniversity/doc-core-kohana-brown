@@ -355,7 +355,8 @@ class DOC_Util_LaTeX {
 			'/<blockquote>(.*?)<\/blockquote>(\s|<br.*?>)*/s' => '\begin{quotation}$1\end{quotation}' . PHP_EOL,
 			'/<ol.*?>(\s|<br.*?>)*(.*?)<\/ol>(\s|<br.*?>)*/s' => '\begin{enumerate}' . PHP_EOL . '$2\end{enumerate}' . PHP_EOL,
 			'/<ul.*?>(\s|<br.*?>)*(.*?)<\/ul>(\s|<br.*?>)*/s' => '\begin{itemize}' . PHP_EOL . '$2\end{itemize}' . PHP_EOL,
-			'/<br.*?>/' => self::LATEX_LINE_END . PHP_EOL,
+/*			'/<br.*?>/' => self::LATEX_LINE_END . PHP_EOL, */
+			'/<br.*?>/' => PHP_EOL,
 			'/<strong>(.*?)<\/strong>/s' => '\textbf{$1}',
 			'/<b>(.*?)<\/b>/s' => '\textbf{$1}',
 			'/<em>(.*?)<\/em>/s' => '\textit{$1}',
@@ -403,7 +404,12 @@ class DOC_Util_LaTeX {
 
 
 		// the rich text editor sometimes leaves breaks at the end of a list item, which is redundant
-		$_output = preg_replace('/<li>(.*?)<br.*?>\s*?<\/li>/s','<li>$1</li>',$_output) ; 
+		$_output = preg_replace('/<li>(.*?)<br.*?>\s*?<\/li>/s','<li>$1</li>',$_output) ;
+
+
+
+
+
 		// parse the html
 		$pre_replace = $_output ;
 		$_output = preg_replace( array_keys( $replacements ), array_values( $replacements ), $pre_replace ) ;
@@ -411,6 +417,8 @@ class DOC_Util_LaTeX {
 			$pre_replace = $_output ;
 			$_output = preg_replace( array_keys( $replacements ), array_values( $replacements ), $pre_replace ) ;
 		}
+
+//		print("<pre>{$_output}</pre>") ; die() ;
 
 		// deal with the < and > characters
 		
