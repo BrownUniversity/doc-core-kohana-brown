@@ -134,7 +134,8 @@ class DOC_Util_Banner_ORDS {
 	 * @throws ErrorException
 	 * @todo Make _much_ more robust. Currently only handles simple GETs.
 	 */
-	public function execute_request($endpoint, $data, $method = 'GET', $headers = array()) {
+	public function execute_request($endpoint, $data = '', $method = 'GET', $headers = array()) {
+
 		$this->get_access_token($this->auth_code) ;
 
 		$start = microtime(TRUE);
