@@ -84,7 +84,7 @@ return array(
         ),
 		'institutions' => array(
 			'filename' => 'ask_institutions.dat',
-			'regex' => '#\{\s*"inst_code"\s*:\s*"[^"]*"\s*,\s*"inst_description"\s*:\s*"[^"]*"\s*\}#',
+			'regex' => '#\{\s*"inst_code"\s*:\s*"[^"]*"\s*,\s*"inst_description"\s*:\s*"[^"]*"\s*,\s*"inst_city"\s*:\s*"[^"]*"\s*,\s*"inst_state"\s*:\s*"[^"]*"\s*\}#',
 		),
         'previous_institutions' => array(
             'filename' => 'ask_prev_inst.dat',
