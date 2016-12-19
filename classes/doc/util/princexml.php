@@ -31,7 +31,7 @@ class DOC_Util_PrinceXML
 		$safe_filename = preg_replace( '/\.pdf$/', '', $safe_filename ) ;
 		$safe_filename .= '_' . date('YmdHis').Text::random() ;
 
-		$pdfGen = new \BrownUniversity\Pdfgen\Pdfgen($prince_config->as_array(), null) ;
+		$pdfGen = new \BrownUniversity\Pdfgen\Pdfgen($prince_config->as_array(), new DOC_Logger()) ;
 
 		$pdf_file = $pdfGen->convert($html, $css, $js) ;
 
