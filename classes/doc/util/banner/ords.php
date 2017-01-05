@@ -123,7 +123,7 @@ class DOC_Util_Banner_ORDS {
 			
 			$oauth->save() ;
 		}
-		Kohana::$log->add(Log::WARNING, "ORDS: Refreshed OAuth token in " . (microtime(TRUE) - $start) . " seconds.");
+		Kohana::$log->add(Log::INFO, "ORDS: Refreshed OAuth token in " . (microtime(TRUE) - $start) . " seconds.");
 	}
 	
 	/**
@@ -173,7 +173,7 @@ class DOC_Util_Banner_ORDS {
 		}
 
 		curl_close( $curl_handle ) ;
-		Kohana::$log->add(Log::WARNING, "ORDS: Executed $method request in " . (microtime(TRUE) - $start) . " seconds.");
+		Kohana::$log->add(Log::INFO, "ORDS: Executed $method request in " . (microtime(TRUE) - $start) . " seconds.");
 		return json_decode( $response ) ;		
 	}
 	
