@@ -344,7 +344,15 @@ class DOC_Util_LaTeX {
 	public static function parse_html($html, $supported_tags = DOC_Util_WordHTML::ALLOWABLE_TAGS_DEFAULT, $plain_text_input = FALSE) {
 		$_output = $html ;
 
+
+		$_output = mb_convert_encoding($_output,'HTML-ENTITIES','UTF-8') ;
+
+		// deal with the usual smart quote headache and cousins
+		$_output = DOC_Util_WordHTML::convert_problem_chars($_output) ;
 		$_output = utf8_encode( $_output ) ;
+
+
+
 
 		$replacements = array(
             '/\t/s' => '',
@@ -365,13 +373,14 @@ class DOC_Util_LaTeX {
 			'/<del>(.*?)<\/del>/s' => '\sout{$1}',
 			'/<strike>(.*?)<\/strike>/s' => '\sout{$1}',
 			'/<li.*?>(.*?)<\/li>/s' => '\item $1' . PHP_EOL,
-		) ;		
-			
+		) ;
+
 		// strip out any tags we don't support
 		$_output = DOC_Util_WordHTML::clean($_output) ;
 
-		// deal with the usual smart quote headache and cousins
-		$_output = DOC_Util_WordHTML::convert_problem_chars($_output) ;
+		// moved this above the utf8_encode() command, which seems to fix some problems with smart quotes
+//		// deal with the usual smart quote headache and cousins
+//		$_output = DOC_Util_WordHTML::convert_problem_chars($_output) ;
 
 		// tidy the document
 		$_output = DOC_Util_WordHTML::domdocument_tidy($_output) ;
@@ -464,7 +473,7 @@ class DOC_Util_LaTeX {
 		// Blank lines followed by backslashy line ends are also a problem.
 		// Turn those into just backslashy line ends.
 		$_output = preg_replace('/^\s*\n(\\\\\\\\\s*\n){2,}/m', '$1$1', $_output) ;
-		
+
         return $_output ;
 	}
 	
