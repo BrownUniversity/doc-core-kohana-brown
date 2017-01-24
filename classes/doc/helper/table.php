@@ -391,7 +391,13 @@ class DOC_Helper_Table {
 									$action_class = $action[ 'class' ] ;
 								}
 								$url_fragment = $this->parse_string($object, $action[ 'url_fragment' ]) ;
-								$action_str = "<a href='".Kohana::$base_url."{$url_fragment}{$id}' class='{$action_class}'>".str_replace(' ','&nbsp;',$action[ 'name' ])."</a>" ;
+
+								$base = Kohana::$base_url ;
+								if( isset( $action[ 'base' ]) && !empty( $action[ 'base' ])) {
+									$base = $action[ 'base' ] ;
+								}
+
+								$action_str = "<a href='{$base}{$url_fragment}{$id}' class='{$action_class}'>".str_replace(' ','&nbsp;',$action[ 'name' ])."</a>" ;
 
 								if( isset( $action[ 'conditional' ])) {
 									$test = "return " . $this->parse_string($object, $action[ 'conditional' ]) . ';' ;
