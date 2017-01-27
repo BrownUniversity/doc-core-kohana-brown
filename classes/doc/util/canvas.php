@@ -406,6 +406,8 @@ class DOC_Util_Canvas {
      * @param mixed $roles
      * @param mixed $types
      * @return array
+     * @todo Add option to get an unsorted array (key with Canvas ID?).
+     * @todo Is it safe to be using the "sortable_name" for an array key?
      */
     public static function get_course_enrollment($course_id, $roles = NULL, $types = NULL) {
         
