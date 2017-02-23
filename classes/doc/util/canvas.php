@@ -409,7 +409,7 @@ class DOC_Util_Canvas {
      * @todo Add option to get an unsorted array (key with Canvas ID?).
      * @todo Is it safe to be using the "sortable_name" for an array key?
      */
-    public static function get_course_enrollment($course_id, $roles = NULL, $types = NULL) {
+    public static function get_course_enrollment($course_id, $roles = NULL, $types = NULL, $key_by_name = TRUE) {
         
         self::init();
         
@@ -448,16 +448,25 @@ class DOC_Util_Canvas {
         $options[CURLOPT_URL] = $url;
         
         $all_results = self::execute_curl($options);
-        
+
         $output = array();
         if ($all_results != NULL) {
             foreach ($all_results as $r) {
                 $r['user']['role'] = $r['role'];
                 $r['user']['type'] = $r['type'];
-                $output[strtolower($r['user']['sortable_name'])] = $r['user'];
+                if( $key_by_name ) {
+	                $output[strtolower($r['user']['sortable_name'])] = $r['user'];
+                } else {
+                	$output[$r['user']['id']] = $r['user'] ;
+                }
+
             }
         }
-        ksort($output);
+
+	    if ($key_by_name) {
+		    ksort($output);
+	    }
+
         return $output;
     }
     
@@ -633,7 +642,32 @@ class DOC_Util_Canvas {
        
        return self::execute_curl($options);
     }
-    
+
+	/**
+	 * Download file from canvas and return local path.
+	 *
+	 * @param $url
+	 * @return string Path to saved file
+	 */
+    public static function download_file($url) {
+    	self::init() ;
+
+	    $options = array() ;
+	    $options[CURLOPT_URL] = $url ;
+	    $options[CURLOPT_FOLLOWLOCATION] = 1 ;
+
+    	self::reset_curl($options, false) ;
+
+    	$response = curl_exec(self::$ch) ;
+    	$path = tempnam(sys_get_temp_dir(),'canvas') ;
+    	Kohana::$log->add(Log::INFO, "File downloaded to " . $path) ;
+    	$fp = fopen($path,'w') ;
+    	fwrite($fp,$response);
+    	fclose($fp) ;
+
+    	return $path ;
+    }
+
     /**
      * Determine if a submission should be available based on the particular 
      * document type

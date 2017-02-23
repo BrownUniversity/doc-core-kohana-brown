@@ -204,5 +204,15 @@ class DOC_Valid extends Kohana_Valid {
     public static function banner_id( $value ) {
     	return preg_match('/^B\d{8}$/', $value) ;
     }
+
+	/**
+	 * Verify that the value is a properly formatted Bru ID.
+	 *
+	 * @param string $value
+	 * @return boolean
+	 */
+    public static function bru_id( $value ) {
+    	return preg_match( '/^\d{9}$/', $value ) ;
+    }
 }
 
