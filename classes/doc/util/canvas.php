@@ -663,6 +663,17 @@ class DOC_Util_Canvas {
 	    return $all_results;
     }
 
+    public static function get_quiz_questions($course_id, $quiz_id) {
+	    self::init();
+
+	    $options = array();
+	    $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/quizzes/{$quiz_id}/questions";
+
+	    $all_results = self::execute_curl($options);
+
+	    return $all_results;
+    }
+
     /**
      * Use the CANVAS submission list API
      * 
