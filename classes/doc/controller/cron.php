@@ -69,7 +69,18 @@ class DOC_Controller_Cron extends Controller {
 		    || $this->check_date_component('ga', strtolower($hour), $now)
 		    || $this->check_date_component('g a', strtolower($hour), $now);
 	}
-	
+
+	/**
+	 * Return whether or not the minute (relative to $now) is the provided $minute.
+	 * @param string $minute Minute for which to test.
+	 * @param integer $now Date for generating minute string.
+	 * @return bool
+	 */
+	protected function is_minute($minute, $now = NULL ) {
+		return $this->check_date_component( 'i', $minute, $now ) ;
+	}
+
+
 	/**
 	 * Test a date $format (relative to $now) against the provided $test string.
 	 * 

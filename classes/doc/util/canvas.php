@@ -572,7 +572,108 @@ class DOC_Util_Canvas {
     	
     	return $all_results;
     }
-    
+
+	/**
+	 * Tell Canvas to generate a student analysis quiz report for the given quiz. This will return a report spec
+	 * ONLY if there is already an up to date report for the quiz. Otherwise it will be necessary to check
+	 * for a generated report in a separate API call.
+	 *
+	 * @param $course_id
+	 * @param $quiz_id
+	 * @return array
+	 */
+    public static function create_quiz_report($course_id, $quiz_id) {
+    	self::init() ;
+    	$options = array() ;
+    	$options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/quizzes/{$quiz_id}/reports" ;
+    	$options[CURLOPT_POST] = true ;
+    	$options[CURLOPT_POSTFIELDS] = array(
+    			'quiz_report[report_type]' =>  'student_analysis',
+			    'quiz_report[includes_all_versions]' => 'true'
+	    ) ;
+    	return self::execute_curl($options) ;
+    }
+
+	/**
+	 * Get all quiz reports available for the specified quiz.
+	 *
+	 * @param $course_id
+	 * @param $quiz_id
+	 * @return array
+	 */
+    public static function get_quiz_reports($course_id, $quiz_id) {
+	    self::init();
+
+	    $options = array();
+	    $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/quizzes/{$quiz_id}/reports";
+
+	    return self::execute_curl($options);
+    }
+
+	/**
+	 * Get report specs for a specific quiz report.
+	 *
+	 * @param $course_id
+	 * @param $quiz_id
+	 * @param $report_id
+	 * @return array
+	 * @todo Determine why this is not returning a File object as expected.
+	 */
+    public static function get_quiz_report($course_id, $quiz_id, $report_id) {
+	    self::init();
+
+	    $options = array();
+	    $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/quizzes/{$quiz_id}/reports/{$report_id}?include[]=file";
+
+	    return self::execute_curl($options);
+    }
+
+
+
+	/**
+	 * @param $course_id
+	 * @param $quiz_id
+	 * @return array
+	 * @todo Determine whether we should support any of the include[] query parameters.
+	 */
+    public static function get_submissions_by_quiz($course_id, $quiz_id) {
+	    self::init();
+
+	    $options = array();
+	    $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/quizzes/{$quiz_id}/submissions";
+
+	    $all_results = self::execute_curl($options);
+
+	    return $all_results;
+    }
+
+	/**
+	 * @param $quiz_submission_id
+	 * @return array
+	 * @todo Determine whether we should support any of the include[] query parameters.
+	 */
+    public static function get_quiz_submission_questions($quiz_submission_id) {
+	    self::init();
+
+	    $options = array();
+	    $options[CURLOPT_URL] = self::$host_url . "/api/v1/quiz_submissions/{$quiz_submission_id}/questions";
+
+	    $all_results = self::execute_curl($options);
+
+	    return $all_results;
+    }
+
+    public static function get_quiz_questions($course_id, $quiz_id) {
+	    self::init();
+
+	    $options = array();
+	    $options[CURLOPT_URL] = self::$host_url . "/api/v1/courses/{$course_id}/quizzes/{$quiz_id}/questions";
+
+	    $all_results = self::execute_curl($options);
+
+	    return $all_results;
+    }
+
     /**
      * Use the CANVAS submission list API
      * 
