@@ -116,6 +116,8 @@ class DOC_Valid extends Kohana_Valid {
 	public static function not_empty_html( $value ) {
 		if( Valid::not_empty($value) ) {
 			$value = strip_tags( $value ) ;
+			$value = trim( str_replace('&nbsp;','',$value)) ;
+
 			return !empty( $value ) ;
 		}
 		return FALSE ;
