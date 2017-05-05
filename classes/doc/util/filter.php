@@ -189,10 +189,18 @@ class DOC_Util_Filter {
 		$search_filter_key = self::get_filter_key( self::KEY_FRAGMENT ) ;
 		$filter_specs_arr = NULL ;
 		$request = Request::current() ;
-		
+
 		$storage = self::storage_instance() ;
 		
 		$search_filters = Kohana::$config->load('searchfilters') ;
+
+		// This isn't ideal, but in transitioning from Kohana 3.2 where case didn't matter to Kohana 3.3 where it
+		// usually does, we get some funky case changes that need to be handled.
+		if( !isset( $search_filters[ $search_filter_key ]) && isset( $search_filters[ strtolower( $search_filter_key )])) {
+			$search_filter_key = strtolower( $search_filter_key ) ;
+		}
+
+
 		$orm_connectors = array(
 			'OR' => 'or_where',
 			'AND' => 'and_where'
