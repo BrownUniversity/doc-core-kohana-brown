@@ -27,7 +27,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
     	parent::before();
     	
     	if ( ! DOC_Helper_Impersonate::check_permissions()) {
-    		$this->request->redirect($this->request->referrer());
+    		$this->redirect($this->request->referrer());
     	}
     }
     
@@ -40,7 +40,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
     {    
     	$id = $this->request->param('id') ;
         if ($id === NULL) {
-            $this->request->redirect('impersonate');
+            $this->redirect('impersonate');
         } else {
             $results = DOC_Helper_Impersonate::get_search_results();
             $person = $results[$id];
@@ -48,7 +48,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
                 $person[Kohana::$config->load('impersonate.ldap_key')]
             );
 
-            $this->request->redirect(DOC_Helper_Impersonate::get_return_link());
+            $this->redirect(DOC_Helper_Impersonate::get_return_link());
         }
     }
     
@@ -58,7 +58,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
     public function action_clear()
     {
         DOC_Helper_Impersonate::clear();
-        $this->request->redirect($this->request->referrer());
+        $this->redirect($this->request->referrer());
     }
     
     /**
@@ -67,7 +67,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
      */
     public function action_clearall() {
         DOC_Helper_Impersonate::clear_all();
-        $this->request->redirect($this->request->referrer());
+        $this->redirect($this->request->referrer());
     }
     
     public function action_history() {
@@ -80,7 +80,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
             DOC_Helper_Impersonate::clear_history();
         }
         
-        $this->request->redirect($this->request->referrer());
+        $this->redirect($this->request->referrer());
     }
     
     /**
@@ -90,12 +90,12 @@ class DOC_Controller_Impersonate extends Controller_Template {
     {
         if ($this->request->method() == 'POST') {
             if ($this->request->post('btn_submit') == 'Cancel') {
-                $this->request->redirect(
+                $this->redirect(
                     DOC_Helper_Impersonate::get_return_link()
                 );
             } else {
             	if ($this->request->post('search_string') == NULL) {
-            		$this->request->redirect('impersonate');
+            		$this->redirect('impersonate');
             	}
             	$affiliation = $this->request->post('affiliation');
             	if ($affiliation == 'any') $affiliation = NULL;
@@ -138,7 +138,7 @@ class DOC_Controller_Impersonate extends Controller_Template {
      */
     public function action_last() {
         DOC_Helper_Impersonate::assume_last_identity();
-        $this->request->redirect($this->request->referrer());
+        $this->redirect($this->request->referrer());
     }
     
 } // End Impersonation Controller

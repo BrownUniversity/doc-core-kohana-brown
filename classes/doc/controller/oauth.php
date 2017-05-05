@@ -29,7 +29,7 @@ class DOC_Controller_OAuth extends Controller_Base_Admin {
 	}
 	
 	public function action_index() {
-		$this->request->redirect('admin/oauth/list');
+		$this->redirect('admin/oauth/list');
 	}
 	
 	public function action_list() {
@@ -41,42 +41,42 @@ class DOC_Controller_OAuth extends Controller_Base_Admin {
 		$config = Kohana::$config->load('bannerintegration.ords');
 		if ($id == NULL) {
 			$this->session->set('errors', array('No OAuth id provided.'));
-			$this->request->redirect('oauth/list');
+			$this->redirect('oauth/list');
 		} else if ($id < 0) {
 			$oauth = ORM::factory($config['model']);
 		} else {
 			$oauth = ORM::factory($config['model'], $id);
 			if (!$oauth->loaded()) {
 				$this->session->set('errors', array("Could not locate OAuth settings with id: $id."));
-				$this->request->redirect('admin/oauth/list');
+				$this->redirect('admin/oauth/list');
 			}
 		}
 		
 		$state = Encrypt::instance()->encode_url_safe($id);
 		$this->session->set('oauth_state', $state);
 		$base_url = $config['base-url'] . 'oauth2/auth?';
-		$this->request->redirect($base_url . "response_type=code&client_id={$config['client-id']}&client_secret={$config['client-secret']}&state=$state&_auth_=force");
+		$this->redirect($base_url . "response_type=code&client_id={$config['client-id']}&client_secret={$config['client-secret']}&state=$state&_auth_=force");
 	}
 	
 	public function action_redirect() {
 		$state = $this->session->get_once('oauth_state');
 		if ($state !== $this->request->query('state')) {
 			$this->session->set('errors', array('Error obtaining auth code: returned state parameter did not match original value.'));
-			$this->request->redirect('admin/oauth/list');
+			$this->redirect('admin/oauth/list');
 		}
 		
 		$config = Kohana::$config->load('bannerintegration.ords');
 		$id = Encrypt::instance()->decode_url_safe($state);
 		if ($id == NULL) {
 			$this->session->set('errors', array('No OAuth id provided.'));
-			$this->request->redirect('admin/oauth/list');
+			$this->redirect('admin/oauth/list');
 		} else if ($id < 0) {
 			$oauth = ORM::factory($config['model']);
 		} else {
 			$oauth = ORM::factory($config['model'], $id);
 			if (!$oauth->loaded()) {
 				$this->session->set('errors', array("Could not locate OAuth settings with id: $id."));
-				$this->request->redirect('admin/oauth/list');
+				$this->redirect('admin/oauth/list');
 			}
 		}
 		
@@ -93,7 +93,7 @@ class DOC_Controller_OAuth extends Controller_Base_Admin {
 			Database::instance()->rollback();
 			$this->session->set('errors', array('Error obtaining auth code: ' . $e->getMessage()));
 		}
-		$this->request->redirect('admin/oauth/list');
+		$this->redirect('admin/oauth/list');
 	}
 	
 	public function action_refresh() {
@@ -101,12 +101,12 @@ class DOC_Controller_OAuth extends Controller_Base_Admin {
 		$config = Kohana::$config->load('bannerintegration.ords');
 		if ($id == NULL || $id < 0) {
 			$this->session->set('errors', array('No OAuth id provided.'));
-			$this->request->redirect('admin/oauth/list');
+			$this->redirect('admin/oauth/list');
 		} else {
 			$oauth = ORM::factory($config['model'], $id);
 			if (!$oauth->loaded()) {
 				$this->session->set('errors', array("Could not locate OAuth settings with id: $id."));
-				$this->request->redirect('admin/oauth/list');
+				$this->redirect('admin/oauth/list');
 			}
 		}
 		
@@ -116,7 +116,7 @@ class DOC_Controller_OAuth extends Controller_Base_Admin {
 		} catch (ErrorException $e) {
 			$this->session->set('errors', array('Unable to refresh access token. You probably need to obtain a new auth code.'));
 		}
-		$this->request->redirect('admin/oauth/list');
+		$this->redirect('admin/oauth/list');
 	}
 
 } // End OAuth Controller

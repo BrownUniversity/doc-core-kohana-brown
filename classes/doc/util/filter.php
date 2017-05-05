@@ -41,9 +41,10 @@ class DOC_Util_Filter {
 			$base = Kohana::$base_url . '/' ;
 		} elseif( $return_type == self::KEY_FRAGMENT ) {
 			$base = '/' ;
-		}
-		
-		$route_arr = Request::process_uri( Request::current()->uri()) ;
+		}		
+
+		$route_arr = Request::process( Request::current() ) ;
+	
 		if( !is_array( $route_arr )) {
 			return $base ;
 		}
@@ -380,8 +381,9 @@ class DOC_Util_Filter {
 
 		// no? try checking the custom search filters
 		$search_filters = Kohana::$config->load('searchfilters') ;
-		$this_filter = $search_filters[ self::get_filter_key() ] ;
-//
+		$filter_key = self::get_filter_key() ;
+		$this_filter = isset( $search_filters[ $filter_key ] ) ? $search_filters[ $filter_key ] : $search_filters[ strtolower( $filter_key )] ;
+
 		if( isset( $this_filter[ $column ]) && isset( $this_filter[ $column ][ 'data_type' ] )) {
 			return $this_filter[ $column ][ 'data_type' ] ;
 		}
@@ -413,7 +415,6 @@ class DOC_Util_Filter {
 		$property = $property_description[0] ;
 		$column = $property_description[1] ;
 		$property_columns = $orm_object->$property->list_columns() ;
-
 		if( isset( $property_columns[ $column ])) {
 			$child_orm = $orm_object->$property ;
 			//return $column ;
