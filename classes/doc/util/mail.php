@@ -35,15 +35,10 @@ class DOC_Util_Mail {
 		}
 
 		if( $mail_config[ 'test_mode' ] == TRUE ) {
-			$message->setBody(
-				$message->getBody() .
-				"<p>TEST MODE: This message would normally have gone to: " . implode( ', ', $recipients ) . "</p>"
-			) ;
+			$message = self::append_content($message, "TEST MODE: This message would normally have gone to: " . implode( ', ', $recipients ) ) ;
+
 			if( !empty( $cc )) {
-				$message->setBody(
-					$message->getBody() .
-					"<p>CC recipients: " . implode( ', ', $cc ) . "</p>"
-				) ;
+				$message = self::append_content($message, "CC recipients: " . implode( ', ', $cc )) ;
 			}
 			$recipients = unserialize( $mail_config[ 'test_mode_recipients' ] ) ;
 		}
@@ -86,6 +81,24 @@ class DOC_Util_Mail {
 	}
 
 	/**
+	 * Append indicated content to the message, checking the content type to be sure we use HTML or plain text
+	 * formatting, as appropriate.
+	 *
+	 * @param \Swift_Message $message
+	 * @param string $content
+	 * @return \Swift_Message
+	 */
+	private static function append_content( $message, $content ) {
+		if( $message->getContentType() == 'text/html' ) {
+			$content = "<p>{$content}</p>" ;
+		} else {
+			$content = "\n\n{$content}" ;
+		}
+		$message->setBody( $message->getBody() . $content ) ;
+		return $message ;
+	}
+
+	/**
 	 * Convenience method to send a message without having to generate a Swift_Message
 	 * first. This just creates the Swift_Message and passes it along to DOC_Util_Mail::send_message().
 	 * 
@@ -97,7 +110,11 @@ class DOC_Util_Mail {
 	 */
 	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE, $attachments = array() ) {
 		$message = Swift_Message::newInstance($subject, $body) ;
-		$message->setContentType('text/html') ;
+		if( $body == strip_tags($body)) {
+			$message->setContentType('text/plain') ;
+		} else {
+			$message->setContentType('text/html') ;
+		}
 
 		return self::send_message($message, $recipients, $cc, $from, $reply_to, $spool, $attachments) ;
 	}
