@@ -1,4 +1,5 @@
 <?php
+// Deprecated
 
 /*
  * TODO: Implement a way to specify actions for each row dynamically. Perhaps use the config structure?
@@ -8,7 +9,7 @@
 
 if( isset( $new_object_link )) {
 
-	$newObjectLink = View::factory('newobjectlink') ;
+	$newObjectLink = \BrownUniversity\DOC\View::factory('newobjectlink') ;
 	$newObjectLink->new_object_link = $new_object_link ;
 	echo $newObjectLink->render() ;
 }
@@ -16,7 +17,7 @@ if( isset( $new_object_link )) {
 // build the filter form
 
 if( isset( $filter_fields ) && isset( $filter_model)) {
-	$search_filter = View::factory('searchfilter') ;
+	$search_filter = \BrownUniversity\DOC\View::factory('searchfilter') ;
 	$search_filter->filter_fields = $filter_fields ;
 	$search_filter->filter_model = $filter_model ;
 	echo $search_filter->render() ;	

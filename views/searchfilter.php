@@ -52,9 +52,10 @@
 
 </style>
 <?php
+	use \BrownUniversity\DOC\Helper\Form ;
 
 	if( !isset( $minute_increment )) {
-		$minute_increment = DOC_Helper_Form::MINUTE_INCREMENT ;
+		$minute_increment = Form::MINUTE_INCREMENT ;
 	}
 
 
@@ -268,8 +269,8 @@
 						<input type='text' value='{$date_default_1}' name='search_val_1[]' class='datepicker' aria-label='End date'/>
 					</span>") ;
 
-			$datetime_0 = DOC_Helper_Form::datetime_input_fields( $date_default_0, 'datetime_0', $minute_increment, 'datepicker-filter', FALSE ) ;
-			$datetime_1 = DOC_Helper_Form::datetime_input_fields( $date_default_1, 'datetime_1', $minute_increment, 'datepicker-filter', FALSE ) ;
+			$datetime_0 = Form::datetime_input_fields( $date_default_0, 'datetime_0', $minute_increment, 'datepicker-filter', FALSE ) ;
+			$datetime_1 = Form::datetime_input_fields( $date_default_1, 'datetime_1', $minute_increment, 'datepicker-filter', FALSE ) ;
 
 			print("<span class='filter_value filter_datetime'>
 						<input type='hidden' name='search_operator[]' value='' />

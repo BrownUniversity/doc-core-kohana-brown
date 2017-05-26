@@ -4,7 +4,7 @@
 	 * into tablesorter/pager, which organizationally makes more sense.
 	 */
 
-	$pager = View::factory('tablesorter/pager') ;
+	$pager = \BrownUniversity\DOC\View::factory('tablesorter/pager') ;
 	if( isset( $pager_id )) {
 		$pager->pager_id = $pager_id ;
 	}

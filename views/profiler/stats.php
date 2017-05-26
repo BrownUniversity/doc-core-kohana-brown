@@ -1,18 +1,18 @@
 <?php defined('SYSPATH') or die('No direct script access.') ?>
 
 <style type="text/css">
-<?php include Kohana::find_file('views', 'profiler/style', 'css') ?>
+<?php include \Kohana::find_file('views', 'profiler/style', 'css') ?>
 </style>
 
 <?php
-$group_stats      = Profiler::group_stats();
+$group_stats      = \Profiler::group_stats();
 $group_cols       = array('min', 'max', 'average', 'total');
 $application_cols = array('min', 'max', 'average', 'current');
 ?>
 
 <div class="kohana">
 	<p><em>NOTE: The stats template has been copied and tweaked to eliminate a "divide by zero" error in Kohana 3.1.3.1. Check later releases to see if we can remove the local file...</em></p>
-	<?php foreach (Profiler::groups() as $group => $benchmarks): ?>
+	<?php foreach (\Profiler::groups() as $group => $benchmarks): ?>
 	<table class="profiler">
 		<tr class="group">
 			<th class="name" rowspan="2"><?php echo __(ucfirst($group)) ?></th>
@@ -29,8 +29,8 @@ $application_cols = array('min', 'max', 'average', 'current');
 		</tr>
 		<?php foreach ($benchmarks as $name => $tokens): ?>
 		<tr class="mark time">
-			<?php $stats = Profiler::stats($tokens) ?>
-			<th class="name" rowspan="2" scope="rowgroup"><?php echo HTML::chars($name), ' (', count($tokens), ')' ?></th>
+			<?php $stats = \Profiler::stats($tokens) ?>
+			<th class="name" rowspan="2" scope="rowgroup"><?php echo \HTML::chars($name), ' (', count($tokens), ')' ?></th>
 			<?php foreach ($group_cols as $key): ?>
 			<td class="<?php echo $key ?>">
 				<div>
@@ -60,7 +60,7 @@ $application_cols = array('min', 'max', 'average', 'current');
 	<?php endforeach ?>
 
 	<table class="profiler">
-		<?php $stats = Profiler::application() ?>
+		<?php $stats = \Profiler::application() ?>
 		<tr class="final mark time">
 			<th class="name" rowspan="2" scope="rowgroup"><?php echo __('Application Execution').' ('.$stats['count'].')' ?></th>
 			<?php foreach ($application_cols as $key): ?>

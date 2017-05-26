@@ -1,6 +1,9 @@
 <?php
+	use BrownUniversity\DOC\Helper\Table ;
+	use BrownUniversity\DOC\View ;
+
 	if( !isset( $render_as ) || empty( $render_as )) {
-		$render_as = DOC_Helper_Table::RENDER_AS_TABLE ;
+		$render_as = Table::RENDER_AS_TABLE ;
 	}
 	if( !isset( $div_id )) {
 		$div_id = 'datatable' ;
@@ -9,7 +12,7 @@
 		$div_class = 'datatable' ;
 	}
 	if( !isset( $table_id )) {
-		if( $render_as == DOC_Helper_Table::RENDER_AS_TABLE ) {
+		if( $render_as == Table::RENDER_AS_TABLE ) {
 			$table_id = 'sortableTable' ;	
 		} else {
 			$table_id = 'tablegrid' ;
@@ -28,7 +31,7 @@
 		$no_jquery = FALSE ;
 	}
 	if( !isset( $context )) {
-		$context = DOC_Helper_Table::CONTEXT_WEB ;
+		$context = Table::CONTEXT_WEB ;
 	}
 	if( !isset( $table_attributes )) {
 		$table_attributes = NULL ;
@@ -37,7 +40,7 @@
 		$include_render_options = FALSE ;
 	}
 	if( !isset( $page_sizes )) {
-		if( $render_as == DOC_Helper_Table::RENDER_AS_TABLE ) {
+		if( $render_as == Table::RENDER_AS_TABLE ) {
 			$page_sizes = array(
 				'25' => '25',
 				'50*' => '50',
@@ -71,8 +74,8 @@
 			$sort_index = isset( $col['sort']['priority'] ) ? $col['sort']['priority'] : count($default_sort) ;
 			$default_sort[ $sort_index ] = "[{$col_index},{$sorts[$col['sort']['dir']]}]" ;
 		}
-		if( (!isset( $col['context'] ) || $col['context'] == DOC_Helper_Table::CONTEXT_WEB) &&
-			isset( $col['type']) && $col['type'] == DOC_Helper_Table::TYPE_DATA )
+		if( (!isset( $col['context'] ) || $col['context'] == Table::CONTEXT_WEB) &&
+			isset( $col['type']) && $col['type'] == Table::TYPE_DATA )
 		{
 			$col_index++ ;
 		}
@@ -87,14 +90,14 @@
 	if( $include_render_options ) {
 		if( isset( $include_render_options ) && $include_render_options === TRUE ) {
 			print("<div class='render-options'>") ;
-			print('<span class="render-table render-selector'.($render_as == DOC_Helper_Table::RENDER_AS_TABLE ? ' selected' : '').'">List</span>') ;
-			print('<span class="render-grid render-selector'.($render_as == DOC_Helper_Table::RENDER_AS_GRID ? ' selected' : '').'">Grid</span>') ;
+			print('<span class="render-table render-selector'.($render_as == Table::RENDER_AS_TABLE ? ' selected' : '').'">List</span>') ;
+			print('<span class="render-grid render-selector'.($render_as == Table::RENDER_AS_GRID ? ' selected' : '').'">Grid</span>') ;
 			print("</div>") ;
 		}
 	}
 
 
-	$table = new DOC_Helper_Table( $data, $column_specs, $table_attributes, $context ) ;
+	$table = new Table( $data, $column_specs, $table_attributes, $context ) ;
 
 	print( "<div id='{$div_id}' class='{$div_class}'>" ) ;
 	print( $table->render($render_as) ) ;
