@@ -96,6 +96,17 @@ class Valid extends \Kohana_Valid {
 		return in_array($value, $enum_array) ;
 	}
 
+	public static function exists($arr1, $arr2) {
+		if( !is_array($arr1)) {
+			$arr1 = array($arr1) ;
+		}
+		if( !is_array($arr2)) {
+			$arr2 = array($arr2) ;
+		}	
+		
+		return count( array_intersect($arr1, $arr2)) > 0 ;
+	}
+
 	/**
 	 * Because sometimes empty is what you want.
 	 *

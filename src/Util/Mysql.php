@@ -78,11 +78,11 @@ class Mysql {
      * Singleton pattern?
      *
      * @param string $config
-     * @return DOC_Util_Mysql
+     * @return Mysql
      */
     public static function instance($config = 'default') {
         if ( ! isset(self::$instances[$config])) {
-            self::$instances[$config] = new DOC_Util_Mysql($config);
+            self::$instances[$config] = new Mysql($config);
         }
 
         return self::$instances[$config];
@@ -125,7 +125,7 @@ class Mysql {
         $result = $this->mysqli->query($sql);
         
         if ($result === FALSE) {
-            \Kohana::$log->add(Log::ERROR, 'MySQLi Error in DOC_Util_MySQL::load() - ' . $this->mysqli->errno . ': ' . $this->mysqli->error);
+            \Kohana::$log->add(\Kohana_Log::ERROR, 'MySQLi Error in DOC_Util_MySQL::load() - ' . $this->mysqli->errno . ': ' . $this->mysqli->error);
         }
         
         return $result;

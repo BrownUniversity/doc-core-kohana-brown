@@ -52,7 +52,7 @@ abstract class Import {
 		$local = $local_path . $name;
 		$remote = $path . $name;
 
-		\Kohana::$log->add(Log::DEBUG, "Attempting FTPs connection to [{$server}] to fetch [{$remote}] into [{$local}]") ;
+		\Kohana::$log->add(\Kohana_Log::DEBUG, "Attempting FTPs connection to [{$server}] to fetch [{$remote}] into [{$local}]") ;
 		
 		/**
 		 * Connect to FTPs server
@@ -60,7 +60,7 @@ abstract class Import {
 		$ftps = ftp_ssl_connect($server);
 		if ($ftps === FALSE) {
 			$msg = "Failed to connect via FTPs to [{$server}] in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new Kohana_Exception($msg);
 		}
 
@@ -71,7 +71,7 @@ abstract class Import {
 		$login = @ftp_login($ftps, $user, $pass);
 		if ($login === FALSE) {
 			$msg = "Failed to login to [{$server}] as user [{$user}] in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new Kohana_Exception($msg);
 		}
 
@@ -83,7 +83,7 @@ abstract class Import {
 		$op = ftp_get($ftps, $local, $remote, FTP_ASCII);
 		if ($op === FALSE) {
 			$msg = "Failed to retrieve [{$remote}] from [{$server}] in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new Kohana_Exception($msg);
 		}
 
@@ -99,7 +99,7 @@ abstract class Import {
 		$fp = fopen($local, 'r');
 		if ($fp === FALSE) {
 			$msg = "Cannot open [{$local}] file in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new Kohana_Exception($msg);
 		}
 
@@ -108,7 +108,7 @@ abstract class Import {
 
 		if ($data === FALSE) {
 			$msg = "Cannot read [{$local}] file in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new Kohana_Exception($msg);
 		}
 
@@ -123,7 +123,7 @@ abstract class Import {
 			return $_output[0];
 		} else {
 			$msg = "No regex match in [{$local}] file.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new \Kohana_Exception($msg);
 		}
 	}
@@ -162,7 +162,7 @@ abstract class Import {
 		$ftps = ftp_ssl_connect($server);
 		if ($ftps === FALSE) {
 			$msg = "Failed to connect via FTPs to [{$server}] in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new \Kohana_Exception($msg);
 		}
 
@@ -173,7 +173,7 @@ abstract class Import {
 		$login = @ftp_login($ftps, $user, $pass);
 		if ($login === FALSE) {
 			$msg = "Failed to login to [{$server}] as user [{$user}] in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new \Kohana_Exception($msg);
 		}
 
@@ -203,7 +203,7 @@ abstract class Import {
 		$op = ftp_get($ftps, $local, $remote, FTP_ASCII);
 		if ($op === FALSE) {
 			$msg = "Failed to retrieve [{$remote}] from [{$server}] in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new \Kohana_Exception($msg);
 		}
 
@@ -219,7 +219,7 @@ abstract class Import {
 		$fp = fopen($local, 'r');
 		if ($fp === FALSE) {
 			$msg = "Cannot open [{$local}] file in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new \Kohana_Exception($msg);
 		}
 
@@ -240,7 +240,7 @@ abstract class Import {
 
 		if (empty($data)) {
 			$msg = "Cannot read [{$local}] file in Banner data exchange.";
-			\Kohana::$log->add(Log::ERROR, $msg);
+			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 			throw new \Kohana_Exception($msg);
 		}
 
