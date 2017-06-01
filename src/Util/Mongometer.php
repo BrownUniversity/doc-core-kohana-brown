@@ -1,10 +1,11 @@
 <?php
-// Deprecated
+namespace BrownUniversity\DOC\Util ;
 
 /**
  * @package DOC
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  * @requires PHP MongoDB Driver
+ * @deprecated
  */
 defined( 'SYSPATH' ) or die( 'No direct script access.');
 
@@ -14,12 +15,12 @@ defined( 'SYSPATH' ) or die( 'No direct script access.');
  * Data are stored in various collections using MongoDB.  A configuration file
  * will be necessary to intializate an instance of this class.
  */
-class DOC_Util_MongoMeter {
+class MongoMeter {
     
     /**
      * Instance of DOC_Util_MongoMeter
      * 
-     * @var DOC_Util_MongoMeter
+     * @var MongoMeter
      */
     protected static $instance = NULL;
     
@@ -79,9 +80,9 @@ class DOC_Util_MongoMeter {
      * Class constructor
      */
     public function __construct() {
-        $config = Kohana::$config->load('mongodb');
+        $config = \Kohana::$config->load('mongodb');
         $config = $config[ self::CONFIG_KEY ] ;
-        $this->client = new MongoClient(
+        $this->client = new \MongoClient(
             "mongodb://{$config['host']}:{$config['port']}", 
             array(
                 'username' => $config['user'], 
@@ -110,6 +111,7 @@ class DOC_Util_MongoMeter {
     
     /**
      * Ensure MongoDB client is connected
+     * @deprecated unused?
      */
     private function connect() {
         if ( ! $this->client->connected) {
@@ -140,7 +142,7 @@ class DOC_Util_MongoMeter {
      */
     public static function instance() {
         if (self::$instance === NULL) {
-            self::$instance = new DOC_Util_MongoMeter();
+            self::$instance = new MongoMeter();
         }
         
         return self::$instance;
@@ -150,14 +152,14 @@ class DOC_Util_MongoMeter {
      * Log performance metric information about a request
      * 
      * @param string $app application abbreviation
-     * @param Kohana_Request $request
+     * @param \Kohana_Request $request
      * @param array $supplemental_data
      */
     public function log_request($app, $request, $supplemental_data = array()) {
         
-        $supp_info = Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
+        $supp_info = \Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
         $data = array(
-            'timestamp' => new MongoDate(),
+            'timestamp' => new \MongoDate(),
             'application' => $app,
             'request' => array(
                 'directory' => $request->directory(),
@@ -167,7 +169,7 @@ class DOC_Util_MongoMeter {
                 'type' => $request->is_ajax() ? 'AJAX' : 'HTTP',
             ),
             'user_agent' => array(
-            	'ip_address' => Request::$client_ip,
+            	'ip_address' => \Request::$client_ip,
             	'browser' => $supp_info['browser'],
             	'version' => $supp_info['version'],
             	'robot' => $supp_info['robot'],
@@ -187,7 +189,7 @@ class DOC_Util_MongoMeter {
             $this->collection_realtime->insert($data, array('w' => 0));
         } catch (Exception $e) {
             $connected = ($this->client->connected) ? 'is connected' : 'is not connected';
-            Kohana::$log->add(Log::ERROR, 'MongoMetrics failed:' . $e->getMessage() . '<hr />Client ' . $connected);
+            \Kohana::$log->add(\Kohana_Log::ERROR, 'MongoMetrics failed:' . $e->getMessage() . '<hr />Client ' . $connected);
         }
     }
 }

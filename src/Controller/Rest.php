@@ -1,8 +1,11 @@
 <?php
+namespace BrownUniversity\DOC\Controller ;
 /**
  * @package    Kohana-Based Web Services
  * @author     Christopher Keith <christopher_keith@brown.edu>
  */
+use BrownUniversity\DOC\View;
+
 defined('SYSPATH') OR die('No direct access allowed.');
 
 /**
@@ -11,7 +14,7 @@ defined('SYSPATH') OR die('No direct access allowed.');
  * Used to abstract the majority of common interface required for publishing
  * a web service.
  */
-class DOC_Controller_REST extends Controller {
+class Rest extends \Controller {
 
 	const AUTH_NONE = 'authenticate_none' ;
 	const AUTH_HMAC = 'authenticate_hmac' ;
@@ -26,8 +29,9 @@ class DOC_Controller_REST extends Controller {
 	/**
 	 * Content-types accepted by this service.  Keys represent content-
 	 * types from HTTP accept-type header and Values represent the path
-	 * to the appropriate view file.
-	 * @todo Pull the actual settings out of this controller and set via config in the before() method.
+	 * to the appropriate view file. Possible values are commented out
+	 * here. Proper values should be set in individual controllers.
+	 *
 	 */
 	protected $definitions = array(
 //		'application/json' => 'json',

@@ -6,6 +6,7 @@ namespace BrownUniversity\DOC;
  * functions typically required by DOC apps.
  *
  * @author jorrill
+ * @todo merge code into Kohana proper
  */
 class ORM extends \Kohana_ORM {
 	
@@ -33,7 +34,7 @@ class ORM extends \Kohana_ORM {
      * @author Christopher Keith <Christopher_Keith@brown.edu>
 	 * @chainable
 	 * @param  bool $multiple Return an iterator or load a single row
-	 * @return ORM|Database_Result
+	 * @return ORM|\Database_Result
 	 */
 	protected function _load_result($multiple = FALSE)
 	{
@@ -177,8 +178,6 @@ class ORM extends \Kohana_ORM {
 		
 		$text .= $modifier ;
 		
-		
-		
 		return $text;		
 	}
     
@@ -189,7 +188,7 @@ class ORM extends \Kohana_ORM {
 	 * @param string $obj_type
 	 * @param string $key_name
 	 * @param string $key_value
-	 * @return ORM 
+	 * @return \ORM
 	 */
 	static function obj_template($obj_type, $key_name, $key_value) {
 		$_output = ORM::factory($obj_type)
@@ -235,7 +234,7 @@ class ORM extends \Kohana_ORM {
 	 * @return boolean 
 	 */
 	public function properties_are_unique( $propval_array ) {
-		$select = DB::select( array( DB::expr('COUNT(id)'), 'total' ))
+		$select = \DB::select( array( \DB::expr('COUNT(id)'), 'total' ))
 				->from($this->_table_name)
 				->where($this->_primary_key, '!=', $this->pk()) ;
 		
@@ -296,7 +295,7 @@ class ORM extends \Kohana_ORM {
 		while( !$slug_found ) {
 			$slug = self::create_slug($text, $modifier, $max_length) ;
 			
-			$row_count =  DB::select( array( DB::expr('COUNT(id)'), 'total'))
+			$row_count =  \DB::select( array( \DB::expr('COUNT(id)'), 'total'))
 					->from($this->_table_name)
 					->where($uniq_prop, '!=', $uniq_prop_val)
 					->where($slug_column, '=', $slug)
@@ -350,8 +349,8 @@ class ORM extends \Kohana_ORM {
      * @author Christopher Keith <Christopher_Keith@brown.edu>
 	 * @param  string $target_path Target model to bind to
      * @param boolean $include_columns whether or not to include columns in projection
-	 * @return void
-	 */
+	 * @return \BrownUniversity\DOC\ORM
+     */
 	public function with($target_path, $include_columns = TRUE)
 	{
 		if (isset($this->_with_applied[$target_path]))

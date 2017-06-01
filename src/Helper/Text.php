@@ -1,6 +1,13 @@
 <?php
+namespace BrownUniversity\DOC\Helper ;
 
-class DOC_Helper_Text extends Kohana_Text {
+/**
+ * Class Text
+ *
+ * @package BrownUniversity\DOC\Helper
+ * @todo Move into Kohana
+ */
+class Text extends \Kohana_Text {
    /**
 	* Truncates text.
 	*
@@ -117,6 +124,13 @@ class DOC_Helper_Text extends Kohana_Text {
 
     }
 
+	/**
+	 * Format a string as a phone number, using a pattern based on the number
+	 * of digits in the string.
+	 *
+	 * @param string $phone
+	 * @return string
+	 */
 	public static function phone( $phone ) {
 		if( $phone != NULL && $phone != '' ) {
 			$pattern = '' ;

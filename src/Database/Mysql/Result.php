@@ -10,6 +10,7 @@ namespace BrownUniversity\DOC\Database\Mysql ;
  * JSON and deeper array output.
  *
  * @author jorrill
+ * @todo Move into Kohana
  */
 class Result extends \Kohana_Database_MySQL_Result {
 

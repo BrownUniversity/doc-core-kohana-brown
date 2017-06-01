@@ -1,9 +1,5 @@
 <?php
 namespace BrownUniversity\DOC\Controller ;
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  * Generic parent controller for cron jobs. There are actions for time slices from
@@ -15,22 +11,23 @@ namespace BrownUniversity\DOC\Controller ;
  * /path/to/php /path/to/index.php --uri=cron/daily
  *
  * @author jorrill
+ * @deprecated Should be replaced by Minion tasks.
  */
 class Cron extends \Controller {
 	public function action_minutely() {
-		\Kohana::$log->add(Log::INFO, 'Executing minutely cron script') ;
+		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing minutely cron script') ;
 	}
 	public function action_hourly() {
-		\Kohana::$log->add(Log::INFO, 'Executing hourly cron script') ;
+		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing hourly cron script') ;
 	}
 	public function action_daily() {
-		\Kohana::$log->add(Log::INFO, 'Executing daily cron script') ;
+		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing daily cron script') ;
 	}
 	public function action_weekly() {
-		\Kohana::$log->add(Log::INFO, 'Executing weekly cron script') ;
+		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing weekly cron script') ;
 	}
 	public function action_monthly() {
-		\Kohana::$log->add(Log::INFO, 'Executing monthly cron script') ;
+		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing monthly cron script') ;
 	}
     
 	/**
@@ -38,7 +35,7 @@ class Cron extends \Controller {
 	 * but in the evenings rather than the mornings.
 	 */
 	public function action_nightly() {
-		\Kohana::$log->add(Log::INFO, 'Executing nightly cron script');
+		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing nightly cron script');
 	}
     
 	public function action_index() {}

@@ -4,6 +4,8 @@ namespace BrownUniversity\DOC\Controller ;
  * @package Kohana 3.x Modules
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
+use BrownUniversity\DOC\View;
+
 defined('SYSPATH') OR die('No direct access allowed.');
  
 /**

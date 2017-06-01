@@ -29,12 +29,15 @@ class Export {
      * only happens once.
      */
     protected static function init() {}
-    
-    /**
-     * Put a file on the transfer folder
-     *
-     * @return boolean
-     */
+
+	/**
+	 * Put a file on the transfer folder
+	 *
+	 * @param string $local_path
+	 * @param string $remote_path
+	 * @return bool
+	 * @throws \Kohana_Exception
+	 */
     public static function put_file($local_path, $remote_path) {
     	
 	$server = \Kohana::$config->load('bannerintegration.server');
@@ -47,7 +50,7 @@ class Export {
 	$ftps = ftp_ssl_connect($server);
 	if ($ftps === FALSE) {
 		$msg = "Failed to connect via FTPs to [{$server}] in Banner data exchange.";
-		\Kohana::$log->add(Log::ERROR, $msg);
+		\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 		throw new \Kohana_Exception($msg);
 	}
 
@@ -58,7 +61,7 @@ class Export {
 	$login = @ftp_login($ftps, $user, $pass);
 	if ($login === FALSE) {
 		$msg = "Failed to login to [{$server}] as user [{$user}] in Banner data exchange.";
-		\Kohana::$log->add(Log::ERROR, $msg);
+		\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 		throw new \Kohana_Exception($msg);
 	}
 
@@ -70,7 +73,7 @@ class Export {
 	$op = ftp_put($ftps, $remote_path, $local_path, FTP_ASCII);
 	if ($op === FALSE) {
 		$msg = "Failed to put [{$local_path}] to [{$remote_path}] in Banner data exchange.";
-		\Kohana::$log->add(Log::ERROR, $msg);
+		\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
 		throw new \Kohana_Exception($msg);
 	}
 

@@ -1,18 +1,16 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * A simple method for spitting out arrays as unordered lists.
  *
  * @author jorrill
+ * @deprecated Use \BrownUniversity\DOC\Helper\Arraytoul
  */
 class DOC_Util_Arraytoul {
-    public static function create($var, $include_outer = TRUE, $suppress_duplicates = FALSE) {
+
+
+	public static function create($var, $include_outer = TRUE, $suppress_duplicates = FALSE) {
 		$_output = '' ;
 		if( !is_array( $var )) {
 			$var = array($var) ;

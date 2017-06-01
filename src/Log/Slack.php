@@ -85,7 +85,7 @@ class Slack extends \Log_Writer {
 //                 $error_prefix .= "\nUser ID: could not be determined.";
 //             }
 //            $error_prefix .= "\nSession ID: " . Session::instance()->id();
-            $error_prefix .= "\nIP Address: " . Request::$client_ip;
+            $error_prefix .= "\nIP Address: " . \Request::$client_ip;
             $error_prefix .= "\nBrowser: " . $supp_info['browser'];
             $error_prefix .= "\nVersion: " . $supp_info['version'];
             $error_prefix .= "\nPlatform: " . $supp_info['platform'];

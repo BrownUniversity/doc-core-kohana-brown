@@ -1,6 +1,8 @@
 <?php
 namespace BrownUniversity\DOC\Util\Banner ;
 use BrownUniversity\DOC\ORM ;
+use BrownUniversity\DOC\Util\Rest;
+
 /**
  * Description of ords
  *
@@ -17,7 +19,16 @@ class Ords {
 	private $refresh_token = NULL ;
 	private $token_expires = NULL ;
 	private $model_name = NULL ;
-	
+
+	/**
+	 * Ords constructor.
+	 *
+	 * @param $base_url
+	 * @param $client_id
+	 * @param $client_secret
+	 * @param $model_name
+	 * @param $auth_code
+	 */
 	private function __construct($base_url, $client_id, $client_secret, $model_name, $auth_code) {
 		$this->base_url = $base_url ;
 		$this->client_id = $client_id ;
@@ -27,7 +38,17 @@ class Ords {
 
 		$this->get_access_token($auth_code) ;
 	}
-	
+
+	/**
+	 * Create or return an instance of an Ords object.
+	 *
+	 * @param      $base_url
+	 * @param      $client_id
+	 * @param      $client_secret
+	 * @param      $model_name
+	 * @param null $auth_code
+	 * @return \BrownUniversity\DOC\Util\Banner\Ords|mixed
+	 */
 	public static function instance($base_url, $client_id, $client_secret, $model_name, $auth_code = NULL) {
 		$instance_key = $base_url . $client_id . $client_secret . $auth_code ;
 		
@@ -41,7 +62,10 @@ class Ords {
 		
 		return $instance ;
 	}
-	
+
+	/**
+	 * @return string
+	 */
 	private function get_user_password() {
 		return "{$this->client_id}:{$this->client_secret}" ;
 	}
@@ -51,12 +75,12 @@ class Ords {
 	 * the initial access token from ORDS. If there's a record but we're past the
 	 * expiration date, use the refresh token to get a fresh token.
 	 * 
-	 * @param string auth_code If NULL, pull the auth_code from the db record (if it exists).
+	 * @param string $auth_code If NULL, pull the auth_code from the db record (if it exists).
 	 */
 	private function get_access_token($auth_code = NULL){
 		$start = microtime(TRUE);
 		
-		\Kohana::$log->add(Log::DEBUG, "Loading OAuth ORM model: {$this->model_name}") ;
+		\Kohana::$log->add(\Kohana_Log::DEBUG, "Loading OAuth ORM model: {$this->model_name}") ;
 		
 		$oauth = ORM::factory( $this->model_name )
 				->where('client_id','=',$this->client_id)
@@ -104,13 +128,13 @@ class Ords {
 			$http_code = curl_getinfo($curl_handle, CURLINFO_HTTP_CODE) ;
 		
 			if ( $http_code != 200 ) {
-				\Kohana::$log->add(Log::ERROR,"Error updating OAuth access token: HTTP code={$http_code}, response={$resp}") ;
+				\Kohana::$log->add(\Kohana_Log::ERROR,"Error updating OAuth access token: HTTP code={$http_code}, response={$resp}") ;
 				throw new ErrorException('There was an error updating the OAuth access token.');
 			}
 			
 			$access = json_decode( $resp ) ;
 			
-			\Kohana::$log->add(Log::DEBUG, 'OAuth token data received: ' . print_r( $access, TRUE )) ;
+			\Kohana::$log->add(\Kohana_Log::DEBUG, 'OAuth token data received: ' . print_r( $access, TRUE )) ;
 			
 			// store in object
 			$this->access_token = $access->access_token ;
@@ -124,16 +148,16 @@ class Ords {
 			
 			$oauth->save() ;
 		}
-		\Kohana::$log->add(Log::INFO, "ORDS: Refreshed OAuth token in " . (microtime(TRUE) - $start) . " seconds.");
+		\Kohana::$log->add(\Kohana_Log::INFO, "ORDS: Refreshed OAuth token in " . (microtime(TRUE) - $start) . " seconds.");
 	}
-	
+
 	/**
-	 * 
-	 * @param string $endpoint
-	 * @param array $data
+	 *
+	 * @param string       $endpoint
+	 * @param array|string $data
+	 * @param string       $method
+	 * @param array        $headers
 	 * @return object
-	 * @throws ErrorException
-	 * @todo Make _much_ more robust. Currently only handles simple GETs.
 	 */
 	public function execute_request($endpoint, $data = '', $method = 'GET', $headers = array()) {
 
@@ -141,7 +165,7 @@ class Ords {
 
 		$start = microtime(TRUE);
 		if ( ! is_string($data) ) {
-			$data = DOC_Util_REST::ordered_query_string($data) ;
+			$data = Rest::ordered_query_string($data) ;
 		}
 		
 		$curl_handle = curl_init() ;
@@ -169,14 +193,13 @@ class Ords {
 		$response = curl_exec( $curl_handle ) ;
 		
 		if( curl_getinfo( $curl_handle, CURLINFO_HTTP_CODE ) != 200 ) {
-			\Kohana::$log->add(Log::ERROR, "Error accessing REST endpoint {$this->base_url}{$endpoint}, data={$data}, HTTP code=".curl_getinfo( $curl_handle, CURLINFO_HTTP_CODE )) ; 
+			\Kohana::$log->add(\Kohana_Log::ERROR, "Error accessing REST endpoint {$this->base_url}{$endpoint}, data={$data}, HTTP code=".curl_getinfo( $curl_handle, CURLINFO_HTTP_CODE )) ;
 			throw new ErrorException('There was a problem executing the specified REST request.' ) ;
 		}
 
 		curl_close( $curl_handle ) ;
-		\Kohana::$log->add(Log::INFO, "ORDS: Executed $method request in " . (microtime(TRUE) - $start) . " seconds.");
+		\Kohana::$log->add(\Kohana_Log::INFO, "ORDS: Executed $method request in " . (microtime(TRUE) - $start) . " seconds.");
 		return json_decode( $response ) ;		
 	}
 	
 }
-

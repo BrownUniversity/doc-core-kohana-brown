@@ -90,14 +90,15 @@ class Mongo extends \Log_Writer {
         self::$db = self::$client->selectDB($config['database']);
         self::$collection = self::$db->selectCollection($config['default_collection']);
     }
-    
-    /**
-     * Read log entries from the Mongo DB
-     *
-     * @param array $limit additional criteria
-     * @return MongoCursor
-     * @throws Kohana_Exception
-     */
+
+	/**
+	 * Read log entries from the Mongo DB
+	 *
+	 * @param array|int $limit additional criteria
+	 * @param array     $filters
+	 * @return \BrownUniversity\DOC\Log\MongoCursor
+	 * @throws \Kohana_Exception
+	 */
     public static function read($limit = 50, $filters = array('level' => 'ERROR')) {
     	
         if ( ! is_a(self::$client, 'MongoClient')) {
@@ -114,14 +115,14 @@ class Mongo extends \Log_Writer {
     	
         return $cursor;
     }
-    
-    /**
-     * Get one specific Mongo Entry
-     * 
-     * @param type $id
-     * @return array
-     * @throws Kohana_Exception
-     */
+
+	/**
+	 * Get one specific Mongo Entry
+	 *
+	 * @param type $id
+	 * @return array
+	 * @throws \Kohana_Exception
+	 */
     public static function read_one($id) {
         
         if ( ! is_a(self::$client, 'MongoClient')) {
@@ -144,15 +145,14 @@ class Mongo extends \Log_Writer {
         
         return $output;
     }
-    
-    /**
-     * Send email messages to a pre-configured list of users for a 
-     * pre-configured set of error level conditions
-     * 
-     * @uses DOC_Util_Mail
-     * @param array $messages
-     * @throws Kohana_Exception
-     */
+
+	/**
+	 * Send email messages to a pre-configured list of users for a
+	 * pre-configured set of error level conditions
+	 *
+	 * @param array $messages
+	 * @throws \Kohana_Exception
+	 */
     public function write(array $messages) {
         
         $supp_info = \Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
@@ -165,7 +165,7 @@ class Mongo extends \Log_Writer {
             	'level' => self::$levels[$message['level']],
             	'message' => $message['body'],
             	'user_agent' => array(
-            		'ip_address' => Request::$client_ip,
+            		'ip_address' => \Request::$client_ip,
             		'browser' => $supp_info['browser'],
             		'version' => $supp_info['version'],
             		'robot' => $supp_info['robot'],

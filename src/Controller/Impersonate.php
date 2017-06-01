@@ -3,51 +3,51 @@ namespace BrownUniversity\DOC\Controller ;
 use BrownUniversity\DOC\Helper\Impersonate as Helper_Impersonate;
 use BrownUniversity\DOC\Util\Ldap ;
 use BrownUniversity\DOC\View ;
-/** 
+/**
  * @package Kohana 3.x Modules
  * @module Impersonation
  * @version 0.1
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
 defined('SYSPATH') OR die('No direct access allowed.');
- 
+
 /**
  * Controller for Impersonating Users
  */
 class Impersonate extends \Controller_Template {
-    
+
     /**
      * Main template file
-     * 
+     *
      * @var string
      */
     public $template = 'impersonate/template';
-    
+
     /**
      * Logic to execute before this controller
      */
     public function before()
     {
     	// parent::before();
-    	
+
     	if ($this->auto_render === TRUE)
 		{
 			// Load the template
 			$this->template = View::factory($this->template);
 		}
-    	
+
     	if ( ! Helper_Impersonate::check_permissions()) {
     		$this->redirect($this->request->referrer());
     	}
     }
-	
-    /**
-     * Assume a user's identity
-     * 
-     * @param int $array_key
-     */
+
+	/**
+	 * Assume a user's identity
+	 *
+	 * @internal param int $array_key
+	 */
     public function action_assume()
-    {    
+    {
     	$id = $this->request->param('id') ;
         if ($id === NULL) {
             $this->redirect('impersonate');
@@ -61,7 +61,7 @@ class Impersonate extends \Controller_Template {
             $this->redirect(Helper_Impersonate::get_return_link());
         }
     }
-    
+
     /**
      * Clear an impersonation session
      */
@@ -70,29 +70,33 @@ class Impersonate extends \Controller_Template {
         Helper_Impersonate::clear();
         $this->redirect($this->request->referrer());
     }
-    
+
     /**
-     * Fully clear an impersonation session, including the identity of the 
+     * Fully clear an impersonation session, including the identity of the
      * last impersonated user.
      */
     public function action_clearall() {
         Helper_Impersonate::clear_all();
         $this->redirect($this->request->referrer());
     }
-    
+
+	/**
+	 * Impersonate a user selected from the impersonation history, or if no key can be
+	 * found, clear the history.
+	 */
     public function action_history() {
         $key = $this->request->param('id');
         $history = Helper_Impersonate::get_history();
-        
+
         if (array_key_exists($key, $history)) {
             Helper_Impersonate::assume($history[$key]);
         } else {
             Helper_Impersonate::clear_history();
         }
-        
+
         $this->redirect($this->request->referrer());
     }
-    
+
     /**
      * Search for a user to impersonate
      */
@@ -112,17 +116,17 @@ class Impersonate extends \Controller_Template {
                 $ldap = new Ldap();
                 $results = $ldap->search_people(
                 	$this->request->post('search_string'),
-      				\Kohana::$config->load('impersonate.search_limit'),          	
+      				\Kohana::$config->load('impersonate.search_limit'),
                 	$affiliation
                 );
-                
-                if ((isset($results['status']['ok'])) && 
-                    ($results['status']['ok'])) 
+
+                if ((isset($results['status']['ok'])) &&
+                    ($results['status']['ok']))
                 {
                     $sort = array();
                     foreach ($results['results'] as $record) {
-                    	$key = $record['last_name'] . ', ' 
-                             . $record['first_name'] . ', ' 
+                    	$key = $record['last_name'] . ', '
+                             . $record['first_name'] . ', '
                              . $record['auth_id'];
                     	$sort[$key] = $record;
                         unset($sort[$key]['memberships']);
@@ -141,9 +145,9 @@ class Impersonate extends \Controller_Template {
             $this->template->content = View::factory('impersonate/search_form');
         }
     }
-    
+
     /**
-     * Allow the current user to assume the identify of the person whom they 
+     * Allow the current user to assume the identify of the person whom they
      * have last impersonated.
      */
     public function action_last() {

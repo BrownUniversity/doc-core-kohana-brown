@@ -3,6 +3,8 @@ namespace BrownUniversity\DOC\Log ;
 /**
  * @package DOC Core
  */
+use BrownUniversity\DOC\Util\Mail;
+
 defined('SYSPATH') or die('No direct script access.');
 
 
@@ -48,15 +50,15 @@ class Email extends \Log_Writer {
      * @var array
      */
     protected static $levels = array(
-        Log::EMERGENCY => 'EMERGENCY',
-        Log::ALERT     => 'ALERT',
-        Log::CRITICAL  => 'CRITICAL',
-        Log::ERROR     => 'ERROR',
-        Log::WARNING   => 'WARNING',
-        Log::NOTICE    => 'NOTICE',
-        Log::INFO      => 'INFO',
-        Log::DEBUG     => 'DEBUG',
-        Log::STRACE    => 'STRACE',
+        \Kohana_Log::EMERGENCY => 'EMERGENCY',
+        \Kohana_Log::ALERT     => 'ALERT',
+        \Kohana_Log::CRITICAL  => 'CRITICAL',
+        \Kohana_Log::ERROR     => 'ERROR',
+        \Kohana_Log::WARNING   => 'WARNING',
+        \Kohana_Log::NOTICE    => 'NOTICE',
+        \Kohana_Log::INFO      => 'INFO',
+        \Kohana_Log::DEBUG     => 'DEBUG',
+        \Kohana_Log::STRACE    => 'STRACE',
     );
     
     /**
@@ -99,7 +101,7 @@ class Email extends \Log_Writer {
         foreach ($messages as $message) {
             $recipients = $this->addresses[ self::$levels[ $message[ 'level' ]]];
 			$subject = "[ {$this->environment} | {$this->application} ] -  " . self::$levels[$message['level']];
-			$body = text::auto_p($error_prefix) . text::auto_p($message['body']);
+			$body = \Text::auto_p($error_prefix) . \Text::auto_p($message['body']);
             
             /**
              * Only actually email the error if it is not a 404, And recipients
@@ -109,7 +111,7 @@ class Email extends \Log_Writer {
                 (count($recipients) > 0) && 
                 (strpos($message['body'], 'HTTP_Exception_404') === FALSE))
             {
-                $result = DOC_Util_Mail::send($subject, $body, $recipients, NULL, $this->from);
+                $result = Mail::send($subject, $body, $recipients, NULL, $this->from);
             }
         }
     }

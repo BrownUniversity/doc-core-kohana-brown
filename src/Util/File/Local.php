@@ -21,7 +21,7 @@ class Local extends File {
 		if( file_exists( $file_path )) {
 			unlink( $file_path ) ;
 		} else {
-			\Kohana::$log->add(Log::WARNING, "Cannot delete-- file not found: {$file_path}") ;
+			\Kohana::$log->add(\Kohana_Log::WARNING, "Cannot delete-- file not found: {$file_path}") ;
 		}
 	}
 
@@ -96,7 +96,7 @@ class Local extends File {
 	 * @param string $root_dir
 	 * @param string $filename
 	 * @param string $new_filename
-	 * @return Swift_Attachment
+	 * @return \Swift_Attachment
 	 */
 	public function get_attachment($root_dir, $filename, $new_filename = NULL) {
 		$file_path = $root_dir . $filename ;
@@ -135,17 +135,19 @@ class Local extends File {
 	public function save($root_dir, $filename, $source_path, $attributes = NULL) {
 		$file_path = $root_dir . $filename ;
 
-		\Kohana::$log->add(Log::DEBUG, "Attempting file save, source path = {$source_path}, file path = {$file_path}") ;
+		\Kohana::$log->add(\Kohana_Log::DEBUG, "Attempting file save, source path = {$source_path}, file path = {$file_path}") ;
 		
 		copy($source_path, $file_path) ;
 	}
-	
+
 	/**
 	 * Save string to local filesystem.
-	 * 
+	 *
 	 * @param string $root_dir
 	 * @param string $filename
 	 * @param string $contents
+	 * @param bool   $append
+	 * @return string
 	 */
 	public function save_string_to_file($root_dir, $filename, $contents, $append = FALSE) {
 		$file_path = $root_dir . $filename ;

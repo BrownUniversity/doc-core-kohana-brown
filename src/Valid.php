@@ -1,9 +1,5 @@
 <?php
 namespace BrownUniversity\DOC ;
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  * Description of valid
@@ -25,7 +21,7 @@ class Valid extends \Kohana_Valid {
             return TRUE;
         } else {
             $d = DateTime::createFromFormat($format, $date);
-            \Kohana::$log->add(Log::DEBUG, "{$date} | {$format}");
+            \Kohana::$log->add(\Kohana_Log::DEBUG, "{$date} | {$format}");
             return $d && $d->format($format) == $date;
         }
     }
@@ -57,15 +53,16 @@ class Valid extends \Kohana_Valid {
 	 * return a boolean response, giving us a single generic way to test multiple
 	 * conditions.
 	 *
-	 * @param type $a
-	 * @param type $b
-	 * @param type $operator
-	 * @return boolean
+	 * @param mixed $a
+	 * @param mixed $b
+	 * @param string $operator
+	 * @return bool
+	 * @throws \ErrorException
 	 */
 	public static function comparison( $a, $b, $operator ) {
 		$valid_operators = array('==', '>', '<', '>=', '<=', '!=') ;
 		if( !in_array( $operator, $valid_operators )) {
-			die('invalid operator specified') ; // TODO: how do we properly die in Kohana?
+			throw new \ErrorException('invalid operator specified') ;
 		}
 
 		$comparison = "$a $operator $b" ;
@@ -96,6 +93,13 @@ class Valid extends \Kohana_Valid {
 		return in_array($value, $enum_array) ;
 	}
 
+	/**
+	 * Checks that the two arrays have at least one item in common.
+	 *
+	 * @param mixed $arr1
+	 * @param mixed $arr2
+	 * @return bool
+	 */
 	public static function exists($arr1, $arr2) {
 		if( !is_array($arr1)) {
 			$arr1 = array($arr1) ;
@@ -149,7 +153,7 @@ class Valid extends \Kohana_Valid {
 	 * accounts with WorkDay).
 	 * 
 	 * @param string $value
-	 * @return type
+	 * @return bool
 	 */
 	public static function bat_key( $value ) {
 		return preg_match('/^[A-Za-z]{2,3}\d{5,7}(\.\d{4})?$/', $value ) === 1 ;

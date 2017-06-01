@@ -57,21 +57,22 @@ class Impersonate {
             self::assume($last->$attribute);
         }
     }
-    
-    /**
-     * Generate a link for canceling impersonation if a user is being impersonated.
-     *
-     * @param string $message
-     */
+
+	/**
+	 * Generate a link for canceling impersonation if a user is being impersonated.
+	 *
+	 * @param string $message
+	 * @return mixed
+	 */
     public static function cancel_link($message = 'Cancel Impersonation')
     {
     	$session = self::session();
     	$active = $session->get(\Kohana::$config->load('impersonate.session_key'));
     	if ($active === NULL) {
     		return NULL;
-    	} else {
-    		return html::anchor('impersonate/clear', $message);
     	}
+    	return \HTML::anchor('impersonate/clear', $message);
+
     }
 
     /**
@@ -91,9 +92,8 @@ class Impersonate {
 
 		if (array_search($user->$attribute, $values) !== FALSE) {
 			return TRUE;
-		} else {
-			return FALSE;
 		}
+		return FALSE;
 	}
 
     /**
@@ -123,7 +123,7 @@ class Impersonate {
      */
     public static function clear_all() {
         self::clear();
-        self::clear_history;
+        self::clear_history();
     }
 
     /**
@@ -174,7 +174,7 @@ class Impersonate {
         $session = self::session();
         
         $id = $session->get(\Kohana::$config->load('impersonate.last_impersonated_key'));
-        \Kohana::$log->add(Log::INFO, 'Last Impersonated User: ' . $id);
+        \Kohana::$log->add(\Kohana_Log::INFO, 'Last Impersonated User: ' . $id);
         $logged_in_method = \Kohana::$config->load('impersonate.logged_in_method');
         $alternate_method = \Kohana::$config->load('impersonate.alternate_method');
         $model = \Kohana::$config->load('impersonate.user_model');
@@ -247,7 +247,7 @@ class Impersonate {
     /**
      * Return an instance of a Session
      *
-     * @return Session Instance
+     * @return \Session Instance
      */
     public static function session()
     {
@@ -263,7 +263,7 @@ class Impersonate {
     {
         $session = self::session();
         if ($link === NULL) {
-            $link = url::base();
+            $link = \URL::base();
 		}
         $already_set = $session->get(\Kohana::$config->load('impersonate.return_link_key'), FALSE);
         if ( ! $already_set) {

@@ -1,5 +1,8 @@
 <?php
 namespace BrownUniversity\DOC\Helper ;
+use BrownUniversity\DOC\Helper\Json;
+use BrownUniversity\DOC\Helper\Text;
+
 /**
  * Class to render tabular data with formatting, actions and context-sensitive
  * output.
@@ -51,6 +54,14 @@ class Table {
 	const RENDER_AS_TABLE = 'table' ;
 	const RENDER_AS_GRID = 'grid' ;
 
+	/**
+	 * Table constructor.
+	 *
+	 * @param mixed $data
+	 * @param array $column_specs
+	 * @param array $table_attrs
+	 * @param int   $context
+	 */
 	public function __construct( $data, $column_specs, $table_attrs = array(), $context = self::CONTEXT_WEB) {
 
 		$this->data = $data ;
@@ -80,7 +91,7 @@ class Table {
 	public function render($render_as = self::RENDER_AS_TABLE) {
 		
 		if( \Kohana::$profiling === TRUE ) {
-			$bm = Profiler::start(__CLASS__,__METHOD__) ;
+			$bm = \Profiler::start(__CLASS__,__METHOD__) ;
 		}
 		
 		$_output = '' ;
@@ -349,6 +360,7 @@ class Table {
 										}
 
 										$value = call_user_func_array(array($obj, $col_spec[ 'format' ][ 'method' ]), $args ) ;
+										break ;
 
 
 									default:
@@ -484,7 +496,7 @@ class Table {
 
 				if( count( $row_data ) > 0 && !in_array($this->context, array( self::CONTEXT_PDF, self::CONTEXT_SPREADSHEET ))) {
 
-					$row_data_json = htmlentities( DOC_Helper_JSON::get_json($row_data), ENT_QUOTES ) ;
+					$row_data_json = htmlentities( Json::get_json($row_data), ENT_QUOTES ) ;
 					$_output .= "<{$this->render_tags[$render_as]['row']} class='row-equiv' data-row-data='{$row_data_json}'>" ;
 				} else {
 					$_output .= "<{$this->render_tags[$render_as]['row']} class='row-equiv'>" ;
@@ -506,7 +518,7 @@ class Table {
 			$_output .= '<div class="no-data">Nothing to display</div>' ;
 		}
 
-		if( isset( $bm )) Profiler::stop ($bm) ;
+		if( isset( $bm )) \Profiler::stop ($bm) ;
 
 		return trim( $_output) ;
 	}
@@ -530,7 +542,7 @@ class Table {
 		$cache = FALSE ;
 
 		if( $cache_lifetime > 0 && array_key_exists('cache', \Kohana::modules())) {
-			$cache = Cache::instance() ;
+			$cache = \Cache::instance() ;
 		}
 		if( $cache !== FALSE ) {
 			$cache_key = md5(implode('::',array(
@@ -590,7 +602,6 @@ class Table {
 	 * @return string
 	 */
 	protected function format_link( $object, $link_text, $link_url ) {
-		$_output = '' ;
 		$url = $this->parse_string($object, $link_url) ;
 		$text = $this->parse_string($object, $link_text) ;
 
@@ -615,7 +626,7 @@ class Table {
 	 */
 	protected function parse_string( $object, $parseable_string, $return_as_string = TRUE ) {
 		if( \Kohana::$profiling === TRUE ) {
-			$bm = Profiler::start(__CLASS__,__METHOD__) ;
+			$bm = \Profiler::start(__CLASS__,__METHOD__) ;
 		}
 		
 		$_output = $parseable_string ;
@@ -632,7 +643,7 @@ class Table {
 			}
 		}
 
-		if( isset( $bm )) Profiler::stop($bm);
+		if( isset( $bm )) \Profiler::stop($bm);
 
 		return $_output ;
 
@@ -696,7 +707,7 @@ class Table {
 	 * @return string
 	 */
 	protected function format_phone( $value ) {
-		return DOC_Helper_Text::phone($value) ;
+		return Text::phone($value) ;
 	}
 
 	/**
@@ -727,7 +738,7 @@ class Table {
 	protected function generate_content( $data_root, $key ) {
 
 		if( \Kohana::$profiling === TRUE ) {
-			$bm = Profiler::start(__CLASS__,__METHOD__) ;
+			$bm = \Profiler::start(__CLASS__,__METHOD__) ;
 		}
 
 		if( $key == 'ROOT' ) {
@@ -736,12 +747,16 @@ class Table {
 			$_output = eval("return \$data_root->{$key};");
 		}
 
-		if( isset( $bm )) Profiler::stop($bm);
+		if( isset( $bm )) \Profiler::stop($bm);
 
 		return $_output ;
 
 	}
 
+	/**
+	 * @param mixed $attrs
+	 * @return mixed
+	 */
 	protected function compiled_attributes( $attrs ) {
 		$_output = $attrs ;
 		if( is_array( $attrs ) && count( $attrs ) > 0 ) {

@@ -1,5 +1,5 @@
 <?php
-
+namespace \BrownUniversity\DOC\Helper ;
 /**
  * While currently empty, the idea is that once we know what kinds of functionality
  * will be common across usages of LaTeX it should be moved here. In the meantime,
@@ -7,4 +7,4 @@
  *
  * @author jorrill
  */
-class DOC_Helper_LaTeX {}
+class Latex {}

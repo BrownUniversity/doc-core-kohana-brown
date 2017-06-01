@@ -47,13 +47,16 @@ class Form {
 	 * Wrap label tags around input element and add appropriate bootstrap inline class.
 	 */
 	const LABEL_INLINE = 'label-inline' ;
-	
+
 	/**
 	 * Given a standard datetime string (such as that returned from MySQL), create
 	 * a set of form fields to edit the data.
 	 *
 	 * @param string $datetime
 	 * @param string $name_prefix
+	 * @param int    $minute_increment
+	 * @param string $date_class
+	 * @param bool   $include_labels
 	 * @return string
 	 */
 	public static function datetime_input_fields( $datetime, $name_prefix, $minute_increment = self::MINUTE_INCREMENT, $date_class = self::DATEPICKER_CLASS, $include_labels = TRUE ) {
@@ -67,11 +70,6 @@ class Form {
 			$minute_formatted = sprintf( '%02d', $i ) ;
 			$minutes[ $minute_formatted ] = $minute_formatted ;
 		}
-
-		$meridian = array(
-			'AM' => 'AM',
-			'PM' => 'PM'
-		) ;
 
 		$_output = '' ;
 		if( $include_labels ) {
@@ -143,9 +141,7 @@ class Form {
 	 * @see Helper_Form::datetime_input_fields
 	 */
 	public static function input_fields_to_datetime( $name_prefix ) {
-		$_output = '' ;
-
-		$request = Request::current() ;
+		$request = \Request::current() ;
 
 		$date = $request->post( $name_prefix . self::SUFFIX_DATE ) ;
 		$hour = $request->post( $name_prefix . self::SUFFIX_HOUR ) ;
@@ -167,9 +163,7 @@ class Form {
 	 * @return string
 	 */
 	public static function input_fields_to_time( $name_prefix ) {
-		$_output = '' ;
-
-		$request = Request::current() ;
+		$request = \Request::current() ;
 
 		$meridian = $request->post( $name_prefix . self::SUFFIX_MERIDIAN ) ;
 		$hour = $request->post( $name_prefix . self::SUFFIX_HOUR ) ;
@@ -182,7 +176,6 @@ class Form {
 		$_output = "{$hour}:{$minute}:00" ;
 
 		return $_output ;
-
 	}
 
 	/**
@@ -192,16 +185,16 @@ class Form {
 	 * @param string $date_str
 	 * @param string $date_format
 	 * @param string $null_behavior Use one of the class constants.
-	 * @return type
+	 * @return string
 	 */
 	public static function format_date($date_str, $date_format, $null_behavior = self::KEEP_NULL) {
 		$_output = NULL ;
 		if( !empty( $date_str ) || $null_behavior == self::NULL_TO_DEFAULT ) {
 			try {
-				$_output = Date::formatted_time($date_str, $date_format) ;
+				$_output = \Date::formatted_time($date_str, $date_format) ;
 			} catch( ErrorException $e ) {
 				$_output = $date_str ;
-				Kohana::$log->add(Log::WARNING, 'Invalid date string: ' . $_output ) ;
+				\Kohana::$log->add(\Kohana_Log::WARNING, 'Invalid date string: ' . $_output ) ;
 			}
 		}
 
@@ -259,8 +252,11 @@ class Form {
 	 * a PHP array. (Why is this not already in Kohana?)
 	 *
 	 * @param string $checkbox_name
-	 * @param array $checkbox_array
-	 * @param array $selected
+	 * @param array  $checkbox_array
+	 * @param array  $selected
+	 * @param string $mode
+	 * @param string $unchecked
+	 * @param string $label_placement
 	 * @return array
 	 */
 	public static function checkbox_group( $checkbox_name, $checkbox_array, $selected, $mode = self::MODE_EDITABLE, $unchecked = self::UNCHECKED_BLANK, $label_placement = self::LABEL_AFTER ) {
@@ -370,7 +366,7 @@ class Form {
 		foreach( $radio_array as $key => $value ) {
 			$unique_id = "{$radio_name}_{$key}" ;
 			if( $mode == self::MODE_EDITABLE ) {
-				$radio = Form::radio($radio_name, $key, $selected == $key, array('id' => $unique_id )) ;
+				$radio = \Form::radio($radio_name, $key, $selected == $key, array('id' => $unique_id )) ;
 			} else {
 				if( $selected == $key ) {
 					$radio = "<span id='{$unique_id}' class='checkmark-checked'>&nbsp;</span>" ;
@@ -417,10 +413,12 @@ class Form {
 	 * Form::select or simply returns the display for the current selection.
 	 *
 	 * @param string $name
-	 * @param string $value
-	 * @param array $attributes
+	 * @param null   $options
+	 * @param null   $selected
+	 * @param array  $attributes
 	 * @param string $mode Use one of the class constants.
 	 * @return string
+	 * @internal param string $value
 	 * @todo Make this smart enough to handle an array for $selected.
 	 */
 	public static function select( $name, $options = NULL, $selected = NULL, $attributes = NULL, $mode = self::MODE_EDITABLE ) {
@@ -439,10 +437,12 @@ class Form {
 	 * Form::textarea or simply returns the current value as passed.
 	 *
 	 * @param string $name
-	 * @param string $value
-	 * @param array $attributes
+	 * @param string $body
+	 * @param array  $attributes
+	 * @param bool   $double_encode
 	 * @param string $mode Use one of the class constants.
 	 * @return string
+	 * @internal param string $value
 	 */
 	public static function textarea($name, $body = '', $attributes = NULL, $double_encode = TRUE, $mode = self::MODE_EDITABLE) {
 		if( $mode == self::MODE_EDITABLE ) {
@@ -462,8 +462,8 @@ class Form {
 	 */
 	public static function checkbox_value( $checkbox_name, $default_value = 0 ) {
 		$_output = $default_value ;
-		if( Request::$current->post( $checkbox_name ) != NULL ) {
-			$_output = Request::$current->post( $checkbox_name ) ;
+		if( \Request::$current->post( $checkbox_name ) != NULL ) {
+			$_output = \Request::$current->post( $checkbox_name ) ;
 
 			if( is_array( $_output )) {
 				$_output = array_pop( $_output ) ;

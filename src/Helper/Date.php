@@ -1,6 +1,11 @@
 <?php
-
-class DOC_Helper_Date {
+namespace BrownUniversity\DOC\Helper ;
+/**
+ * Class Date
+ *
+ * @package BrownUniversity\DOC\Helper
+ */
+class Date {
 	/**
 	 * Given a start date, end date and day of the week, return all dates for that 
 	 * day within the range as an array.

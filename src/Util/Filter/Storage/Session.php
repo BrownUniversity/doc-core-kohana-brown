@@ -25,7 +25,7 @@ class Session extends Storage {
 	
 	/**
 	 * 
-	 * @return DOC_Util_Filter_Storage_Session
+	 * @return \BrownUniversity\DOC\Util\Filter\Storage\Session
 	 */
 	public static function instance() {
 		$my_class = __CLASS__ ;

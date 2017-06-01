@@ -7,7 +7,7 @@ namespace BrownUniversity\DOC\Helper ;
  *
  * @author jorrill
  */
-class HTMLInclude {
+class HtmlInclude {
 
 	const TYPE_CSS = 'css' ;
 	const TYPE_JAVASCRIPT = 'javascript' ;
@@ -28,7 +28,6 @@ class HTMLInclude {
 	 * @return string
 	 */
 	static function file_link( $path, $type = NULL, $attrs = NULL, $auto_version = FALSE ) {
-		$_output = '' ;
 		$include_url = '' ;
 		// check the include directories, find the first instance of the file
 		$include_paths = \Kohana::$config->load('includepaths') ;
@@ -127,17 +126,13 @@ class HTMLInclude {
 	 */
 	static function companion( $type, $include_as = self::INCLUDE_LINK, $auto_version = FALSE ) {
 
-		$_output = '' ;
 		$dir_and_extensions = array(
 			self::TYPE_CSS => 'css',
 			self::TYPE_JAVASCRIPT => 'js'
 		) ;
 		$dir_ext = $dir_and_extensions[ $type ] ;
 
-
 		$request = \Request::current() ;
-
-
 
 		$file = $dir_ext . '/pages/' ;
 		$directory = $request->directory() ;

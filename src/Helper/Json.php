@@ -1,15 +1,19 @@
 <?php
-
+namespace BrownUniversity\DOC\Helper ;
 /**
  *
  *
  * @author jorrill
  */
-class DOC_Helper_JSON {
+class Json {
 
+	/**
+	 * Convert the data to a JSON-encoded string.
+	 *
+	 * @param $data
+	 * @return string
+	 */
 	public static function get_json( $data ) {
-		$_output = '' ;
-
 		// $as_json_supported = array('ORM', 'Database_Result') ;
 
 		if(is_object( $data ) && (in_array( 'ORM', class_parents( $data )) || in_array('Database_Result', class_parents( $data )))) {
@@ -32,6 +36,12 @@ class DOC_Helper_JSON {
 
 	}
 
+	/**
+	 * Parse data into an array.
+	 *
+	 * @param $data
+	 * @return array
+	 */
 	protected static function parse_data( $data ) {
 		$_output = $data ;
 		if( is_object( $data )) {

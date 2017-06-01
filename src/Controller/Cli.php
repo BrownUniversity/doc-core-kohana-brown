@@ -7,6 +7,7 @@ namespace BrownUniversity\DOC\Controller ;
  * that is required to execute the function. These are defined in the cli config file.
  *
  * @author jorrill
+ * @deprecated Use Minion instead.
  */
 class Cli extends \Controller {
 

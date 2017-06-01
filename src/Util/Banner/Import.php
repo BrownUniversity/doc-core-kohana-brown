@@ -32,12 +32,13 @@ abstract class Import {
 
 	/**
 	 * Read a file from the CIS Transfer FTPs File System
-	 * 
-	 * @throws Kohana_Exception
+	 *
 	 * @param string $name name of the file
 	 * @param string $pattern regular expression to match individual documents
 	 * @param string $local_path root directory for local file storage.
-	 * @return array JSON-encoded documents
+	 * @param bool   $delete_downloaded_file
+	 * @return array
+	 * @throws \Kohana_Exception
 	 */
 	public static function get_file($name, $pattern, $local_path, $delete_downloaded_file = TRUE) {
 
@@ -61,7 +62,7 @@ abstract class Import {
 		if ($ftps === FALSE) {
 			$msg = "Failed to connect via FTPs to [{$server}] in Banner data exchange.";
 			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new Kohana_Exception($msg);
+			throw new \Kohana_Exception($msg);
 		}
 
 		/**
@@ -72,7 +73,7 @@ abstract class Import {
 		if ($login === FALSE) {
 			$msg = "Failed to login to [{$server}] as user [{$user}] in Banner data exchange.";
 			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new Kohana_Exception($msg);
+			throw new \Kohana_Exception($msg);
 		}
 
 		$pasv = ftp_pasv($ftps, TRUE);
@@ -84,7 +85,7 @@ abstract class Import {
 		if ($op === FALSE) {
 			$msg = "Failed to retrieve [{$remote}] from [{$server}] in Banner data exchange.";
 			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new Kohana_Exception($msg);
+			throw new \Kohana_Exception($msg);
 		}
 
 		/**
@@ -100,7 +101,7 @@ abstract class Import {
 		if ($fp === FALSE) {
 			$msg = "Cannot open [{$local}] file in Banner data exchange.";
 			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new Kohana_Exception($msg);
+			throw new \Kohana_Exception($msg);
 		}
 
 		$data = fread($fp, filesize($local));
@@ -109,7 +110,7 @@ abstract class Import {
 		if ($data === FALSE) {
 			$msg = "Cannot read [{$local}] file in Banner data exchange.";
 			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new Kohana_Exception($msg);
+			throw new \Kohana_Exception($msg);
 		}
 
 		if ($delete_downloaded_file === TRUE) {
@@ -130,14 +131,14 @@ abstract class Import {
 
 	/**
 	 * Read a file from the CIS Transfer FTPs File System
-	 * 
-	 * @throws Kohana_Exception
-	 * @param string $name name of the file
-	 * @param string $local_path root directory for local file storage.
-	 * @param array $column_names Optional column names. If provided, records will be returned as associative arrays. Otherwise, numerically indexed arrays.
+	 *
+	 * @param string  $name name of the file
+	 * @param string  $local_path root directory for local file storage.
+	 * @param array   $column_names Optional column names. If provided, records will be returned as associative arrays. Otherwise, numerically indexed arrays.
 	 * @param boolean $latest If provided, grab the matching file with the newest timestamp. Otherwise, use the provided filename.
 	 * @param boolean $delete_downloaded_file Optional parameter to control automatic deletion of local files.
-	 * @return array of CSV records documents
+	 * @return array
+	 * @throws \Kohana_Exception
 	 */
 	protected static function get_csv($name, $local_path, $column_names = array(), $latest = NULL, $delete_downloaded_file = TRUE) {
 
