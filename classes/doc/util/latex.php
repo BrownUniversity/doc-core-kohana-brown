@@ -609,4 +609,62 @@ class DOC_Util_LaTeX {
     public static function remove_breaks($input) {
         return str_replace(array("\n","<br>","<br >","<br />", "<br/>"), '', $input);
     }
+
+
+	/**
+	 * Convert text into valid LaTeX code, and insert a page break if necessary to prevent unwanted orphan
+	 * text at the top of the second page.
+	 *
+	 * @param string $body
+	 * @param string $additional_text
+	 * @return string
+	 */
+    public static function latex_with_page_breaks($body, $additional_text = '') {
+	    $_output = '' ;
+	    $fragment = '' ;
+
+	    $body_arr = preg_split(
+	    		"/\n[ \t]*?\n/",
+			    DOC_Util_LaTeX::parse_html(
+			    		trim($body),
+					    DOC_Util_WordHTML::ALLOWABLE_TAGS_DEFAULT,
+					    TRUE
+			    )
+	    ) ;
+
+	    $chars_per_line = 102.5 ;
+	    $line_count = 0 ;
+	    $additional_line_count = substr_count( $additional_text, "\n") ;
+	    $page_break_line_count = 36 - $additional_line_count ;
+
+	    foreach( $body_arr as $paragraph ) {
+		    $paragraph = trim( $paragraph ) ;
+
+		    if( !empty( $paragraph )) {
+			    $paragraph = str_replace("\n","\\\\\n",$paragraph) ;
+
+			    $paragraph_line_count = ceil( strlen( $paragraph ) / $chars_per_line ) + 1 + substr_count($paragraph,"\n");
+			    if( $line_count + $paragraph_line_count < $page_break_line_count ) {
+				    $fragment .= $paragraph ;
+				    $line_count += $paragraph_line_count ;
+			    } else {
+
+				    $_output .= '\begin{center}'.PHP_EOL
+						    .'\textit{\scriptsize{(continued)}}'.PHP_EOL
+						    .'\end{center}'.PHP_EOL
+						    .'\pagebreak'
+						    .PHP_EOL ;
+				    $fragment = $paragraph ;
+				    $line_count = $paragraph_line_count ;
+
+			    }
+			    $_output .= $paragraph . "\n\n" ;
+		    }
+	    }
+
+	    return $_output ;
+
+    }
+
+
 }
