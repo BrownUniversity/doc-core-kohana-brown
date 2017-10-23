@@ -105,7 +105,7 @@ class DOC_Util_File_Local extends DOC_Util_File {
 		}
 
 		if( !file_exists( $file_path )) {
-			die( "Unable to find file." ) ;
+			die( "Unable to find file. ({$file_path})" ) ;
 		}
 
 		return Swift_Attachment::fromPath($file_path, $this->get_mime_type($file_path))->setFilename( $new_filename ) ;

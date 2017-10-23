@@ -21,7 +21,7 @@ class DOC_Util_LaTeX {
         // Reserved Characters in HTML
 		'&quot;'      => '"', // quotation mark
 		'&apos;'      => ' ', // apostrophe
-		'&amp;'       => ' ', // ampersand
+		'&amp;'       => '\&', // ampersand
 		'&lt;'        => ' ', // less-than
 		'&gt;'        => ' ', // greater-than
 	
