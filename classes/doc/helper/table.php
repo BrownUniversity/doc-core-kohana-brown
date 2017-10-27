@@ -543,8 +543,11 @@ class DOC_Helper_Table {
 				$separator
 			))) ;
 
-			$_output = $cache->get($cache_key,NULL) ;
-
+			try {
+				$_output = $cache->get($cache_key,NULL) ;
+			} catch( Cache_Exception $e ) {
+				Kohana::$log->add(Log::WARNING, $e->getMessage()) ;
+			}
 		}
 
 		if( empty( $_output )) {
