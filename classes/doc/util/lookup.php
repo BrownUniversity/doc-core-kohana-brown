@@ -50,7 +50,12 @@ class DOC_Util_Lookup {
 		$cache_key = "{$model}.{$key}.{$mode}." . md5( serialize( $order )) . '.' . md5( serialize( $wheres )) ;
 
 		if(($cache !== FALSE) && ( ! empty( $cache_key )) && ($refresh_cache == FALSE)) {
-			$_output = $cache->get($cache_key,$_output) ;
+			try {
+				$_output = $cache->get($cache_key,$_output) ;
+			} catch( Cache_Exception $e ) {
+				Kohana::$log->add(Log::WARNING, $e->getMessage()) ;
+			}
+
 		
 			if( self::$verbose ) {
 				Kohana::$log->add(Log::DEBUG, "cached value for {$model}.{$key}:") ;
@@ -159,7 +164,11 @@ class DOC_Util_Lookup {
 		}
 		$cache_key = "singlelookup.{$model}.{$prop_key}.{$prop_val}.{$return_prop}" ;
 		if( $cache !== FALSE && !empty( $cache_key )) {
-			$_output = $cache->get($cache_key,'') ;
+			try {
+				$_output = $cache->get($cache_key,'') ;
+			} catch( Cache_Exception $e ) {
+				Kohana::$log->add(Log::WARNING, $e->getMessage()) ;
+			}
 			
 			if( self::$verbose ) {
 				Kohana::$log->add(Log::DEBUG, "cached value for {$model}.{$prop_key}.{$prop_val}:") ;
