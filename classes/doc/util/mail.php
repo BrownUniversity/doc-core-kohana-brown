@@ -60,13 +60,14 @@ class DOC_Util_Mail {
 		}
 
 		if( count( $attachments ) > 0) {
+			$file_util = new DOC_Util_File_Local() ;
 		    foreach($attachments as $attachment) {
 				if( is_array( $attachment )) {
 					Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment['path']}, with new name {$attachment['new_name']}") ;
-					$message->attach(Swift_Attachment::fromPath($attachment['path'])->setFilename($attachment['new_name']));
+					$message->attach(Swift_Attachment::fromPath($attachment['path'], $file_util->get_mime_type($attachment['path']))->setFilename($attachment['new_name']));
 				} else {
 					Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment}. ");
-					$message->attach(Swift_Attachment::fromPath($attachment));
+					$message->attach(Swift_Attachment::fromPath($attachment, $file_util->get_mime_type($attachment)));
 				}
 			}
 		} else {
