@@ -21,7 +21,7 @@ class DOC_Util_LaTeX {
         // Reserved Characters in HTML
 		'&quot;'      => '"', // quotation mark
 		'&apos;'      => ' ', // apostrophe
-		'&amp;'       => '\&', // ampersand
+//		'&amp;'       => '\&', // ampersand
 		'&lt;'        => ' ', // less-than
 		'&gt;'        => ' ', // greater-than
 	
@@ -350,9 +350,6 @@ class DOC_Util_LaTeX {
 		// deal with the usual smart quote headache and cousins
 		$_output = DOC_Util_WordHTML::convert_problem_chars($_output) ;
 		$_output = utf8_encode( $_output ) ;
-
-
-
 
 		$replacements = array(
             '/\t/s' => '',
