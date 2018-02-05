@@ -28,9 +28,7 @@ class DOC_Util_Mail {
 			$spool = new Swift_FileSpool($mail_config['spool_location']) ;
 			$mailer = new Swift_Mailer( new Swift_SpoolTransport( $spool )) ;
 		} else {
-// 			$transport = Swift_MailTransport::newInstance() ;
-// 			$transport = Swift_SmtpTransport::newInstance('localhost') ;
-			$transport = Swift_SendmailTransport::newInstance() ;
+		    $transport = self::getDeliveryTransport($mail_config);
 			$mailer = Swift_Mailer::newInstance($transport) ;
 		}
 
@@ -127,9 +125,7 @@ class DOC_Util_Mail {
 		$mail_config = Kohana::$config->load('mail') ;
 
 		$spool = new Swift_FileSpool($mail_config['spool_location']) ;
-// 		$transport = Swift_MailTransport::newInstance() ;
-// 		$transport = Swift_SmtpTransport::newInstance('localhost') ;
-		$transport = Swift_SendmailTransport::newInstance() ;
+		$transport = self::getDeliveryTransport($mail_config);
 		$count = $spool->flushQueue($transport) ;
 		Kohana::$log->add(Log::INFO, "Flushed {$count} messages from the spool.") ;
 	}
@@ -171,6 +167,38 @@ class DOC_Util_Mail {
 
 		return $_output ;
 	}
+
+    /**
+	 * Get the appropriate Swift Transport object based on configuration
+	 * @param array $config
+	 * @return Swift Transport Object
+	 */
+	private static function getDeliveryTransport($config)
+    {
+        if ( ! array_key_exists('transport', $config)) {
+            $config['transport'] = 'sendmail';
+        }
+
+        switch($config['transport']) {
+              case 'smtp' :
+                  $transport = Swift_SmtpTransport::newInstance(
+                      isset($config['host']) ? $config['host'] : '',
+                      isset($config['port']) ? $config['port'] : 25,
+                      isset($config['security']) ? $config['security'] : null
+                  );
+                  if (isset($config['username'])) {
+                      $transport->setUsername($config['username']);
+                  }
+                  if (isset($config['password'])) {
+                      $transport->setPassword($config['password']);
+                  }
+                  break;
+              default :
+                  $transport = Swift_SendmailTransport::newInstance();
+        }
+
+        return $transport;
+    }
 
 	/**
 	 * Mail merge-- this is highly dependent the individual app's data structure,
