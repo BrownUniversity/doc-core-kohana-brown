@@ -172,6 +172,38 @@ class DOC_Util_Mail {
 		return $_output ;
 	}
 
+    /**
+	 * Get the appropriate Swift Transport object based on configuration
+	 * @param array $config
+	 * @return Swift Transport Object
+	 */
+	private static function getDeliveryTransport($config)
+    {
+        if ( ! array_key_exists('transport', $config)) {
+            $config['transport'] = 'sendmail';
+        }
+
+        switch($config['transport']) {
+              case 'smtp' :
+                  $transport = Swift_SmtpTransport::newInstance(
+                      isset($config['host']) ? $config['host'] : '',
+                      isset($config['port']) ? $config['port'] : 25,
+                      isset($config['security']) ? $config['security'] : null
+                  );
+                  if (isset($config['username'])) {
+                      $transport->setUsername($config['username']);
+                  }
+                  if (isset($config['password'])) {
+                      $transport->setPassword($config['password']);
+                  }
+                  break;
+              default :
+                  $transport = Swift_SendmailTransport::newInstance();
+        }
+
+        return $transport;
+    }
+
 	/**
 	 * Mail merge-- this is highly dependent the individual app's data structure,
 	 * so not actually implemented here. The code is commented out as a reference
