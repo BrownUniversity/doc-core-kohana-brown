@@ -1,5 +1,7 @@
 <?php
 namespace BrownUniversity\DOC;
+
+use Kohana\ORM\ORM as Kohana_ORM;
 /**
  * Extension of Kohana_ORM to provide functionality not provided by the core code.
  * This includes updates for performance, property uniqueness and some specialized
@@ -8,7 +10,7 @@ namespace BrownUniversity\DOC;
  * @author jorrill
  * @todo merge code into Kohana proper
  */
-class ORM extends \Kohana_ORM {
+class ORM extends Kohana_ORM {
 	
 	/**
 	 * Use in slugify to indicate the uniqueness test should use the primary key

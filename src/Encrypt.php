@@ -4,6 +4,7 @@ namespace BrownUniversity\DOC ;
  * Extending Kohana_Encrypt to provide extra functionality for dealing with URLs.
  *
  * @author jorrill
+ * @deprecated moving methods into Kohana proper
  */
 class Encrypt extends \Kohana_Encrypt {
 	/**
