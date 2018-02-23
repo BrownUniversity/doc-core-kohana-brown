@@ -1,5 +1,9 @@
 <?php
 namespace BrownUniversity\DOC\Helper ;
+
+use Kohana\Kohana;
+use Kohana\Request;
+use Kohana\HTML;
 /**
  * Some static functions for locating and including content in your output. Also
  * relies on the includepaths config file, where you indicate paths and URLs to
@@ -30,7 +34,7 @@ class HtmlInclude {
 	static function file_link( $path, $type = NULL, $attrs = NULL, $auto_version = FALSE ) {
 		$include_url = '' ;
 		// check the include directories, find the first instance of the file
-		$include_paths = \Kohana::$config->load('includepaths') ;
+		$include_paths = Kohana::$config->load('includepaths') ;
 
 		foreach( $include_paths as $path_arr ) {
 			if(file_exists( $path_arr[ 'base_file_path' ] . $path )) {
@@ -50,15 +54,15 @@ class HtmlInclude {
 			// if $type is not null, then crank out the full html code, otherwise just output the URL
 			switch ($type) {
 				case self::TYPE_CSS:
-					$_output = "<link rel='stylesheet' href='{$include_url}' type='text/css' ".\HTML::attributes($attrs)." />" ;
+					$_output = "<link rel='stylesheet' href='{$include_url}' type='text/css' ".HTML::attributes($attrs)." />" ;
 
 					break;
 				case self::TYPE_JAVASCRIPT:
-					$_output = "<script src='{$include_url}' language='javascript' type='text/javascript'".\HTML::attributes($attrs)."></script>" ;
+					$_output = "<script src='{$include_url}' language='javascript' type='text/javascript'".HTML::attributes($attrs)."></script>" ;
 					break ;
 
 				case self::TYPE_IMAGE:
-					$_output = "<img src='{$include_url}' ".\HTML::attributes($attrs)."/>" ;
+					$_output = "<img src='{$include_url}' ".HTML::attributes($attrs)."/>" ;
 					break ;
 				default:
 					$_output = $include_url ;
@@ -101,7 +105,7 @@ class HtmlInclude {
 	static function file_path( $path ) {
 		$_output = '' ;
 
-		$include_paths = \Kohana::$config->load( 'includepaths' ) ;
+		$include_paths = Kohana::$config->load( 'includepaths' ) ;
 		foreach( $include_paths as $path_arr ) {
 			$file_path = $path_arr[ 'base_file_path' ] . $path ;
 			if( file_exists( $file_path )) {
@@ -132,7 +136,7 @@ class HtmlInclude {
 		) ;
 		$dir_ext = $dir_and_extensions[ $type ] ;
 
-		$request = \Request::current() ;
+		$request = Request::current() ;
 
 		$file = $dir_ext . '/pages/' ;
 		$directory = $request->directory() ;

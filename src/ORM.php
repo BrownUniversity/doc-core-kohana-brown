@@ -12,6 +12,11 @@ use Kohana\ORM\ORM as Kohana_ORM;
  */
 class ORM extends Kohana_ORM {
 	
+
+	public static function factory($model, $id = NULL){
+		return parent::factory($model,$id);
+	}
+
 	/**
 	 * Use in slugify to indicate the uniqueness test should use the primary key
 	 * for the object, whatever that is.
