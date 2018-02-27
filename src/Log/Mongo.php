@@ -4,13 +4,18 @@ namespace BrownUniversity\DOC\Log ;
  * @package DOC Core
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
+use Kohana\Kohana;
+use Kohana\KohanaException;
+use Kohana\Log;
+use Kohana\Log\Writer;
+
 defined('SYSPATH') or die('No direct script access.');
 
 
 /**
  * Kohana MongoDB Log writer
  */
-class Mongo extends \Log_Writer {
+class Mongo extends Writer {
 
     /**
      * Application in which the error occured
@@ -53,28 +58,31 @@ class Mongo extends \Log_Writer {
      * @var array
      */
     protected static $levels = array(
-        \Kohana_Log::EMERGENCY => 'EMERGENCY',
-        \Kohana_Log::ALERT     => 'ALERT',
-        \Kohana_Log::CRITICAL  => 'CRITICAL',
-        \Kohana_Log::ERROR     => 'ERROR',
-        \Kohana_Log::WARNING   => 'WARNING',
-        \Kohana_Log::NOTICE    => 'NOTICE',
-        \Kohana_Log::INFO      => 'INFO',
-        \Kohana_Log::DEBUG     => 'DEBUG',
-        \Kohana_Log::STRACE    => 'STRACE',
+        Log::EMERGENCY => 'EMERGENCY',
+        Log::ALERT     => 'ALERT',
+        Log::CRITICAL  => 'CRITICAL',
+        Log::ERROR     => 'ERROR',
+        Log::WARNING   => 'WARNING',
+        Log::NOTICE    => 'NOTICE',
+        Log::INFO      => 'INFO',
+        Log::DEBUG     => 'DEBUG',
+        Log::STRACE    => 'STRACE',
     );
     
     const TIMEOUT = 5000 ;
-    
+
     /**
      * Class constructor override to facilitate configuration mapping
+     *
+     * @throws \Kohana\KohanaException
+     * @throws \Exception
      */
     public function __construct($environment = NULL, $app = NULL) {
         
         $this->application = $app;
         $this->environment = $environment;
         
-        $config = \Kohana::$config->load('mongodb')->log;
+        $config = Kohana::$config->load('mongodb')->log;
         self::$client = new \MongoClient(
             "mongodb://{$config['host']}:{$config['port']}", 
             array(
@@ -91,14 +99,16 @@ class Mongo extends \Log_Writer {
         self::$collection = self::$db->selectCollection($config['default_collection']);
     }
 
-	/**
-	 * Read log entries from the Mongo DB
-	 *
-	 * @param array|int $limit additional criteria
-	 * @param array     $filters
-	 * @return \BrownUniversity\DOC\Log\MongoCursor
-	 * @throws \Kohana_Exception
-	 */
+    /**
+     * Read log entries from the Mongo DB
+     *
+     * @param array|int $limit additional criteria
+     * @param array     $filters
+     * @return \BrownUniversity\DOC\Log\MongoCursor
+     * @throws \Kohana_Exception
+     * @throws \MongoCursorException
+     * @throws \MongoConnectionException
+     */
     public static function read($limit = 50, $filters = array('level' => 'ERROR')) {
     	
         if ( ! is_a(self::$client, 'MongoClient')) {
@@ -116,13 +126,14 @@ class Mongo extends \Log_Writer {
         return $cursor;
     }
 
-	/**
-	 * Get one specific Mongo Entry
-	 *
-	 * @param type $id
-	 * @return array
-	 * @throws \Kohana_Exception
-	 */
+    /**
+     * Get one specific Mongo Entry
+     *
+     * @param type $id
+     * @return array
+     * @throws \Kohana_Exception
+     * @throws \MongoConnectionException
+     */
     public static function read_one($id) {
         
         if ( ! is_a(self::$client, 'MongoClient')) {
@@ -139,20 +150,20 @@ class Mongo extends \Log_Writer {
                     '_id' => $id
                 )
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $output = array();
         }
         
         return $output;
     }
 
-	/**
-	 * Send email messages to a pre-configured list of users for a
-	 * pre-configured set of error level conditions
-	 *
-	 * @param array $messages
-	 * @throws \Kohana_Exception
-	 */
+    /**
+     * Send email messages to a pre-configured list of users for a
+     * pre-configured set of error level conditions
+     *
+     * @param array $messages
+     * @throws \Kohana\KohanaException
+     */
     public function write(array $messages) {
         
         $supp_info = \Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
@@ -177,14 +188,14 @@ class Mongo extends \Log_Writer {
             try {
 
                 if ( ! is_a(self::$client, 'MongoClient')) {
-                    throw new \Kohana_Exception('Log Mongo not initialized properly - MongoClient.');
+                    throw new KohanaException('Log Mongo not initialized properly - MongoClient.');
                 }
                 
                 if ( ! self::$client->connected) {
                     self::$client->connect();
                 }
             	self::$collection->insert($entry, array('w' => 0));
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
             	// Log an error in a log writer?  Nah... we'll just ignore
             }
         }

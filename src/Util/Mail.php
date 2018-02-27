@@ -1,5 +1,10 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
+
+use Kohana\Kohana;
+use Kohana\KohanaException;
+use Kohana\Log;
+
 /**
  * Methods for sending emails via Swift_Mailer.
  *
@@ -7,22 +12,23 @@ namespace BrownUniversity\DOC\Util ;
  */
 class Mail {
 
-	/**
-	 * Send the specified Swift_Message with the from, to, etc. as specified in
-	 * the arguments list. Returns the number of successful recipients.
-	 * 
-	 * @param Swift_Message $message
-	 * @param array $recipients
-	 * @param array $cc
-	 * @param string $from
-	 * @param string $reply_to
-	 * @param Swift_FileSpool $spool
-	 * @return int
-	 */
+    /**
+     * Send the specified Swift_Message with the from, to, etc. as specified in
+     * the arguments list. Returns the number of successful recipients.
+     *
+     * @param Swift_Message   $message
+     * @param array           $recipients
+     * @param array           $cc
+     * @param string          $from
+     * @param string          $reply_to
+     * @param Swift_FileSpool $spool
+     * @return int
+     * @throws \Kohana\KohanaException
+     */
 	public static function send_message($message, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE, $attachments = array() ) {
 		$_output = FALSE ;
 
-		$mail_config = \Kohana::$config->load('mail') ;
+		$mail_config = Kohana::$config->load('mail') ;
 
 		if( $spool ) {
 			$spool = new Swift_FileSpool($mail_config['spool_location']) ;
@@ -75,26 +81,27 @@ class Mail {
 				}
 			}
 		} else {
-		    \Kohana::$log->add(Log::DEBUG, "It appears that there are no attachments. ");
+		    Kohana::$log->add(Log::DEBUG, "It appears that there are no attachments. ");
 		}
 		
 		$_output = $mailer->send($message) ;
-		\Kohana::$log->add(Log::DEBUG, "Message sent with subject '".$message->getSubject()."' at ".date('Y-m-d H:i:s')) ;
+		Kohana::$log->add(Log::DEBUG, "Message sent with subject '".$message->getSubject()."' at ".date('Y-m-d H:i:s')) ;
 		
 		return $_output ;
 
 	}
 
-	/**
-	 * Convenience method to send a message without having to generate a Swift_Message
-	 * first. This just creates the Swift_Message and passes it along to DOC_Util_Mail::send_message().
-	 * 
-	 * @param string $subject
-	 * @param string $body
-	 * @param string $recipients
-	 * @param string $cc
-	 * @return int
-	 */
+    /**
+     * Convenience method to send a message without having to generate a Swift_Message
+     * first. This just creates the Swift_Message and passes it along to DOC_Util_Mail::send_message().
+     *
+     * @param string $subject
+     * @param string $body
+     * @param string $recipients
+     * @param string $cc
+     * @return int
+     * @throws \Kohana\KohanaException
+     */
 	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE, $attachments = array() ) {
 		$message = Swift_Message::newInstance($subject, $body) ;
 		$message->setContentType('text/html') ;
@@ -102,18 +109,20 @@ class Mail {
 		return self::send_message($message, $recipients, $cc, $from, $reply_to, $spool, $attachments) ;
 	}
 
-	/**
-	 * Flush the spool of queued messages.
-	 */
+    /**
+     * Flush the spool of queued messages.
+     *
+     * @throws \Kohana\KohanaException
+     */
 	public static function flush_spool() {
-		$mail_config = \Kohana::$config->load('mail') ;
+		$mail_config = Kohana::$config->load('mail') ;
 
 		$spool = new Swift_FileSpool($mail_config['spool_location']) ;
 // 		$transport = Swift_MailTransport::newInstance() ;
 // 		$transport = Swift_SmtpTransport::newInstance('localhost') ;
 		$transport = Swift_SendmailTransport::newInstance() ;
 		$count = $spool->flushQueue($transport) ;
-		\Kohana::$log->add(Log::INFO, "Flushed {$count} messages from the spool.") ;
+		Kohana::$log->add(Log::INFO, "Flushed {$count} messages from the spool.") ;
 	}
 
 	/**
@@ -145,7 +154,7 @@ class Mail {
 						$_output[ $key ] = $address ;
 					} else {
 						// throw an exception
-						throw new \Kohana_Exception("There appears to be a problem with the address(es) in the CC field. Be sure if you have multiple addresses that they are separated with a comma, and that each address is correct ($address).") ;
+						throw new KohanaException("There appears to be a problem with the address(es) in the CC field. Be sure if you have multiple addresses that they are separated with a comma, and that each address is correct ($address).") ;
 					}
 				}
 			}

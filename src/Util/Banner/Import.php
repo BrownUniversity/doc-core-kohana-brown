@@ -3,6 +3,10 @@ namespace BrownUniversity\DOC\Util\Banner ;
 /**
  * @package DOC Core Module
  */
+use Kohana\Kohana;
+use Kohana\KohanaException;
+use Kohana\Log;
+
 defined('SYSPATH') or die('No direct script access.');
 
 /**
@@ -38,22 +42,22 @@ abstract class Import {
 	 * @param string $local_path root directory for local file storage.
 	 * @param bool   $delete_downloaded_file
 	 * @return array
-	 * @throws \Kohana_Exception
+	 * @throws KohanaException
 	 */
 	public static function get_file($name, $pattern, $local_path, $delete_downloaded_file = TRUE) {
 
 		/**
 		 * Initialize data for the file transfer
 		 */
-		$server = \Kohana::$config->load('bannerintegration.server');
-		$path = \Kohana::$config->load('bannerintegration.path');
-		$user = \Kohana::$config->load('bannerintegration.username');
-		$pass = \Kohana::$config->load('bannerintegration.password');
+		$server = Kohana::$config->load('bannerintegration.server');
+		$path = Kohana::$config->load('bannerintegration.path');
+		$user = Kohana::$config->load('bannerintegration.username');
+		$pass = Kohana::$config->load('bannerintegration.password');
 
 		$local = $local_path . $name;
 		$remote = $path . $name;
 
-		\Kohana::$log->add(\Kohana_Log::DEBUG, "Attempting FTPs connection to [{$server}] to fetch [{$remote}] into [{$local}]") ;
+		Kohana::$log->add(Log::DEBUG, "Attempting FTPs connection to [{$server}] to fetch [{$remote}] into [{$local}]") ;
 		
 		/**
 		 * Connect to FTPs server
@@ -61,8 +65,8 @@ abstract class Import {
 		$ftps = ftp_ssl_connect($server);
 		if ($ftps === FALSE) {
 			$msg = "Failed to connect via FTPs to [{$server}] in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		/**
@@ -72,8 +76,8 @@ abstract class Import {
 		$login = @ftp_login($ftps, $user, $pass);
 		if ($login === FALSE) {
 			$msg = "Failed to login to [{$server}] as user [{$user}] in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		$pasv = ftp_pasv($ftps, TRUE);
@@ -84,8 +88,8 @@ abstract class Import {
 		$op = ftp_get($ftps, $local, $remote, FTP_ASCII);
 		if ($op === FALSE) {
 			$msg = "Failed to retrieve [{$remote}] from [{$server}] in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		/**
@@ -100,8 +104,8 @@ abstract class Import {
 		$fp = fopen($local, 'r');
 		if ($fp === FALSE) {
 			$msg = "Cannot open [{$local}] file in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		$data = fread($fp, filesize($local));
@@ -109,8 +113,8 @@ abstract class Import {
 
 		if ($data === FALSE) {
 			$msg = "Cannot read [{$local}] file in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		if ($delete_downloaded_file === TRUE) {
@@ -124,8 +128,8 @@ abstract class Import {
 			return $_output[0];
 		} else {
 			$msg = "No regex match in [{$local}] file.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 	}
 
@@ -138,7 +142,7 @@ abstract class Import {
 	 * @param boolean $latest If provided, grab the matching file with the newest timestamp. Otherwise, use the provided filename.
 	 * @param boolean $delete_downloaded_file Optional parameter to control automatic deletion of local files.
 	 * @return array
-	 * @throws \Kohana_Exception
+	 * @throws KohanaException
 	 */
 	protected static function get_csv($name, $local_path, $column_names = array(), $latest = NULL, $delete_downloaded_file = TRUE) {
 
@@ -149,10 +153,10 @@ abstract class Import {
 		/**
 		 * Initialize data for the file transfer
 		 */
-		$server = \Kohana::$config->load('bannerintegration.server');
-		$path = \Kohana::$config->load('bannerintegration.path');
-		$user = \Kohana::$config->load('bannerintegration.username');
-		$pass = \Kohana::$config->load('bannerintegration.password');
+		$server = Kohana::$config->load('bannerintegration.server');
+		$path = Kohana::$config->load('bannerintegration.path');
+		$user = Kohana::$config->load('bannerintegration.username');
+		$pass = Kohana::$config->load('bannerintegration.password');
 
 		$local = $local_path . $name;
 		$remote = $path . $name;
@@ -163,8 +167,8 @@ abstract class Import {
 		$ftps = ftp_ssl_connect($server);
 		if ($ftps === FALSE) {
 			$msg = "Failed to connect via FTPs to [{$server}] in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		/**
@@ -174,8 +178,8 @@ abstract class Import {
 		$login = @ftp_login($ftps, $user, $pass);
 		if ($login === FALSE) {
 			$msg = "Failed to login to [{$server}] as user [{$user}] in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		$pasv = ftp_pasv($ftps, TRUE);
@@ -204,8 +208,8 @@ abstract class Import {
 		$op = ftp_get($ftps, $local, $remote, FTP_ASCII);
 		if ($op === FALSE) {
 			$msg = "Failed to retrieve [{$remote}] from [{$server}] in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		/**
@@ -220,8 +224,8 @@ abstract class Import {
 		$fp = fopen($local, 'r');
 		if ($fp === FALSE) {
 			$msg = "Cannot open [{$local}] file in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		$data = array();
@@ -241,8 +245,8 @@ abstract class Import {
 
 		if (empty($data)) {
 			$msg = "Cannot read [{$local}] file in Banner data exchange.";
-			\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-			throw new \Kohana_Exception($msg);
+			Kohana::$log->add(Log::ERROR, $msg);
+			throw new KohanaException($msg);
 		}
 
 		if ($delete_downloaded_file === TRUE) {

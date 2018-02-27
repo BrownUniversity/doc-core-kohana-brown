@@ -1,5 +1,11 @@
 <?php
 namespace BrownUniversity\DOC\Controller ;
+
+use Kohana\Controller;
+use Kohana\Kohana;
+use Kohana\KohanaException;
+use Kohana\Log\StdOut;
+
 /**
  * Generic CLI controller for use with any app that needs such functionality. Tasks
  * and help content should be defined in application-level classes that extend this
@@ -9,7 +15,7 @@ namespace BrownUniversity\DOC\Controller ;
  * @author jorrill
  * @deprecated Use Minion instead.
  */
-class Cli extends \Controller {
+class Cli extends Controller {
 
 	protected $task_name ;
 	protected $task_data = NULL ;
@@ -22,24 +28,27 @@ class Cli extends \Controller {
 	const HELP = 'help' ;
 	const TASK_LIST_JSON = 'list-json' ;
 
-	public function before() {
+    /**
+     * @throws \Kohana\KohanaException
+     */
+    public function before() {
 		parent::before() ;
         
         /**
          * Ensure the request is actually coming from the command line
          */
-        if ( ! \Kohana::$is_cli) {
-            throw new \Kohana_Exception('Attempting to execute CLI view in a web browser.');
+        if ( ! Kohana::$is_cli) {
+            throw new KohanaException('Attempting to execute CLI view in a web browser.');
         }
         
 		ob_implicit_flush(TRUE) ;
 		ob_end_flush() ;
 
-		$log = \Kohana::$log->instance() ;
+		$log = Kohana::$log->instance() ;
 		$log::$write_on_add = TRUE ;
-		\Kohana::$log->attach(new \Log_StdOut()) ;
+		Kohana::$log->attach(new StdOut()) ;
 
-		$cli_config = \Kohana::$config->load('cli') ;
+		$cli_config = Kohana::$config->load('cli') ;
 		if( $cli_config[ 'cli_enabled' ] === TRUE ) {
 			$auth = CLI::options('username', 'password') ;
 			$task_args = CLI::options('task','data') ;

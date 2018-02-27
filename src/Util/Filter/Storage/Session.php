@@ -1,11 +1,7 @@
 <?php
 namespace BrownUniversity\DOC\Util\Filter\Storage ;
 use BrownUniversity\DOC\Util\Filter\Storage ;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+use Kohana\Session as Kohana_Session;
 
 /**
  * Storage object for using the session as filter storage. This is the default
@@ -20,7 +16,7 @@ class Session extends Storage {
 	 * Standard constructor, stores an instance of the Session object in a private property.
 	 */
 	private function __construct() {
-		$this->session = \Session::instance( 'database' ) ;
+		$this->session = Kohana_Session::instance( 'database' ) ;
 	}
 	
 	/**

@@ -5,6 +5,8 @@ namespace BrownUniversity\DOC\Util ;
  * @version 2.0
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
+use Kohana\Kohana;
+
 defined('SYSPATH') or die('No direct script access.');
 
 /**
@@ -20,6 +22,7 @@ class S3 {
      *
      * @param string $bucket
      * @param string $filename
+     * @return
      */
     public static function delete($bucket, $filename)
     {
@@ -66,6 +69,8 @@ class S3 {
 
     /**
      * Create an instance of an Cloudfusion S3 object
+     *
+     * @throws \Kohana\KohanaException
      */
     public static function init()
     {
@@ -76,7 +81,7 @@ class S3 {
             self::$include_path = \Kohana::find_file('classes', 'sdk-1.4.7/sdk.class');
         }
         require_once(self::$include_path);
-		$aws_config = \Kohana::$config->load('aws') ;
+		$aws_config = Kohana::$config->load('aws') ;
         return new AmazonS3($aws_config[ 'key' ], $aws_config[ 'secret' ]);
     }
 
@@ -86,7 +91,9 @@ class S3 {
      * @param string $bucket
      * @param string $filename
      * @param string $path
-     * @param array $attributes
+     * @param array  $attributes
+     * @return
+     * @throws \Kohana\KohanaException
      */
     public static function put($bucket, $filename, $path, $attributes = NULL)
     {

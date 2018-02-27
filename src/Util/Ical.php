@@ -1,10 +1,8 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
+use DateTime;
+use DateTimeZone;
 
 /**
  * Description of ical
@@ -37,7 +35,7 @@ class Ical {
 		$_output .= "VERSION:2.0".$crlf ;
 		$_output .= "PRODID:{$this->product}".$crlf ;
 		$_output .= "BEGIN:VEVENT".$crlf ;
-		$_output .= "UID:".DOC_Util_UUID::get()."@".getenv('HOSTNAME').$crlf ;
+		$_output .= "UID:".Uuid::get()."@".getenv('HOSTNAME').$crlf ;
 		$_output .= "DTSTAMP:" . gmdate('Ymd').'T'. gmdate('His') . "Z".$crlf ;
 		$_output .= "DTSTART:".$this->start_datetime->format('Ymd\THis\Z').$crlf ;
 		$_output .= "DTEND:".$this->end_datetime->format('Ymd\THis\Z').$crlf ;

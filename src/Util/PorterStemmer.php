@@ -116,10 +116,11 @@ namespace BrownUniversity\DOC\Util ;
 
 
         /**
-        * Step 1c
-        *
-        * @param string $word Word to stem
-        */
+         * Step 1c
+         *
+         * @param string $word Word to stem
+         * @return string
+         */
         private static function step1c($word)
         {
             $v = self::$regex_vowel;
@@ -133,10 +134,11 @@ namespace BrownUniversity\DOC\Util ;
 
 
         /**
-        * Step 2
-        *
-        * @param string $word Word to stem
-        */
+         * Step 2
+         *
+         * @param string $word Word to stem
+         * @return string
+         */
         private static function step2($word)
         {
             switch (substr($word, -2, 1)) {
@@ -191,10 +193,11 @@ namespace BrownUniversity\DOC\Util ;
 
 
         /**
-        * Step 3
-        *
-        * @param string $word String to stem
-        */
+         * Step 3
+         *
+         * @param string $word String to stem
+         * @return string
+         */
         private static function step3($word)
         {
             switch (substr($word, -2, 1)) {
@@ -229,10 +232,11 @@ namespace BrownUniversity\DOC\Util ;
 
 
         /**
-        * Step 4
-        *
-        * @param string $word Word to stem
-        */
+         * Step 4
+         *
+         * @param string $word Word to stem
+         * @return string
+         */
         private static function step4($word)
         {
             switch (substr($word, -2, 1)) {
@@ -300,10 +304,11 @@ namespace BrownUniversity\DOC\Util ;
 
 
         /**
-        * Step 5
-        *
-        * @param string $word Word to stem
-        */
+         * Step 5
+         *
+         * @param string $word Word to stem
+         * @return bool|string
+         */
         private static function step5($word)
         {
             // Part a

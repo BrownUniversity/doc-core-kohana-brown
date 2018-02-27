@@ -3,6 +3,10 @@ namespace BrownUniversity\DOC\Util ;
 /**
  * @package DOC Core Module
  */
+use Kohana\Kohana;
+use Kohana\KohanaException;
+use Kohana\Log;
+
 defined('SYSPATH') or die('No direct script access.');
 
 /**
@@ -27,10 +31,11 @@ class Mysql {
      * @param string $config database configuration name
      * @throws Kohana_Exception
      * @todo figure out non-standard port usage
+     * @throws \Kohana\KohanaException
      */
     private function __construct($config = 'default') {
 
-        $config = \Kohana::$config->load("database.{$config}.connection");
+        $config = Kohana::$config->load("database.{$config}.connection");
 
         $this->mysqli = mysqli_init();
 
@@ -61,7 +66,7 @@ class Mysql {
 
         if ($this->mysqli->connect_errno) {
             $msg = "Failed to connect to MySQL: " . $this->mysqli->connect_error;
-            throw new \Kohana_Exception($msg);
+            throw new KohanaException($msg);
         }
 
         $this->mysqli->autocommit(FALSE);
@@ -125,7 +130,7 @@ class Mysql {
         $result = $this->mysqli->query($sql);
         
         if ($result === FALSE) {
-            \Kohana::$log->add(\Kohana_Log::ERROR, 'MySQLi Error in DOC_Util_MySQL::load() - ' . $this->mysqli->errno . ': ' . $this->mysqli->error);
+            Kohana::$log->add(Log::ERROR, 'MySQLi Error in DOC\\Util\\MySQL::load() - ' . $this->mysqli->errno . ': ' . $this->mysqli->error);
         }
         
         return $result;
@@ -133,7 +138,7 @@ class Mysql {
 
     /**
      * Execute an arbitrary sequel query
-     * @param type $sql
+     * @param string $sql
      * @return mixed depends on type of query
      */
     public function query($sql) {
@@ -143,9 +148,9 @@ class Mysql {
     /**
      * Prepare a statement for multiple executions
      *
-     * @throws Kohana_Exception
      * @param string $sql
      * @return MySQLi Statment
+     * @throws \Kohana\KohanaException
      */
     public function prepare($sql) {
         $key = hash('sha256', $sql);
@@ -155,7 +160,7 @@ class Mysql {
         }
 
         if ($this->statements[$key] === FALSE) {
-            throw new \Kohana_Exception('MySQL: preparing statement failed.');
+            throw new KohanaException('MySQL: preparing statement failed.');
         }
 
         return $this->statements[$key];
@@ -167,6 +172,7 @@ class Mysql {
      * @param string $table
      * @param string $key
      * @param string $values
+     * @return bool|\mysqli_result
      */
     public function purge($table, $key, $values) {
         $values = implode(', ', $values);

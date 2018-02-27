@@ -7,6 +7,13 @@ namespace BrownUniversity\DOC\Util ;
  * @requires PHP MongoDB Driver
  * @deprecated
  */
+use Exception;
+use Kohana\Kohana;
+use Kohana\Log;
+use Kohana\Request;
+use MongoClient;
+use MongoDate;
+
 defined( 'SYSPATH' ) or die( 'No direct script access.');
 
 /**
@@ -75,14 +82,17 @@ class MongoMeter {
 	 * MongoDB connection timeout.
 	 */
 	const TIMEOUT = 1000 ;
-    
+
     /**
      * Class constructor
+     *
+     * @throws \Kohana\KohanaException
+     * @throws \Exception
      */
     public function __construct() {
-        $config = \Kohana::$config->load('mongodb');
+        $config = Kohana::$config->load('mongodb');
         $config = $config[ self::CONFIG_KEY ] ;
-        $this->client = new \MongoClient(
+        $this->client = new MongoClient(
             "mongodb://{$config['host']}:{$config['port']}", 
             array(
                 'username' => $config['user'], 
@@ -108,10 +118,12 @@ class MongoMeter {
      * Compile individual requests into an hourly statistics entry
      */
     protected function compile_hourly() {}
-    
+
     /**
      * Ensure MongoDB client is connected
+     *
      * @deprecated unused?
+     * @throws \MongoConnectionException
      */
     private function connect() {
         if ( ! $this->client->connected) {
@@ -157,9 +169,9 @@ class MongoMeter {
      */
     public function log_request($app, $request, $supplemental_data = array()) {
         
-        $supp_info = \Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
+        $supp_info = Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
         $data = array(
-            'timestamp' => new \MongoDate(),
+            'timestamp' => new MongoDate(),
             'application' => $app,
             'request' => array(
                 'directory' => $request->directory(),
@@ -169,7 +181,7 @@ class MongoMeter {
                 'type' => $request->is_ajax() ? 'AJAX' : 'HTTP',
             ),
             'user_agent' => array(
-            	'ip_address' => \Request::$client_ip,
+            	'ip_address' => Request::$client_ip,
             	'browser' => $supp_info['browser'],
             	'version' => $supp_info['version'],
             	'robot' => $supp_info['robot'],
@@ -189,7 +201,7 @@ class MongoMeter {
             $this->collection_realtime->insert($data, array('w' => 0));
         } catch (Exception $e) {
             $connected = ($this->client->connected) ? 'is connected' : 'is not connected';
-            \Kohana::$log->add(\Kohana_Log::ERROR, 'MongoMetrics failed:' . $e->getMessage() . '<hr />Client ' . $connected);
+            Kohana::$log->add(Log::ERROR, 'MongoMetrics failed:' . $e->getMessage() . '<hr />Client ' . $connected);
         }
     }
 }

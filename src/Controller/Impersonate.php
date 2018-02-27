@@ -3,6 +3,9 @@ namespace BrownUniversity\DOC\Controller ;
 use BrownUniversity\DOC\Helper\Impersonate as Helper_Impersonate;
 use BrownUniversity\DOC\Util\Ldap ;
 use BrownUniversity\DOC\View ;
+use Kohana\Controller\Template;
+use Kohana\Kohana;
+
 /**
  * @package Kohana 3.x Modules
  * @module Impersonation
@@ -14,7 +17,7 @@ defined('SYSPATH') OR die('No direct access allowed.');
 /**
  * Controller for Impersonating Users
  */
-class Impersonate extends \Controller_Template {
+class Impersonate extends Template {
 
     /**
      * Main template file
@@ -25,6 +28,8 @@ class Impersonate extends \Controller_Template {
 
     /**
      * Logic to execute before this controller
+     *
+     * @throws \Kohana\KohanaException
      */
     public function before()
     {
@@ -41,11 +46,12 @@ class Impersonate extends \Controller_Template {
     	}
     }
 
-	/**
-	 * Assume a user's identity
-	 *
-	 * @internal param int $array_key
-	 */
+    /**
+     * Assume a user's identity
+     *
+     * @internal param int $array_key
+     * @throws \Kohana\KohanaException
+     */
     public function action_assume()
     {
     	$id = $this->request->param('id') ;
@@ -55,7 +61,7 @@ class Impersonate extends \Controller_Template {
             $results = Helper_Impersonate::get_search_results();
             $person = $results[$id];
             Helper_Impersonate::assume(
-                $person[\Kohana::$config->load('impersonate.ldap_key')]
+                $person[Kohana::$config->load('impersonate.ldap_key')]
             );
 
             $this->redirect(Helper_Impersonate::get_return_link());
@@ -64,6 +70,8 @@ class Impersonate extends \Controller_Template {
 
     /**
      * Clear an impersonation session
+     *
+     * @throws \Kohana\KohanaException
      */
     public function action_clear()
     {
@@ -74,16 +82,20 @@ class Impersonate extends \Controller_Template {
     /**
      * Fully clear an impersonation session, including the identity of the
      * last impersonated user.
+     *
+     * @throws \Kohana\KohanaException
      */
     public function action_clearall() {
         Helper_Impersonate::clear_all();
         $this->redirect($this->request->referrer());
     }
 
-	/**
-	 * Impersonate a user selected from the impersonation history, or if no key can be
-	 * found, clear the history.
-	 */
+    /**
+     * Impersonate a user selected from the impersonation history, or if no key can be
+     * found, clear the history.
+     *
+     * @throws \Kohana\KohanaException
+     */
     public function action_history() {
         $key = $this->request->param('id');
         $history = Helper_Impersonate::get_history();
@@ -99,6 +111,9 @@ class Impersonate extends \Controller_Template {
 
     /**
      * Search for a user to impersonate
+     *
+     * @throws \Kohana\HTTP\HTTPException
+     * @throws \Kohana\KohanaException
      */
     public function action_index()
     {
@@ -116,7 +131,7 @@ class Impersonate extends \Controller_Template {
                 $ldap = new Ldap();
                 $results = $ldap->search_people(
                 	$this->request->post('search_string'),
-      				\Kohana::$config->load('impersonate.search_limit'),
+      				Kohana::$config->load('impersonate.search_limit'),
                 	$affiliation
                 );
 
@@ -149,6 +164,8 @@ class Impersonate extends \Controller_Template {
     /**
      * Allow the current user to assume the identify of the person whom they
      * have last impersonated.
+     *
+     * @throws \Kohana\KohanaException
      */
     public function action_last() {
         Helper_Impersonate::assume_last_identity();

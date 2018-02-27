@@ -6,20 +6,22 @@ namespace BrownUniversity\DOC\Util ;
  * @since 1.0
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
+use Kohana\KohanaException;
+
 defined( 'SYSPATH' ) or die( 'No direct script access' );
 
 /**
  * LTI Utilitiy Class
  */
 class Lti {
-    
+
     /**
-     * Parse the "lise_course_offering_sourcedid" value sent as part of an 
+     * Parse the "lise_course_offering_sourcedid" value sent as part of an
      * LTI launch request into an array that is more usable for program code.
-     * 
-     * @throws Kohana_Exception 
+     *
      * @param type $input
      * @return array
+     * @throws \Kohana\KohanaException
      */
     public static function parse_canvas_course_sisid($input) {
        
@@ -37,7 +39,7 @@ class Lti {
                $msg = ('This LTI module does not currently support combined sections.');
            }
            
-           throw new \Kohana_Exception($msg);
+           throw new KohanaException($msg);
        }
        
        $subject = strtoupper($parts[1]);

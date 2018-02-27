@@ -1,6 +1,7 @@
 <?php
 namespace BrownUniversity\DOC;
 
+use Kohana\Database\DB;
 use Kohana\ORM\ORM as Kohana_ORM;
 /**
  * Extension of Kohana_ORM to provide functionality not provided by the core code.
@@ -12,11 +13,6 @@ use Kohana\ORM\ORM as Kohana_ORM;
  */
 class ORM extends Kohana_ORM {
 	
-
-	public static function factory($model, $id = NULL){
-		return parent::factory($model,$id);
-	}
-
 	/**
 	 * Use in slugify to indicate the uniqueness test should use the primary key
 	 * for the object, whatever that is.
@@ -31,18 +27,19 @@ class ORM extends Kohana_ORM {
      * @var array
      */
     protected $_project_columns = array();
-    
+
     /**
      * OVERLOADED: To allow projections with ORM
-     * 
-	 * Loads a database result, either as a new record for this model, or as
-	 * an iterator for multiple rows.
-	 *
+     *
+     * Loads a database result, either as a new record for this model, or as
+     * an iterator for multiple rows.
+     *
      * @author Christopher Keith <Christopher_Keith@brown.edu>
-	 * @chainable
-	 * @param  bool $multiple Return an iterator or load a single row
-	 * @return ORM|\Database_Result
-	 */
+     * @chainable
+     * @param  bool $multiple Return an iterator or load a single row
+     * @return ORM|\Database_Result
+     * @throws \Kohana\KohanaException
+     */
 	protected function _load_result($multiple = FALSE)
 	{
 		$this->_db_builder->from(array($this->_table_name, $this->_object_name));
@@ -107,11 +104,12 @@ class ORM extends Kohana_ORM {
 			return $this;
 		}
 	}
-    
+
     /**
      * Overload to include calculated columns
-     * 
+     *
      * @return array
+     * @throws \Kohana\KohanaException
      */
     public function as_array() {
         $_output = parent::as_array();
@@ -123,23 +121,25 @@ class ORM extends Kohana_ORM {
         
         return $_output;
     }
-    
+
     /**
      * Encode the object as JSON
-     * 
+     *
      * @return string
+     * @throws \Kohana\KohanaException
      */
     public function as_json() {
 		return json_encode( $this->as_array(), JSON_HEX_APOS | JSON_HEX_QUOT ) ;
 	}
-    
+
     /**
-	 * Make a copy of all relation data so that both the current and source
-	 * objects have the same set of relations for the given relation name.
-	 * 
-	 * @param ORM $source_obj
-	 * @param string $relation_name 
-	 */
+     * Make a copy of all relation data so that both the current and source
+     * objects have the same set of relations for the given relation name.
+     *
+     * @param ORM    $source_obj
+     * @param string $relation_name
+     * @throws \Kohana\KohanaException
+     */
 	public function clone_relation($source_obj, $relation_name) {
 		$data = $source_obj->$relation_name->find_all() ;
 		if( count( $data ) > 0 ) {
@@ -187,16 +187,17 @@ class ORM extends Kohana_ORM {
 		
 		return $text;		
 	}
-    
-	/**
-	 * Not sure what purpose this serves that the basic factory wouldn't give us.
-	 * Should it be deprecated?
-	 * 
-	 * @param string $obj_type
-	 * @param string $key_name
-	 * @param string $key_value
-	 * @return \ORM
-	 */
+
+    /**
+     * Not sure what purpose this serves that the basic factory wouldn't give us.
+     * Should it be deprecated?
+     *
+     * @param string $obj_type
+     * @param string $key_name
+     * @param string $key_value
+     * @return \Kohana\ORM\ORM|null
+     * @throws \Kohana\KohanaException
+     */
 	static function obj_template($obj_type, $key_name, $key_value) {
 		$_output = ORM::factory($obj_type)
 				->where($key_name,'=',$key_value)
@@ -232,16 +233,17 @@ class ORM extends Kohana_ORM {
         }
         return $this;
     }
-    
+
     /**
-	 * Given an array of property => value pairs, checks that the combination
-	 * specified does not already exist in the database.
-	 * 
-	 * @param array $propval_array
-	 * @return boolean 
-	 */
+     * Given an array of property => value pairs, checks that the combination
+     * specified does not already exist in the database.
+     *
+     * @param array $propval_array
+     * @return boolean
+     * @throws \Kohana\KohanaException
+     */
 	public function properties_are_unique( $propval_array ) {
-		$select = \DB::select( array( \DB::expr('COUNT(id)'), 'total' ))
+		$select = DB::select( array( DB::expr('COUNT(id)'), 'total' ))
 				->from($this->_table_name)
 				->where($this->_primary_key, '!=', $this->pk()) ;
 		
@@ -251,10 +253,11 @@ class ORM extends Kohana_ORM {
 		
 		return ! (bool) $select->execute($this->_db_group)->get('total') ;
 	}
-    
+
     /**
-	 * @deprecated Use DOC_ORM::properties_are_unique instead.
-	 */
+     * @deprecated Use DOC_ORM::properties_are_unique instead.
+     * @throws \Kohana\KohanaException
+     */
 	public function property_is_unique( $value, $property ) {
 		return ! (bool) DB::select( array( DB::expr('COUNT(id)'), 'total'))
 				->from($this->_table_name)
@@ -313,8 +316,7 @@ class ORM extends Kohana_ORM {
 			$modifier = intval( $modifier ) + 1 ;
 			
 		}
-		
-		
+
 		return $slug ;
 	}
     

@@ -1,5 +1,13 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
+
+use Kohana\Database\Database;
+use Kohana\Database\DB;
+use Kohana\Date;
+use Kohana\Kohana;
+use Kohana\Log;
+use Kohana\Request;
+
 /**
  * Supports the creation and use of a standard single-line filter interface for
  * tabular data.
@@ -15,35 +23,36 @@ class Filter {
 	const NOT_SET = '-1' ;
 
 	static $storage_object = NULL ;
-	
-	/**
-	 * Checks the filter config file for the storage class to be used, and returns
-	 * an instance of that object.
-	 * 
-	 * @return mixed
-	 */
+
+    /**
+     * Checks the filter config file for the storage class to be used, and returns
+     * an instance of that object.
+     *
+     * @return mixed
+     * @throws \Kohana\KohanaException
+     */
 	public static function storage_instance() {
 		if( empty( self::$storage_object )) {
-			$storage_object_class = \Kohana::$config->load('filter.storage_class') ;
+			$storage_object_class = Kohana::$config->load('filter.storage_class') ;
 			self::$storage_object = $storage_object_class::instance() ;
 		}
 		
 		return self::$storage_object ;
 	}
-	
-	/**
-	 * Get the key we are using for the filter data on the current page (URI).
-	 *
-	 * @return string
-	 */
-	public static function get_filter_key( $return_type = self::KEY_FRAGMENT ) {
-		if( $return_type == self::KEY_FULL ) {
-			$base = \Kohana::$base_url . '/' ;
-		} elseif( $return_type == self::KEY_FRAGMENT ) {
-			$base = '/' ;
-		}		
 
-		$route_arr = \Request::process( \Request::current() ) ;
+    /**
+     * Get the key we are using for the filter data on the current page (URI).
+     *
+     * @param string $return_type
+     * @return string
+     */
+	public static function get_filter_key( $return_type = self::KEY_FRAGMENT ) {
+		$base = '/' ;
+	    if( $return_type == self::KEY_FULL ) {
+			$base = Kohana::$base_url . '/' ;
+		}
+
+		$route_arr = Request::process( Request::current() ) ;
 	
 		if( !is_array( $route_arr )) {
 			return $base ;
@@ -112,26 +121,28 @@ class Filter {
 		return in_array( $data_type, $valid_types ) ;
 	}
 
-	/**
-	 * Checks both stored data and the POST array to determine whether
-	 * there is a filter in place.
-	 *
-	 * @return boolean
-	 */
+    /**
+     * Checks both stored data and the POST array to determine whether
+     * there is a filter in place.
+     *
+     * @return boolean
+     * @throws \Kohana\KohanaException
+     */
 	public static function filter_exists() {
 		$storage = self::storage_instance() ;
 		$stored_filter = $storage->get( self::get_filter_key( self::KEY_FULL )) ;
 
-		$new_filter = \Request::current()->post('setFilter') == 'Search' ;
+		$new_filter = Request::current()->post('setFilter') == 'Search' ;
 		return !empty( $stored_filter ) || $new_filter ;
 	}
 
-	/**
-	 * Return the current filter specs from storage. This is primarily for use
-	 * with external code that might want to examine the filters...
-	 *
-	 * @return array
-	 */
+    /**
+     * Return the current filter specs from storage. This is primarily for use
+     * with external code that might want to examine the filters...
+     *
+     * @return array
+     * @throws \Kohana\KohanaException
+     */
 	public static function get_current_filter_specs() {
 		$filter_key = self::get_filter_key( self::KEY_FULL ) ;
 		
@@ -139,12 +150,14 @@ class Filter {
 		return $storage->get( $filter_key ) ;		
 	}
 
-	/**
-	 * Update stored filter specs with data from POST if it exists.
-	 */
+    /**
+     * Update stored filter specs with data from POST if it exists.
+     *
+     * @throws \Kohana\KohanaException
+     */
 	public static function update_filter_specs() {
 		$storage = self::storage_instance() ;
-		$request = \Request::current() ;
+		$request = Request::current() ;
 		$filter_key = self::get_filter_key( self::KEY_FULL ) ;
 		if (($request->post('setFilter') == 'Clear' ) || ($request->post('setFilter') == 'Reset' )) {
 			$storage->delete( $filter_key ) ;
@@ -173,26 +186,27 @@ class Filter {
 		}
 
 	}
-	
-	/**
-	 * Modifies and returns the passed in ORM object, adding in search filters
-	 * based on the current parameters. Defaults to data in storage, but
-	 * uses POST data if present.
-	 *
-	 * @param ORM $orm_base
-	 * @return ORM
-	 */
+
+    /**
+     * Modifies and returns the passed in ORM object, adding in search filters
+     * based on the current parameters. Defaults to data in storage, but
+     * uses POST data if present.
+     *
+     * @param ORM $orm_base
+     * @return ORM
+     * @throws \Kohana\KohanaException
+     */
 	public static function add_filter($orm_base, $substitutions = NULL) {
 
 		$_output = $orm_base ;
 		$filter_key = self::get_filter_key( self::KEY_FULL ) ;
 		$search_filter_key = self::get_filter_key( self::KEY_FRAGMENT ) ;
 		$filter_specs_arr = NULL ;
-		$request = \Request::current() ;
+		$request = Request::current() ;
 
 		$storage = self::storage_instance() ;
 		
-		$search_filters = \Kohana::$config->load('searchfilters') ;
+		$search_filters = Kohana::$config->load('searchfilters') ;
 
 		// This isn't ideal, but in transitioning from Kohana 3.2 where case didn't matter to Kohana 3.3 where it
 		// usually does, we get some funky case changes that need to be handled.
@@ -248,7 +262,7 @@ class Filter {
 						}
 
                         
-                        $query = \DB::query( \Database::SELECT, $sql ) ;
+                        $query = DB::query( Database::SELECT, $sql ) ;
                         
 						if( isset( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ]) && $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'data_type' ] == 'date') {
 							if( empty( $replacement_0 )) {
@@ -283,11 +297,13 @@ class Filter {
 							)) ;
 						}
 
-						$db = \Database::instance() ;
+						$db = Database::instance() ;
 						if( isset( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) && !empty( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ])) {
-							$db = \Database::instance($search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) ;
+							$db = Database::instance($search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'db_instance' ]) ;
 						}
-	//					DOC_Util_Debug::dump( $query->compile($db), false) ;
+
+                        Kohana::$log->add(Log::DEBUG, $query->compile($db)) ;
+
 						$result = $query->execute( $db ) ;
 
 						$ids = array() ;
@@ -303,7 +319,7 @@ class Filter {
 						$_output = $_output->$orm_connectors[ $bool_connector ]( $search_filters[ $search_filter_key ][ $filter_specs[ 'filter_column' ]][ 'id_column' ], $in, $ids ) ;
 
 					} else {
-						$_output = $_output->$orm_connectors[ $bool_connector ](\DB::expr('1'),'=',\DB::expr('1')) ;
+						$_output = $_output->$orm_connectors[ $bool_connector ](DB::expr('1'),'=',DB::expr('1')) ;
 					}
 						
 
@@ -358,15 +374,16 @@ class Filter {
 	}
 
 
-	/**
-	 * Looks for the column specified by the arguments and returns the data type.
-	 * This will work for either columns in the basic object ($foo, 'bar') or
-	 * one-level deep properties ($foo, 'bar->foobar').
-	 *
-	 * @param ORM $orm_object
-	 * @param string $column
-	 * @return string
-	 */
+    /**
+     * Looks for the column specified by the arguments and returns the data type.
+     * This will work for either columns in the basic object ($foo, 'bar') or
+     * one-level deep properties ($foo, 'bar->foobar').
+     *
+     * @param ORM    $orm_object
+     * @param string $column
+     * @return string
+     * @throws \Kohana\KohanaException
+     */
 	public static function get_data_type( $orm_object, $column ) {
 		$columns = $orm_object->list_columns() ;
 		if( isset( $columns[ $column ])) {
@@ -388,7 +405,7 @@ class Filter {
 		}
 
 		// no? try checking the custom search filters
-		$search_filters = \Kohana::$config->load('searchfilters') ;
+		$search_filters = Kohana::$config->load('searchfilters') ;
 		$filter_key = self::get_filter_key() ;
 		$this_filter = isset( $search_filters[ $filter_key ] ) ? $search_filters[ $filter_key ] : $search_filters[ strtolower( $filter_key )] ;
 

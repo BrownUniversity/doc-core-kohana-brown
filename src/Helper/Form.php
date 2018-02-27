@@ -1,5 +1,13 @@
 <?php
 namespace BrownUniversity\DOC\Helper ;
+
+use ErrorException;
+use Kohana\Date;
+use Kohana\Form as Kohana_Form;
+use Kohana\Kohana;
+use Kohana\Log;
+use Kohana\Request;
+
 /**
  * A collection of static methods to make working with form data a little easier
  *
@@ -75,15 +83,15 @@ class Form {
 		if( $include_labels ) {
 			$_output .= 'Date ' ;
 		}
-		$_output .= '<input type="text" name="'.$name_prefix.self::SUFFIX_DATE.'" value="'.\Date::formatted_time( $datetime, self::DATE_FORMAT ).'" class="'.$date_class.'" size="12" maxlength="12" /> ' ;
+		$_output .= '<input type="text" name="'.$name_prefix.self::SUFFIX_DATE.'" value="'. Date::formatted_time( $datetime, self::DATE_FORMAT ).'" class="'.$date_class.'" size="12" maxlength="12" /> ' ;
 		if( $include_labels ) {
 			$_output .= 'Time ' ;
 		}
 
 		$_output .= self::time_input_fields(
-				\Date::formatted_time( $datetime, self::HOUR_FORMAT),
-				\Date::formatted_time( $datetime, self::MINUTE_FORMAT),
-				\Date::formatted_time( $datetime, self::MERIDIAN_FORMAT),
+				Date::formatted_time( $datetime, self::HOUR_FORMAT),
+				Date::formatted_time( $datetime, self::MINUTE_FORMAT),
+				Date::formatted_time( $datetime, self::MERIDIAN_FORMAT),
 				$name_prefix,
 				$minute_increment
 		) ;
@@ -141,7 +149,7 @@ class Form {
 	 * @see Helper_Form::datetime_input_fields
 	 */
 	public static function input_fields_to_datetime( $name_prefix ) {
-		$request = \Request::current() ;
+		$request = Request::current() ;
 
 		$date = $request->post( $name_prefix . self::SUFFIX_DATE ) ;
 		$hour = $request->post( $name_prefix . self::SUFFIX_HOUR ) ;
@@ -163,7 +171,7 @@ class Form {
 	 * @return string
 	 */
 	public static function input_fields_to_time( $name_prefix ) {
-		$request = \Request::current() ;
+		$request = Request::current() ;
 
 		$meridian = $request->post( $name_prefix . self::SUFFIX_MERIDIAN ) ;
 		$hour = $request->post( $name_prefix . self::SUFFIX_HOUR ) ;
@@ -191,10 +199,10 @@ class Form {
 		$_output = NULL ;
 		if( !empty( $date_str ) || $null_behavior == self::NULL_TO_DEFAULT ) {
 			try {
-				$_output = \Date::formatted_time($date_str, $date_format) ;
+				$_output = Date::formatted_time($date_str, $date_format) ;
 			} catch( ErrorException $e ) {
 				$_output = $date_str ;
-				\Kohana::$log->add(\Kohana_Log::WARNING, 'Invalid date string: ' . $_output ) ;
+				Kohana::$log->add(Log::WARNING, 'Invalid date string: ' . $_output ) ;
 			}
 		}
 
@@ -282,7 +290,7 @@ class Form {
 			}
 			
 			if( $mode == self::MODE_EDITABLE ) {
-				$cb .= Form::checkbox($checkbox_group_name, $key, in_array($key, $selected), array('id' => $unique_id)) ;
+				$cb .= Kohana_Form::checkbox($checkbox_group_name, $key, in_array($key, $selected), array('id' => $unique_id)) ;
 			} else {
 				if( in_array( $key, $selected )) {
 					$cb .= "<span id='{$unique_id}' class='checkmark-checked'>&nbsp;</span>" ;
@@ -334,7 +342,7 @@ class Form {
 			$_output .= $label_tag ;
 		}
 		if( $mode == self::MODE_EDITABLE ) {
-			$_output .= Form::checkbox($name, $value, $selected, array('id' => $css_id )) ;
+			$_output .= Kohana_Form::checkbox($name, $value, $selected, array('id' => $css_id )) ;
 		} else {
 			$css_class = $selected ? 'checkmark-checked' : $unchecked_class ;
 			$_output .= "<span id='{$name}' class='{$css_class}'>&nbsp;</span>" ;
@@ -366,7 +374,7 @@ class Form {
 		foreach( $radio_array as $key => $value ) {
 			$unique_id = "{$radio_name}_{$key}" ;
 			if( $mode == self::MODE_EDITABLE ) {
-				$radio = \Form::radio($radio_name, $key, $selected == $key, array('id' => $unique_id )) ;
+				$radio = Kohana_Form::radio($radio_name, $key, $selected == $key, array('id' => $unique_id )) ;
 			} else {
 				if( $selected == $key ) {
 					$radio = "<span id='{$unique_id}' class='checkmark-checked'>&nbsp;</span>" ;
@@ -403,7 +411,7 @@ class Form {
 	 */
 	public static function input( $name, $value = NULL, $attributes = NULL, $mode = self::MODE_EDITABLE ) {
 		if( $mode == self::MODE_EDITABLE ) {
-			return \Kohana_Form::input($name, $value, $attributes) ;
+			return Kohana_Form::input($name, $value, $attributes) ;
 		}
 		return $value ;
 	}
@@ -423,7 +431,7 @@ class Form {
 	 */
 	public static function select( $name, $options = NULL, $selected = NULL, $attributes = NULL, $mode = self::MODE_EDITABLE ) {
 		if( $mode == self::MODE_EDITABLE ) {
-			return \Kohana_Form::select($name, $options, $selected, $attributes) ;
+			return Kohana_Form::select($name, $options, $selected, $attributes) ;
 		}
 		$_output = NULL ;
 		if( isset( $options[ $selected ])) {
@@ -446,7 +454,7 @@ class Form {
 	 */
 	public static function textarea($name, $body = '', $attributes = NULL, $double_encode = TRUE, $mode = self::MODE_EDITABLE) {
 		if( $mode == self::MODE_EDITABLE ) {
-			return Form::textarea($name, $body, $attributes, $double_encode) ;
+			return Kohana_Form::textarea($name, $body, $attributes, $double_encode) ;
 		}
 		return $body ;
 	}
@@ -462,8 +470,8 @@ class Form {
 	 */
 	public static function checkbox_value( $checkbox_name, $default_value = 0 ) {
 		$_output = $default_value ;
-		if( \Request::$current->post( $checkbox_name ) != NULL ) {
-			$_output = \Request::$current->post( $checkbox_name ) ;
+		if( Request::$current->post( $checkbox_name ) != NULL ) {
+			$_output = Request::$current->post( $checkbox_name ) ;
 
 			if( is_array( $_output )) {
 				$_output = array_pop( $_output ) ;

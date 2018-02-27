@@ -1,6 +1,11 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
 
+use Exception;
+use Kohana\Log;
+use Kohana\Profiler;
+use Kohana\Kohana;
+
 /**
  * Retrieve information from Brown's global address book via LDAP.
  *
@@ -145,21 +150,21 @@ class Ldap
             $this->ldap_query_bind_password = $config['password'];
         }
         
-        $bm = \Profiler::start('LDAP', 'Constructor - connect');
+        $bm = Profiler::start('LDAP', 'Constructor - connect');
         $this->cn = ldap_connect('ldaps://'.$this->ldap_host_url);
-        \Profiler::stop($bm);
-        $bm1 = \Profiler::start('LDAP', 'Constructor - bind');
+        Profiler::stop($bm);
+        $bm1 = Profiler::start('LDAP', 'Constructor - bind');
         ldap_bind($this->cn,
                   $this->ldap_query_bind_rdn,
                   $this->ldap_query_bind_password);
-    	\Profiler::stop($bm1);
+    	Profiler::stop($bm1);
     }
 
     /**
      * Allow singleton type usage with option configuration
      * 
      * @param array $config
-     * @return DOC_Util_Ldap
+     * @return \BrownUniversity\DOC\Util\Ldap
      */
 	public static function instance($config = array()) {
 		if( !isset( self::$instance )) {
@@ -213,7 +218,7 @@ class Ldap
      */
     public function get_person_info($id, $id_property = NULL, $people_only = TRUE) {
         // search the people objects
-        $bm2 = \Profiler::start('LDAP', 'Setup search');
+        $bm2 = Profiler::start('LDAP', 'Setup search');
         $base = "ou=People,dc=brown,dc=edu";
         
         if (( $id_property !== NULL) && (array_key_exists($id_property, $this->person_attributes))) {
@@ -226,13 +231,13 @@ class Ldap
         	$base = "dc=brown,dc=edu";
         }
 
-		\Kohana::$log->add( \Kohana_Log::DEBUG, "LDAP Search: base={$base}, filter={$filter}") ;
+		Kohana::$log->add( Log::DEBUG, "LDAP Search: base={$base}, filter={$filter}") ;
 		
-		\Profiler::stop($bm2);
+		Profiler::stop($bm2);
         try {
-        	$bm1 = \Profiler::start('LDAP', 'search');
+        	$bm1 = Profiler::start('LDAP', 'search');
 			$search_result = $this->run_search($base, $filter, array_values($this->person_attributes));
-			\Profiler::stop($bm1);
+			Profiler::stop($bm1);
 		}
         catch (Exception $e)
         {
@@ -257,10 +262,10 @@ class Ldap
         // get the results
         //$result['info'] = $this->parse_person_array($search_result[0]);
         
-        $bm3 = \Profiler::start('LDAP', 'Parse response');
+        $bm3 = Profiler::start('LDAP', 'Parse response');
         $result['info'] = $this->parse_result_array($this->person_attributes, $search_result[0]);
         $result['status']['ok'] = true;
-		\Profiler::stop($bm3);
+		Profiler::stop($bm3);
         return $result;
     }
 
@@ -304,15 +309,16 @@ class Ldap
             return array();
         }
     }
-    
+
     /**
      * Search LDAP for people by name.
      *
      * $paffil can be an array of strings or a comma-delimited list.
      *
-     * @param string $s the search term (name to look for)
-     * @param int $limit Maximum number of results to return.  Defaults to 20.
+     * @param string       $s the search term (name to look for)
+     * @param int          $limit Maximum number of results to return.  Defaults to 20.
      * @param string|Array $paffil primary_affiliations to limit to.
+     * @return array
      */
     public function search_people($s, $limit = 20, $paffil = null, $attribute = 'displayname') {
         $result = array();
@@ -605,7 +611,7 @@ class Ldap
      * @author Christopher Keith <Christopher_Keith@brown.edu>
      * @param string course specification
      * @param string person role
-     * @return Array
+     * @return array
      */
     public function get_course_membership($coursespec, $role)
     {
@@ -839,9 +845,10 @@ class Ldap
 
     /**
      * Get meeting periods for a given course
-     * 
+     *
      * @param string $coursespec
-     * @return array 
+     * @return array
+     * @throws \Exception
      */
     public function get_course_meeting_periods($coursespec) {
         $base = "ou=Courses,dc=brown,dc=edu";
@@ -1053,6 +1060,8 @@ class Ldap
      * @param string $filter
      * @param string $atts Attributes to pull from LDAP.  Defaults to null (all).
      * $param int $limit Maximum number of entries.
+     * @return array
+     * @throws \Exception
      */
     private function run_search($base, $filter, $atts = null, $limit = null)
     {
@@ -1076,9 +1085,9 @@ class Ldap
      * Parse the result of an LDAP query based off an inputted attribute map
      *
      * @author Christopher Keith <Christopher_Keith@brown.edu>
-     * @param Array $map an associative array of key value pairs
-     * @param Array $data an associative array returned from LDAP query
-     * @return Array
+     * @param array $map an associative array of key value pairs
+     * @param array $data an associative array returned from LDAP query
+     * @return array
      */
     private function parse_result_array(Array $map, Array $data) {
     	$outp = array();
@@ -1101,7 +1110,8 @@ class Ldap
     /**
      * Parse a single result from LDAP about a person.
      *
-     * @param Array $data an associative array returned from LDAP from a person search.
+     * @param array $data an associative array returned from LDAP from a person search.
+     * @return array
      */
     private function parse_person_array(Array $data)
     {

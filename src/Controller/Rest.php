@@ -5,6 +5,11 @@ namespace BrownUniversity\DOC\Controller ;
  * @author     Christopher Keith <christopher_keith@brown.edu>
  */
 use BrownUniversity\DOC\View;
+use Kohana\Controller;
+use Kohana\Inflector;
+use Kohana\Kohana;
+use Kohana\ORM\ORM;
+use Kohana\Request;
 
 defined('SYSPATH') OR die('No direct access allowed.');
 
@@ -14,7 +19,7 @@ defined('SYSPATH') OR die('No direct access allowed.');
  * Used to abstract the majority of common interface required for publishing
  * a web service.
  */
-class Rest extends \Controller {
+class Rest extends Controller {
 
 	const AUTH_NONE = 'authenticate_none' ;
 	const AUTH_HMAC = 'authenticate_hmac' ;
@@ -151,7 +156,7 @@ class Rest extends \Controller {
 		}
 
 		if ($this->model === NULL) {
-			$this->model = inflector::singular($this->view_folder);
+			$this->model = Inflector::singular($this->view_folder);
 		}
 
 		$this->process_accept_type();
@@ -209,13 +214,14 @@ class Rest extends \Controller {
 		return TRUE ;
 	}
 
-	/**
-	 * Authentication using HTTP Basic. The username and password must be defined
-	 * in the database.
-	 * 
-	 * @return boolean
-	 * @todo Update ORM settings to pull from a config variable so that this can be more generic?
-	 */
+    /**
+     * Authentication using HTTP Basic. The username and password must be defined
+     * in the database.
+     *
+     * @return boolean
+     * @todo Update ORM settings to pull from a config variable so that this can be more generic?
+     * @throws \Kohana\KohanaException
+     */
 	protected function authenticate_http_basic() {
 		$_output = FALSE ;
 
@@ -232,16 +238,17 @@ class Rest extends \Controller {
 		return $_output ;
 	}
 
-	/**
-	 * Determines whether or not a request is valid by calculating a HMAC
-	 * signature from the key/secret pair.  The key is sent as the username
-	 * portion of the HTTP Basic Authentication request and the signature is
-	 * sent as the password.  This system rebuilds the signature and compares
-	 * to that received in the request.  If they match, the request is valid.
-	 *
-	 * @return boolean
-	 * @todo Update ORM settings to pull from a config variable so that this can be more generic?
-	 */
+    /**
+     * Determines whether or not a request is valid by calculating a HMAC
+     * signature from the key/secret pair.  The key is sent as the username
+     * portion of the HTTP Basic Authentication request and the signature is
+     * sent as the password.  This system rebuilds the signature and compares
+     * to that received in the request.  If they match, the request is valid.
+     *
+     * @return boolean
+     * @todo Update ORM settings to pull from a config variable so that this can be more generic?
+     * @throws \Kohana\KohanaException
+     */
 	protected function authenticate_hmac() {
 		/**
 		 * Initial HMAC implementation
@@ -264,13 +271,13 @@ class Rest extends \Controller {
 			$restacl = ORM::factory('restacl')
 				->where('key_id', $key)
 				->where('resource', $resource)
-				->where('method', strtoupper(request::method()))
+				->where('method', strtoupper(Request::method()))
 				->find();
 			if ($restacl->loaded) {
 				// Rebuild Signature
-				$new_signature = hash_hmac('md5', $uri . strtoupper(request::method()), $restacl->key->secret);
+				$new_signature = hash_hmac('md5', $uri . strtoupper(Request::method()), $restacl->key->secret);
 				if (strcmp($signature, $new_signature) === 0) {
-					$authenticated = TRUE;
+					$_output = TRUE;
 				}
 			}
 		}
@@ -325,16 +332,16 @@ class Rest extends \Controller {
 		);
 	}
 
-	/**
-	 * Process requests to this URI with the GET verb
-	 *
-	 * @params mixed parameters after the controller in the URI
-	 * @todo Either modify this to make use of the new get_payload method or strip it down to the 501 settings we have for the others.
-	 */
+    /**
+     * Process requests to this URI with the GET verb
+     *
+     * @params mixed parameters after the controller in the URI
+     * @todo Either modify this to make use of the new get_payload method or strip it down to the 501 settings we have for the others.
+     * @throws \Kohana\KohanaException
+     */
 	protected function process_get() {
 		$headers = array("Content-Type: {$this->accept_type}");
 		$payload = NULL;
-		$query = $this->request->query() ;
 
 		$params_array = $this->request->param();
 
@@ -405,16 +412,18 @@ class Rest extends \Controller {
 		);
 	}
 
-	/**
-	 * Generate and return the payload based on the content type and view file. 
-	 * Note that the view file used can be in multiple places in the hierarchy, 
-	 * which is organized first by content type and second by controller/action. 
-	 * This will always use the most specific view file it can find.
-	 * 
-	 * @param mixed $data
-	 * @param array $options
-	 * @return string
-	 */
+    /**
+     * Generate and return the payload based on the content type and view file.
+     * Note that the view file used can be in multiple places in the hierarchy,
+     * which is organized first by content type and second by controller/action.
+     * This will always use the most specific view file it can find.
+     *
+     * @param mixed $data
+     * @param array $options
+     * @return string
+     * @throws \Exception
+     * @throws \Kohana\View\ViewException
+     */
 	protected function get_payload( $data, $options = array() ) {
 		$view_root = 'rest/' ;
 		$mime_path = $this->definitions[ $this->accept_type ] ;
@@ -438,13 +447,15 @@ class Rest extends \Controller {
 
 	}
 
-	/**
-	 * Send response message to requester
-	 *
-	 * @param int HTTP Status CODE
-	 * @param mixed addtional HTTP headers to send
-	 * @param string body of response
-	 */
+    /**
+     * Send response message to requester
+     *
+     * @param      $status
+     * @param null $headers
+     * @param null $payload
+     * @throws \Exception
+     * @throws \Kohana\View\ViewException
+     */
 	final protected function send_response($status, $headers = NULL, $payload = NULL)
 	{
 		header('HTTP/1.1 ' . $status . ' ' . $this->status_codes[$status]);

@@ -1,9 +1,10 @@
 <?php
 namespace BrownUniversity\DOC\Helper ;
 
+use Kohana\HTML;
 use Kohana\Kohana;
 use Kohana\Request;
-use Kohana\HTML;
+
 /**
  * Some static functions for locating and including content in your output. Also
  * relies on the includepaths config file, where you indicate paths and URLs to
@@ -20,17 +21,18 @@ class HtmlInclude {
 	const INCLUDE_LINK = 'link' ;
 	const INCLUDE_CONTENTS = 'contents' ;
 
-	/**
-	 * Generate the proper URL for inclusion in your HTML. If passed a type, this
-	 * method will return the appropriate link, script or img tag. If no type
-	 * is included, then it will simply return the URL.
-	 *
-	 * @param string $path The path fragment you want to check for.
-	 * @param string $type Use one of the class constants, or leave NULL to just get the URL with no generated HTML.
-	 * @param array $attrs Attributes to add to the tag. Only used when generating a link, script or img tag.
-	 * @param boolean $auto_version Whether to include the auto-version timestamp.
-	 * @return string
-	 */
+    /**
+     * Generate the proper URL for inclusion in your HTML. If passed a type, this
+     * method will return the appropriate link, script or img tag. If no type
+     * is included, then it will simply return the URL.
+     *
+     * @param string  $path The path fragment you want to check for.
+     * @param string  $type Use one of the class constants, or leave NULL to just get the URL with no generated HTML.
+     * @param array   $attrs Attributes to add to the tag. Only used when generating a link, script or img tag.
+     * @param boolean $auto_version Whether to include the auto-version timestamp.
+     * @return string
+     * @throws \Kohana\KohanaException
+     */
 	static function file_link( $path, $type = NULL, $attrs = NULL, $auto_version = FALSE ) {
 		$include_url = '' ;
 		// check the include directories, find the first instance of the file
@@ -96,12 +98,13 @@ class HtmlInclude {
 		return $_output ;
 	}
 
-	/**
-	 * Given a path fragment, returns the full file path on the system to the file.
-	 *
-	 * @param string $path Path fragment to be appended to the includepaths as set in config
-	 * @return string  The full file path to the file
-	 */
+    /**
+     * Given a path fragment, returns the full file path on the system to the file.
+     *
+     * @param string $path Path fragment to be appended to the includepaths as set in config
+     * @return string  The full file path to the file
+     * @throws \Kohana\KohanaException
+     */
 	static function file_path( $path ) {
 		$_output = '' ;
 
@@ -118,16 +121,17 @@ class HtmlInclude {
 
 	}
 
-	/**
-	 * Returns the appropriate tag or contents, using the current request to build
-	 * a path. This assumes that your css or javascript directory has a "pages"
-	 * directory with a structure that matches the request directory/controller/action.
-	 *
-	 * @param string $type Use one of the class constants.
-	 * @param string $include_as Use one of the class constants.
-	 * @param boolean $auto_version Whether to include the auto-version timestamp.
-	 * @return string
-	 */
+    /**
+     * Returns the appropriate tag or contents, using the current request to build
+     * a path. This assumes that your css or javascript directory has a "pages"
+     * directory with a structure that matches the request directory/controller/action.
+     *
+     * @param string  $type Use one of the class constants.
+     * @param string  $include_as Use one of the class constants.
+     * @param boolean $auto_version Whether to include the auto-version timestamp.
+     * @return string
+     * @throws \Kohana\KohanaException
+     */
 	static function companion( $type, $include_as = self::INCLUDE_LINK, $auto_version = FALSE ) {
 
 		$dir_and_extensions = array(

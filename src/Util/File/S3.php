@@ -1,7 +1,12 @@
 <?php
 namespace BrownUniversity\DOC\Util\File ;
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client ;
 use BrownUniversity\DOC\Util\File ;
+use ErrorException;
+use Kohana\HTTP\Exception\Code_404;
+use Kohana\Kohana;
+use Kohana\Log;
 
 /*
  * To change this template, choose Tools | Templates
@@ -19,9 +24,15 @@ class S3 extends File {
 	protected $s3 ;
 
 
-	public function __construct($config_file = self::CONFIG_FILE) {
+    /**
+     * S3 constructor.
+     *
+     * @param string $config_file
+     * @throws \Kohana\KohanaException
+     */
+    public function __construct($config_file = self::CONFIG_FILE) {
 		parent::__construct($config_file);
-		$this->aws_config = \Kohana::$config->load('aws') ;
+		$this->aws_config = Kohana::$config->load('aws') ;
 		$this->s3 = S3Client::factory(array( 'key' => $this->aws_config[ 'key' ], 'secret' => $this->aws_config[ 'secret' ])) ;				
 	}
 
@@ -31,6 +42,7 @@ class S3 extends File {
      * @param string $root_dir
      * @param string $filename
      * @return string
+     * @throws \ErrorException
      */
     public function cache_file($root_dir, $filename) {
 		$_output = NULL ;
@@ -44,13 +56,14 @@ class S3 extends File {
         return $_output ;
     }
 
-	/**
-	 * Delete the file both from S3 and from the local cache, if it exists.
-	 * 
-	 * @param string $root_dir
-	 * @param string $filename
-	 * @return boolean
-	 */
+    /**
+     * Delete the file both from S3 and from the local cache, if it exists.
+     *
+     * @param string $root_dir
+     * @param string $filename
+     * @return boolean
+     * @throws \ErrorException
+     */
 	public function delete($root_dir, $filename) {
 		try {
 			$response = $this->s3->deleteObject( array( 
@@ -70,15 +83,15 @@ class S3 extends File {
 		return TRUE ;
 	}
 
-	/**
-	 * Sends the file to the browser. If the file is "web friendly" then sends
-	 * inline, otherwise will send as an attachment for download.
-	 * 
-	 * @param string $root_dir
-	 * @param string $filename
-	 * @param string $new_filename
-	 * @throws HTTP_Exception_404
-	 */
+    /**
+     * Sends the file to the browser. If the file is "web friendly" then sends
+     * inline, otherwise will send as an attachment for download.
+     *
+     * @param string $root_dir
+     * @param string $filename
+     * @param string $new_filename
+     * @throws \Kohana\HTTP\Exception\Code_404
+     */
 	public function display($root_dir, $filename, $new_filename = NULL) {
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
@@ -99,18 +112,18 @@ class S3 extends File {
 				$this->download( $root_dir, $filename, $new_filename ) ;
 			}			
 		} catch( ErrorException $e ) {
-			throw new \HTTP_Exception_404($e->getMessage()) ;
+			throw new Code_404($e->getMessage());
 		}
 	}
 
-	/**
-	 * Send file as an attachment for download.
-	 * 
-	 * @param string $root_dir
-	 * @param string $filename
-	 * @param string $new_filename
-	 * @throws HTTP_Exception_404
-	 */
+    /**
+     * Send file as an attachment for download.
+     *
+     * @param string $root_dir
+     * @param string $filename
+     * @param string $new_filename
+     * @throws \Kohana\HTTP\Exception\Code_404
+     */
 	public function download($root_dir, $filename, $new_filename = NULL) {
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
@@ -127,7 +140,7 @@ class S3 extends File {
 			@readfile( $file_path ) or die( "file not found" ) ;
 			
 		} catch( ErrorException $e ) {
-			throw new \HTTP_Exception_404($e->getMessage()) ;
+			throw new Code_404($e->getMessage()) ;
 		}
 		
 
@@ -168,15 +181,16 @@ class S3 extends File {
 		return $this->aws_config['bucket'] ;
 	}
 
-	/**
-	 * Save file to S3.
-	 * 
-	 * @param string $root_dir
-	 * @param string $filename
-	 * @param string $source_path
-	 * @param array $attributes
-	 * @return boolean
-	 */
+    /**
+     * Save file to S3.
+     *
+     * @param string $root_dir
+     * @param string $filename
+     * @param string $source_path
+     * @param array  $attributes
+     * @return boolean
+     * @throws \ErrorException
+     */
 	public function save($root_dir, $filename, $source_path, $attributes = NULL) {
 	
 		try {
@@ -195,7 +209,7 @@ class S3 extends File {
 
 			$response = $this->s3->createObject( $object_args ) ;
 
-		} catch( \S3Exception $e ) {
+		} catch( S3Exception $e ) {
 			$error = $e->parse() ;
 			throw new ErrorException("{$error['message']} (type: {$error['type']}, code: {$error['code']})");
 		}	
@@ -254,9 +268,9 @@ class S3 extends File {
 	public function file_exists( $root_dir, $filename ) {
 		try {
 			$_output = $this->s3->doesObjectExist($root_dir, $filename) ;
-		} catch (Exception $ex) {
+		} catch (\Exception $ex) {
 			$_output = FALSE ;
-			\Kohana::$log->add(Log::WARNING,'Error communicating with AWS: ' . $ex->getMessage()) ;
+			Kohana::$log->add(Log::WARNING,'Error communicating with AWS: ' . $ex->getMessage()) ;
 		}
 		return $_output ;
 	}
@@ -264,8 +278,8 @@ class S3 extends File {
 	/**
 	 * Get the AmazonS3 property from this object.
 	 * 
-	 * @return AmazonS3
-	 */
+	 * @return \Aws\S3\S3Client
+     */
 	public function get_s3_object() {
 		return $this->s3 ;
 	}

@@ -1,5 +1,8 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
+
+use DOMDocument;
+
 /**
  * Contains a set of static functions for dealing with Word HTML that may land in
  * rich text fields.

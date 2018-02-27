@@ -1,11 +1,13 @@
 <?php
 namespace BrownUniversity\DOC\Util\File ;
 use BrownUniversity\DOC\Util\File ;
+use Kohana\Kohana;
+use Kohana\Log;
+
 /**
  * Use this to work with files on the local file system.
  *
  * @author jorrill
- * @todo test this...
  */
 class Local extends File {
 
@@ -21,7 +23,7 @@ class Local extends File {
 		if( file_exists( $file_path )) {
 			unlink( $file_path ) ;
 		} else {
-			\Kohana::$log->add(\Kohana_Log::WARNING, "Cannot delete-- file not found: {$file_path}") ;
+			Kohana::$log->add(Log::WARNING, "Cannot delete-- file not found: {$file_path}") ;
 		}
 	}
 
@@ -68,8 +70,6 @@ class Local extends File {
 	 */
 	public function download($root_dir, $filename, $new_filename = NULL) {
 		$file_path = $root_dir . $filename ;
-		
-		
 
 		if( $new_filename == NULL ) {
 			$new_filename = $filename ;
@@ -135,7 +135,7 @@ class Local extends File {
 	public function save($root_dir, $filename, $source_path, $attributes = NULL) {
 		$file_path = $root_dir . $filename ;
 
-		\Kohana::$log->add(\Kohana_Log::DEBUG, "Attempting file save, source path = {$source_path}, file path = {$file_path}") ;
+		Kohana::$log->add(Log::DEBUG, "Attempting file save, source path = {$source_path}, file path = {$file_path}") ;
 		
 		copy($source_path, $file_path) ;
 	}

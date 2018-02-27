@@ -2,6 +2,8 @@
 namespace BrownUniversity\DOC\Util ;
 
 use BrownUniversity\DOC\Util\File as File_Local;
+use BrownUniversity\DOC\Util\File\Local;
+use Kohana\Kohana;
 
 /**
  * Foundation class for file utilities.
@@ -21,8 +23,14 @@ abstract class File {
 	protected $use_cache = FALSE ;
 	protected $allowed_file_types = array() ;
 
-	public function __construct( $config_file = self::CONFIG_FILE ) {
-		$this->file_config = \Kohana::$config->load( $config_file ) ;
+    /**
+     * File constructor.
+     *
+     * @param string $config_file
+     * @throws \Kohana\KohanaException
+     */
+    public function __construct( $config_file = self::CONFIG_FILE ) {
+		$this->file_config = Kohana::$config->load( $config_file ) ;
 		$this->allowed_file_types = $this->file_config[ 'default' ][ 'allowed_file_types' ] ;
 	}
 
@@ -255,13 +263,13 @@ abstract class File {
 	 * is required to enable us to generate files on the fly and have them
 	 * be treated as if they were a normal file upload.
 	 *
-	 * @param string $file Full path and filename to the file for which we want specs generated
+	 * @param string $filename Full path and filename to the file for which we want specs generated
 	 * @param string $original_filename An original filename to insert into the array.
 	 * @return array
 	 */
 	public static function get_file_specs( $filename, $original_filename ) {
 		$_output = array() ;
-		$file_util = new File_Local() ;
+		$file_util = new Local() ;
 		if( file_exists( $filename )) {
 			$_output[ 'name' ] = $original_filename ;
 			$_output[ 'type' ] = $file_util->get_mime_type( $filename );
@@ -275,15 +283,16 @@ abstract class File {
 		return $_output ;
 	}
 
-	/**
-	 * By default the incoming $_FILES array structure for an array of files is a little non-standard
-	 * in that we get a single item where the properties have multiple rows. This restructures
-	 * the array to better parallel what we would get from normal POST data. Stolen from PHP
-	 * user-contributed notes at http://www.php.net/manual/en/reserved.variables.files.php#106608.
-	 *
-	 * @param array $files Assumed to be the _FILES array from the form submission.
-	 * @param bool $top Indicates whether this is the first time through or not.
-	 */
+    /**
+     * By default the incoming $_FILES array structure for an array of files is a little non-standard
+     * in that we get a single item where the properties have multiple rows. This restructures
+     * the array to better parallel what we would get from normal POST data. Stolen from PHP
+     * user-contributed notes at http://www.php.net/manual/en/reserved.variables.files.php#106608.
+     *
+     * @param array $files Assumed to be the _FILES array from the form submission.
+     * @param bool  $top Indicates whether this is the first time through or not.
+     * @return array
+     */
 	public static function restructure_files_array( $files, $top = TRUE ) {
 		$_out_files = array();
 		foreach($files as $name=>$file){

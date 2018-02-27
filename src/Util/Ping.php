@@ -31,6 +31,8 @@ namespace BrownUniversity\DOC\Util ;
  * 
  */
 
+use Exception;
+
 /**
  * Ping for PHP.
  *
@@ -70,29 +72,30 @@ class Ping {
 		$ping = new Ping($host, $ttl) ;
 		return $ping->ping($method) ;
 	}
-	
-	
-	/**
-	 * Called when the Ping object is created.
-	 *
-	 * @param $host (string)
-	 *   The host to be pinged.
-	 * @param $ttl (int)
-	 *   Time-to-live (TTL) (You may get a 'Time to live exceeded' error if this
-	 *   value is set too low. The TTL value indicates the scope or range in which
-	 *   a packet may be forwarded. By convention:
-	 *     - 0 = same host
-	 *     - 1 = same subnet
-	 *     - 32 = same site
-	 *     - 64 = same region
-	 *     - 128 = same continent
-	 *     - 255 = unrestricted
-	 *   The TTL is also used as a general 'timeout' value for fsockopen(), so if
-	 *   you are using that method, you might want to set a default of 5-10 sec to
-	 *   avoid blocking network connections.
-	 *
-	 * @return (empty)
-	 */
+
+
+    /**
+     * Called when the Ping object is created.
+     *
+     * @param $host (string)
+     *   The host to be pinged.
+     * @param $ttl (int)
+     *   Time-to-live (TTL) (You may get a 'Time to live exceeded' error if this
+     *   value is set too low. The TTL value indicates the scope or range in which
+     *   a packet may be forwarded. By convention:
+     *     - 0 = same host
+     *     - 1 = same subnet
+     *     - 32 = same site
+     *     - 64 = same region
+     *     - 128 = same continent
+     *     - 255 = unrestricted
+     *   The TTL is also used as a general 'timeout' value for fsockopen(), so if
+     *   you are using that method, you might want to set a default of 5-10 sec to
+     *   avoid blocking network connections.
+     *
+     * @throws \Exception
+     * @return (empty)
+     */
 	public function __construct($host, $ttl = 255) {
 		if (!isset($host)) {
 			throw new Exception("Error: Host name not supplied.");
@@ -223,15 +226,15 @@ class Ping {
 		return $latency;
 	}
 
-	/**
-	 * Calculate a checksum.
-	 *
-	 * @param $data (string)
-	 *   Data for which checksum will be calculated.
-	 *
-	 * @return (string)
-	 *   Binary string checksum of $data.
-	 */
+    /**
+     * Calculate a checksum.
+     *
+     * @param $data (string)
+     *   Data for which checksum will be calculated.
+     *
+     * @return string (string)
+     *   Binary string checksum of $data.
+     */
 	private function calculateChecksum($data) {
 		if (strlen($data) % 2) {
 			$data .= "\x00";

@@ -5,6 +5,8 @@ namespace BrownUniversity\DOC\Database\Mysql ;
  * JSON and deeper array output.
  */
 
+use \Kohana\Database\Database\MySQLi\Result as MySQLi_Result;
+
 /**
  * Expands on the functionality provided by Kohana_Database_MySQL_Result to support
  * JSON and deeper array output.
@@ -12,7 +14,7 @@ namespace BrownUniversity\DOC\Database\Mysql ;
  * @author jorrill
  * @todo Move into Kohana
  */
-class Result extends \Kohana_Database_MySQL_Result {
+class Result extends MySQLi_Result {
 
 	/**
 	 * Returns a JSON-encoded string of the object, diving into each property.

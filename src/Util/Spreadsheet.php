@@ -1,6 +1,9 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
-use BrownUniversity\DOC\Util\WordHtml ;
+
+use DOMDocument;
+use Kohana\Request;
+
 /**
  * A utility class to ease working with spreadsheets.
  *
@@ -224,18 +227,19 @@ class Spreadsheet {
 
 	}
 
-	/**
-	 * Download a spreadsheet file to the user. If no filename is specified,
-	 * one will be generated based on the current URI and datetime. Defaults to
-	 * Excel, but can optionally generate other formats (file types) as well.
-	 *
-	 * @param PHPExcel $obj_phpexcel
-	 * @param string $filename
-	 * @param string $file_type Use one of the class constants.
-	 */
+    /**
+     * Download a spreadsheet file to the user. If no filename is specified,
+     * one will be generated based on the current URI and datetime. Defaults to
+     * Excel, but can optionally generate other formats (file types) as well.
+     *
+     * @param PHPExcel $obj_phpexcel
+     * @param string   $filename
+     * @param string   $file_type Use one of the class constants.
+     * @throws \Kohana\KohanaException
+     */
 	public static function download( $obj_phpexcel, $filename = NULL, $file_type = self::FILETYPE_EXCEL ) {
 		if( empty( $filename )) {
-			$filename = preg_replace('/\W/', '_', \Request::detect_uri()) ;
+			$filename = preg_replace('/\W/', '_', Request::detect_uri()) ;
 			$filename .= '_'. date('Y-m-d_H:i') ;
 		}
 		

@@ -1,6 +1,7 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
 use BrownUniversity\DOC\Util\Ldap ;
+use Kohana\Kohana;
 
 /**
  * @package DOC Core
@@ -14,16 +15,17 @@ defined('SYSPATH') or die('No direct script access.');
  * Grouper Utility class
  */
 class Grouper {
-	
+
     /**
      * Add a member to a group
-     * 
+     *
      * @param string $bru_id
      * @param string $group
      * @return json
+     * @throws \Kohana\KohanaException
      */
     public static function add_member($bru_id, $group) {
-        $config = \Kohana::$config->load('grouper');
+        $config = Kohana::$config->load('grouper');
         
         $ch = curl_init();
         $url = $config['GROUPER_REST_BASE'] . 'groups/' . rawurlencode($group) . '/members/' . $bru_id;
@@ -62,16 +64,17 @@ class Grouper {
         ksort($_output);
         return $_output;
     }
-    
+
     /**
      * Delete a member from group
-     * 
+     *
      * @param string $bru_id
      * @param string $group
      * @return json
+     * @throws \Kohana\KohanaException
      */
     public static function delete_member($bru_id, $group) {
-        $config = \Kohana::$config->load('grouper');
+        $config = Kohana::$config->load('grouper');
         
         $ch = curl_init();
         $url = $config['GROUPER_REST_BASE'] . 'groups/' . rawurlencode($group) . '/members/' . $bru_id;
@@ -86,15 +89,16 @@ class Grouper {
         
         return $response;
     }
-    
+
     /**
      * Query the member of a particular group
-     * 
+     *
      * @param string $group
      * @return array
+     * @throws \Kohana\KohanaException
      */
     public static function get_membership($group) {
-        $config = \Kohana::$config->load('grouper');
+        $config = Kohana::$config->load('grouper');
         
         $ch = curl_init();
         $url = $config['GROUPER_REST_BASE'] . 'groups/' . rawurlencode($group) . '/members';
@@ -129,16 +133,17 @@ class Grouper {
         
         return self::convert($_output);
     }
-    
+
     /**
      * Determine if a user is a member of a group
-     * 
+     *
      * @param string $bru_id
      * @param string $group
      * @return boolean
+     * @throws \Kohana\KohanaException
      */
     public static function is_member($bru_id, $group) {
-        $config = \Kohana::$config->load('grouper');
+        $config = Kohana::$config->load('grouper');
         
         $ch = curl_init();
         $url = $config['GROUPER_REST_BASE'] . 'groups/' . rawurlencode($group) . '/members/' . $bru_id;

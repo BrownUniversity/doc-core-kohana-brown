@@ -2,6 +2,10 @@
 namespace BrownUniversity\DOC\Helper ;
 use BrownUniversity\DOC\Helper\Json;
 use BrownUniversity\DOC\Helper\Text;
+use Kohana\Cache\Cache;
+use Kohana\HTML;
+use Kohana\Kohana;
+use Kohana\Profiler;
 
 /**
  * Class to render tabular data with formatting, actions and context-sensitive
@@ -90,15 +94,15 @@ class Table {
 	 */
 	public function render($render_as = self::RENDER_AS_TABLE) {
 		
-		if( \Kohana::$profiling === TRUE ) {
-			$bm = \Profiler::start(__CLASS__,__METHOD__) ;
+		if( Kohana::$profiling === TRUE ) {
+			$bm = Profiler::start(__CLASS__,__METHOD__) ;
 		}
 		
 		$_output = '' ;
 		$supplemental_column_headers = '' ;
 
 		if( count( $this->data ) > 0 ) {
-			$_output .= "<{$this->render_tags[$render_as]['container']}" . \HTML::attributes($this->table_attrs) . ">" ;
+			$_output .= "<{$this->render_tags[$render_as]['container']}" . HTML::attributes($this->table_attrs) . ">" ;
 
 			/*
 			 * Table Header, not necessary for grid render
@@ -150,13 +154,13 @@ class Table {
 								$header_attributes[ 'class' ] = '{sorter: false} checkbox-column' ;
 							}
 
-							$_output .= "<th" . \HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+							$_output .= "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
 						} else {
 							if( $col_spec[ 'type' ] == self::TYPE_SUPPLEMENTAL ) {
 								if( $this->context == self::CONTEXT_SPREADSHEET ) {
-									$supplemental_column_headers .= "<th" . \HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
+									$supplemental_column_headers .= "<th" . HTML::attributes( $header_attributes ) . ">{$heading}</th>" ;
 								} else {
-									$supplemental_column_headers = "<th".\HTML::attributes( array('class' => '{sorter: false}')).">&nbsp;</th>" ;
+									$supplemental_column_headers = "<th".HTML::attributes( array('class' => '{sorter: false}')).">&nbsp;</th>" ;
 								}
 							}
 						}
@@ -477,7 +481,7 @@ class Table {
 							$row_data[ $prop ] = $value ;
 
 						} else {
-							$row_cells .= "<{$this->render_tags[$render_as]['cell']}".\HTML::attributes( $this->compiled_attributes($td_attrs) ).">{$value}</{$this->render_tags[$render_as]['cell']}>" ;
+							$row_cells .= "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes($td_attrs) ).">{$value}</{$this->render_tags[$render_as]['cell']}>" ;
 						}
 					}
 				}
@@ -489,7 +493,7 @@ class Table {
 
 					} else {
 						foreach( $supplemental_data as $supplement_col ) {
-							$row_cells .= "<{$this->render_tags[$render_as]['cell']}".\HTML::attributes( $this->compiled_attributes( $supplement_col['td_attrs'] )).">{$supplement_col['value']}</{$this->render_tags[$render_as]['cell']}>" ;
+							$row_cells .= "<{$this->render_tags[$render_as]['cell']}".HTML::attributes( $this->compiled_attributes( $supplement_col['td_attrs'] )).">{$supplement_col['value']}</{$this->render_tags[$render_as]['cell']}>" ;
 						}
 					}
 				}
@@ -523,26 +527,28 @@ class Table {
 		return trim( $_output) ;
 	}
 
-	/**
-	 * Given an object and relation information, generate a list where a "has many"
-	 * relationship exists.
-	 *
-	 * @param object $object The object we're starting with.
-	 * @param string $root_key The property of the object we're working with, or empty to use the object itself.
-	 * @param string $relation_name The name of the "has many" relation.
-	 * @param string $property_name The property name in the "has many" relation to display.
-	 * @param string $order_by
-	 * @param string $empty_content Default string if there are no relations.
-	 * @param string $separator The separator to use in output.
-	 * @param int $cache_lifetime Cache lifetime, set to zero for no cache
-	 * @return string
-	 */
+    /**
+     * Given an object and relation information, generate a list where a "has many"
+     * relationship exists.
+     *
+     * @param object $object The object we're starting with.
+     * @param string $root_key The property of the object we're working with, or empty to use the object itself.
+     * @param string $relation_name The name of the "has many" relation.
+     * @param string $property_name The property name in the "has many" relation to display.
+     * @param string $order_by
+     * @param string $empty_content Default string if there are no relations.
+     * @param string $separator The separator to use in output.
+     * @param int    $cache_lifetime Cache lifetime, set to zero for no cache
+     * @return string
+     * @throws \Kohana\KohanaException
+     * @throws \Kohana\Cache\Cache\CacheException
+     */
 	protected function format_list( $object, $root_key, $relation_name, $property_name, $order_by = NULL, $empty_content = '--', $separator = '<br />', $cache_lifetime = 0) {
 		$_output = '' ;
 		$cache = FALSE ;
 
-		if( $cache_lifetime > 0 && array_key_exists('cache', \Kohana::modules())) {
-			$cache = \Cache::instance() ;
+		if( $cache_lifetime > 0 && array_key_exists('cache', Kohana::modules())) {
+			$cache = Cache::instance() ;
 		}
 		if( $cache !== FALSE ) {
 			$cache_key = md5(implode('::',array(
@@ -662,7 +668,7 @@ class Table {
 		if( isset( $lookup[ $value ])) {
 			$_output = $lookup[ $value ] ;
 		}
-		return $_output ; ;
+		return $_output ;
 	}
 
 	/**
@@ -737,8 +743,8 @@ class Table {
 	 */
 	protected function generate_content( $data_root, $key ) {
 
-		if( \Kohana::$profiling === TRUE ) {
-			$bm = \Profiler::start(__CLASS__,__METHOD__) ;
+		if( Kohana::$profiling === TRUE ) {
+			$bm = Profiler::start(__CLASS__,__METHOD__) ;
 		}
 
 		if( $key == 'ROOT' ) {
@@ -747,7 +753,7 @@ class Table {
 			$_output = eval("return \$data_root->{$key};");
 		}
 
-		if( isset( $bm )) \Profiler::stop($bm);
+		if( isset( $bm )) Profiler::stop($bm);
 
 		return $_output ;
 

@@ -5,13 +5,14 @@ namespace BrownUniversity\DOC\Controller ;
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
 use BrownUniversity\DOC\View;
+use Kohana\Controller\Template;
 
 defined('SYSPATH') OR die('No direct access allowed.');
  
 /**
  * Controller for providing LTI functionality
  */
-class Lti extends \Controller_Template {
+class Lti extends Template {
     
     /**
      * Main template file

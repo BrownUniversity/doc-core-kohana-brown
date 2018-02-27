@@ -5,10 +5,16 @@ namespace BrownUniversity\DOC\Log ;
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
 
+use BrownUniversity\DOC\Util\Slack as Util_Slack;
+use Kohana\Kohana;
+use Kohana\Log;
+use Kohana\Log\Writer;
+use Kohana\Request;
+
 /**
  * Slack Logger
  */
-class Slack extends \Log_Writer {
+class Slack extends Writer {
 
     /**
      * Application in which the error occured
@@ -30,15 +36,15 @@ class Slack extends \Log_Writer {
      * @var array
      */
     protected static $levels = array(
-        \Kohana_Log::EMERGENCY => 'EMERGENCY',
-        \Kohana_Log::ALERT     => 'ALERT',
-        \Kohana_Log::CRITICAL  => 'CRITICAL',
-        \Kohana_Log::ERROR     => 'ERROR',
-        \Kohana_Log::WARNING   => 'WARNING',
-        \Kohana_Log::NOTICE    => 'NOTICE',
-        \Kohana_Log::INFO      => 'INFO',
-        \Kohana_Log::DEBUG     => 'DEBUG',
-        \Kohana_Log::STRACE    => 'STRACE',
+        Log::EMERGENCY => 'EMERGENCY',
+        Log::ALERT     => 'ALERT',
+        Log::CRITICAL  => 'CRITICAL',
+        Log::ERROR     => 'ERROR',
+        Log::WARNING   => 'WARNING',
+        Log::NOTICE    => 'NOTICE',
+        Log::INFO      => 'INFO',
+        Log::DEBUG     => 'DEBUG',
+        Log::STRACE    => 'STRACE',
     );
 
     /**
@@ -56,20 +62,21 @@ class Slack extends \Log_Writer {
      *
      * @uses Util_Slack::send
      * @param array $messages
+     * @throws \Kohana\KohanaException
      */
     public function write(array $messages) {
 
         // Add supplemental information to the error text
-        $supp_info = \Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
+        $supp_info = Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
 
-        $request = \Request::current();
+        $request = Request::current();
         if ((is_a($request, 'Request'))) {
-            $error_prefix = "Route: " . \Request::current()->uri();
+            $error_prefix = "Route: " . Request::current()->uri();
         } else {
             $error_prefix = "Route: could not be determined.";
         }
 
-        if (\Kohana::$is_cli) {
+        if (Kohana::$is_cli) {
             $options = CLI::options('task', 'data') ;
             if (isset($options['task'])) {
                 $error_prefix .= "\nTask: " . $options['task'];
@@ -93,7 +100,7 @@ class Slack extends \Log_Writer {
             $error_prefix .= "\nRobot: " . $supp_info['robot'];
         }
 
-        $url = \Kohana::$config->load('slack.url');
+        $url = Kohana::$config->load('slack.url');
 
         foreach ($messages as $message) {
 
@@ -106,8 +113,8 @@ class Slack extends \Log_Writer {
             $msg .= "\n\n" . $error_prefix . "\n\n" . $message['body'];
 
             try {
-                \BrownUniversity\DOC\Util\Slack::send($url, $msg);
-            } catch (Exception $e) {
+                Util_Slack::send($url, $msg);
+            } catch (\Exception $e) {
                 // Avoid Endless error loop
             }
         }

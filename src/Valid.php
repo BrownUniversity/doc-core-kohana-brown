@@ -1,12 +1,17 @@
 <?php
 namespace BrownUniversity\DOC ;
 
+use Kohana\Kohana;
+use Kohana\Log;
+use Kohana\Valid as Kohana_Valid;
+
 /**
  * Description of valid
  *
  * @author jorrill
  */
-class Valid extends \Kohana_Valid {
+class Valid extends Kohana_Valid
+{
 
     /**
      * Validating a date format
@@ -20,8 +25,8 @@ class Valid extends \Kohana_Valid {
         if ($date === NULL) {
             return TRUE;
         } else {
-            $d = DateTime::createFromFormat($format, $date);
-            \Kohana::$log->add(\Kohana_Log::DEBUG, "{$date} | {$format}");
+            $d = \DateTime::createFromFormat($format, $date);
+            Kohana::$log->add(Log::DEBUG, "{$date} | {$format}");
             return $d && $d->format($format) == $date;
         }
     }

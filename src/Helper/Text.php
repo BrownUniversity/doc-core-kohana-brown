@@ -1,13 +1,16 @@
 <?php
 namespace BrownUniversity\DOC\Helper ;
 
+use Kohana\Text as Kohana_Text;
+
 /**
  * Class Text
  *
  * @package BrownUniversity\DOC\Helper
  * @todo Move into Kohana
  */
-class Text extends \Kohana_Text {
+class Text extends Kohana_Text
+{
    /**
 	* Truncates text.
 	*

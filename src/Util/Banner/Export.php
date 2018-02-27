@@ -6,6 +6,10 @@ namespace BrownUniversity\DOC\Util\Banner ;
  * @version 1.0
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
+use Kohana\Kohana;
+use Kohana\KohanaException;
+use Kohana\Log;
+
 defined( 'SYSPATH' ) or die( 'No direct script access.' );
 
 /**
@@ -36,13 +40,13 @@ class Export {
 	 * @param string $local_path
 	 * @param string $remote_path
 	 * @return bool
-	 * @throws \Kohana_Exception
+	 * @throws KohanaException
 	 */
     public static function put_file($local_path, $remote_path) {
     	
-	$server = \Kohana::$config->load('bannerintegration.server');
-	$user = \Kohana::$config->load('bannerintegration.username');
-	$pass = \Kohana::$config->load('bannerintegration.password');
+	$server = Kohana::$config->load('bannerintegration.server');
+	$user = Kohana::$config->load('bannerintegration.username');
+	$pass = Kohana::$config->load('bannerintegration.password');
 
 	/**
 	 * Connect to FTPs server
@@ -50,8 +54,8 @@ class Export {
 	$ftps = ftp_ssl_connect($server);
 	if ($ftps === FALSE) {
 		$msg = "Failed to connect via FTPs to [{$server}] in Banner data exchange.";
-		\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-		throw new \Kohana_Exception($msg);
+		Kohana::$log->add(Log::ERROR, $msg);
+		throw new KohanaException($msg);
 	}
 
 	/**
@@ -61,8 +65,8 @@ class Export {
 	$login = @ftp_login($ftps, $user, $pass);
 	if ($login === FALSE) {
 		$msg = "Failed to login to [{$server}] as user [{$user}] in Banner data exchange.";
-		\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-		throw new \Kohana_Exception($msg);
+		Kohana::$log->add(Log::ERROR, $msg);
+		throw new KohanaException($msg);
 	}
 
 	$pasv = ftp_pasv($ftps, TRUE) ;
@@ -73,8 +77,8 @@ class Export {
 	$op = ftp_put($ftps, $remote_path, $local_path, FTP_ASCII);
 	if ($op === FALSE) {
 		$msg = "Failed to put [{$local_path}] to [{$remote_path}] in Banner data exchange.";
-		\Kohana::$log->add(\Kohana_Log::ERROR, $msg);
-		throw new \Kohana_Exception($msg);
+		Kohana::$log->add(Log::ERROR, $msg);
+		throw new KohanaException($msg);
 	}
 
 	/**

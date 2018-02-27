@@ -1,9 +1,11 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
 use BrownUniversity\DOC\Valid ;
-use BrownUniversity\DOC\Util\WordHtml ;
-use BrownUniversity\DOC\Util\File ;
 use BrownUniversity\DOC\Util\File\Local as File_Local ;
+use ErrorException;
+use Kohana\Kohana;
+use Kohana\KohanaException;
+
 /**
  * Collection of utility methods for generating LaTeX documents.
  *
@@ -279,13 +281,13 @@ class Latex {
 		
 		
 	);
-	
-	/**
-	 * Removed character references that cannot be translated to latex
-	 *
-	 * @param input string
-	 * @return string
-	 */
+
+    /**
+     * Removed character references that cannot be translated to latex
+     *
+     * @param $input
+     * @return string
+     */
 	public static function fix_bad_utf8($input) {
 		$replacements = array(
 			'&#128;',
@@ -348,15 +350,11 @@ class Latex {
 	public static function parse_html($html, $supported_tags = WordHtml::ALLOWABLE_TAGS_DEFAULT, $plain_text_input = FALSE) {
 		$_output = $html ;
 
-
 		$_output = mb_convert_encoding($_output,'HTML-ENTITIES','UTF-8') ;
 
 		// deal with the usual smart quote headache and cousins
 		$_output = WordHtml::convert_problem_chars($_output) ;
 		$_output = utf8_encode( $_output ) ;
-
-
-
 
 		$replacements = array(
             '/\t/s' => '',
@@ -492,15 +490,16 @@ class Latex {
         
         return str_replace(array_keys( self::$html_entities ), array_values( self::$html_entities ), $str) ;
     }
-    
-	/**
-	 * Parse a string for any characters that need special handling in LaTeX. Note
-	 * that we skip the greater than/less than characters here, because those need 
-	 * to happen after some other processing. We also deal with backslashes in two
-	 * passes to keep their curly braces from getting escaped.
-	 * 
-	 * @param string $str
-	 */
+
+    /**
+     * Parse a string for any characters that need special handling in LaTeX. Note
+     * that we skip the greater than/less than characters here, because those need
+     * to happen after some other processing. We also deal with backslashes in two
+     * passes to keep their curly braces from getting escaped.
+     *
+     * @param string $str
+     * @return mixed
+     */
 	public static function latex_special_chars($str) {
 		$replacements = array(
             
@@ -527,16 +526,16 @@ class Latex {
 		
 		return str_replace(array_keys( $replacements ), array_values( $replacements ), $str) ;
 	}
-	
-	/**
-	 * Given a LaTeX string, render a pdf file and return the file information
-	 * so that it can be further processed or downloaded.
-	 * 
-     * @throws Kohana_Exception
-	 * @param string $latex_str LaTeX string ready to be rendered.
-	 * @param string $filename Desired pdf filename. Extension is not required.
-	 * @return array File description array, matching what we get from php's $_FILES
-	 */
+
+    /**
+     * Given a LaTeX string, render a pdf file and return the file information
+     * so that it can be further processed or downloaded.
+     *
+     * @param string $latex_str LaTeX string ready to be rendered.
+     * @param string $filename Desired pdf filename. Extension is not required.
+     * @return array File description array, matching what we get from php's $_FILES
+     * @throws \Kohana\KohanaException
+     */
 	public static function create_pdf($latex_str, $filename, $run_cleanup = TRUE) {
 		if( $run_cleanup === TRUE ) {
 			self::cleanup(TRUE) ;
@@ -548,9 +547,8 @@ class Latex {
 		if( substr(trim($filename),-4) != '.pdf') {
 			$filename = trim($filename).'.pdf' ;
 		}
-		
-		
-		$latex_config = \Kohana::$config->load('latex') ;
+
+		$latex_config = Kohana::$config->load('latex') ;
 		
 		$safe_filename = File::safe_filename($filename) ;
 		$safe_filename = preg_replace( '/\.pdf$/', '', $safe_filename ) ;
@@ -561,32 +559,33 @@ class Latex {
 		$success = file_put_contents($latex_file,$latex_str) ;
 
 		if ($success === FALSE) {
-			throw new \Kohana_Exception('Failed generating temporary TeX file.');
+			throw new KohanaException('Failed generating temporary TeX file.');
 		}
                 
 		// render the pdf and return the appropriate file info. 
 		$pdf_file = "{$latex_config->tmp_path}{$safe_filename}.pdf" ;
 		$command = "{$latex_config->bin_path}pdflatex -jobname {$safe_filename} -output-directory {$latex_config->tmp_path} {$latex_file}" ;
-		\Kohana::$log->add(Log::DEBUG, "LaTeX command: {$command}") ;
+		Kohana::$log->add(Log::DEBUG, "LaTeX command: {$command}") ;
 		$result = exec( $command, $full_result ) ;
 		
 		$_output = File::get_file_specs( $pdf_file, $filename ) ;
 
 		if (count($_output) == 0) {
-			throw new \Kohana_Exception('TeX to PDF conversion failed');
+			throw new KohanaException('TeX to PDF conversion failed');
 		}
 		return $_output ;
 		
 	}
-	
-	/**
-	 * Go through the latex tmp directory and remove any old files.
-	 * 
-	 * @param boolean $remove_old_pdf Set to TRUE to also remove old pdf files. By default they're skipped.
-	 * @param string $older_than String suitable as input to strtotime.
-	 */
+
+    /**
+     * Go through the latex tmp directory and remove any old files.
+     *
+     * @param boolean $remove_old_pdf Set to TRUE to also remove old pdf files. By default they're skipped.
+     * @param string  $older_than String suitable as input to strtotime.
+     * @throws \Kohana\KohanaException
+     */
 	public static function cleanup( $remove_old_pdf = FALSE, $older_than = '-1 hour' ) {
-		$tmp_dir = \Kohana::$config->load('latex')->tmp_path ;
+		$tmp_dir = Kohana::$config->load('latex')->tmp_path ;
 		$file_util = new File_Local() ;
 		
 		if( $handle = opendir( $tmp_dir )) {

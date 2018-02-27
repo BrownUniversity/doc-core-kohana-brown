@@ -8,6 +8,10 @@ namespace BrownUniversity\DOC\Util ;
  * @requires CURL
  * @requires Canvas API Credentials
  */
+use Kohana\Kohana;
+use Kohana\KohanaException;
+use Kohana\Log;
+
 defined( 'SYSPATH' ) or die( 'No direct script access.' );
 
 /**
@@ -38,7 +42,7 @@ class Canvas {
      * Definition of class constants for submission types
      * 
      * - These are the values used by Canvas and returned from 
-     *   varioud APIs (e.g. assignment and submission)
+     *   various APIs (e.g. assignment and submission)
      */
     const SUBMISSION_TYPE_DISCUSSION = 'discussion_topic';
     const SUBMISSION_TYPE_NONE = 'none';
@@ -139,14 +143,15 @@ class Canvas {
         $options[CURLOPT_POSTFIELDS] = $postfields; //implode('&', $data['upload_params']);
         return self::execute_curl($options, FALSE);
     }
-    
+
     /**
      * Determine if a Canvas course for a given LDAP coursespec has been
      * created
-     * 
+     *
      * @param string $coursespec
      * @return boolean
      * @throws Kohana_Exception
+     * @throws \Kohana\KohanaException
      */
     public static function course_exists($coursespec) {
         $sisid = self::coursespec_to_sisid($coursespec);
@@ -159,7 +164,7 @@ class Canvas {
         } elseif (isset($data['id'])) {
             $output = $data['id'];
         } else {
-            Throw new \Kohana_Exception("Indeterminanent Canvas course existance for: {$coursespec}");
+            Throw new KohanaException("Indeterminanent Canvas course existance for: {$coursespec}");
         }
         
         return $output;
@@ -249,7 +254,7 @@ class Canvas {
      * 
      * @param string $parent_folder_id
      * @param string $folder_name
-     * @return string id of new folder
+     * @return array
      */
     public static function create_course_folder($course_id, $parent_folder_id, $folder_name) {
         self::init();
@@ -475,7 +480,6 @@ class Canvas {
      * Use the CANVAS folders for a course API
      *
      * @param int $course_id
-     * @param mixed $folder_id
      * @return array
      */
     public static function get_course_folder($course_id) {
@@ -539,13 +543,14 @@ class Canvas {
     	
     	return self::execute_curl($options);
     }
-    
+
     /**
      * Use the CANVAS get one submission API
-     * 
+     *
      * @param int $course_id
      * @param int $assignment_id
      * @param int $user_id
+     * @return array
      */
     public static function get_submission($course_id, $assignment_id, $user_id) {
         self::init();
@@ -712,22 +717,25 @@ class Canvas {
         }
         return $output;
     }
-    
+
     /**
      * Initialize class for full use
+     *
+     * @throws \Kohana\KohanaException
      */
     private static function init($include_token = TRUE) {
-            $config = \Kohana::$config->load('canvas');
+            $config = Kohana::$config->load('canvas');
             self::$host_url = $config->host_url;
             self::$token = $config->api_token;
             self::reset_curl(array(), $include_token);
     }
-    
+
     /**
      * Initial a file upload via CANVAS API
-     * 
+     *
      * @param array $info
      * @return array
+     * @throws \Kohana\KohanaException
      */
     public static function init_file_upload($info) {
        self::init();
@@ -745,12 +753,13 @@ class Canvas {
        return self::execute_curl($options);
     }
 
-	/**
-	 * Download file from canvas and return local path.
-	 *
-	 * @param $url
-	 * @return string Path to saved file
-	 */
+    /**
+     * Download file from canvas and return local path.
+     *
+     * @param $url
+     * @return string Path to saved file
+     * @throws \Kohana\KohanaException
+     */
     public static function download_file($url) {
     	self::init() ;
 
@@ -819,11 +828,12 @@ class Canvas {
         
         return $output;
     }
-    
+
     /**
      * Use List Accounts API
      *
      * @return array
+     * @throws \Kohana\KohanaException
      */
     public static function list_accounts() {
     	self::init();
@@ -833,12 +843,13 @@ class Canvas {
     	
     	return self::execute_curl($options);
     }
-    
+
     /**
      * Use Course List in Account API
      *
      * @param int $account_id
      * @return array
+     * @throws \Kohana\KohanaException
      */
     public static function list_courses($account_id) {
     	self::init();
@@ -848,12 +859,13 @@ class Canvas {
     	
     	return self::execute_curl($options);
     }
-    
+
     /**
      * Create an array to use for allowing someone to choose a course
-     * 
+     *
      * @param string $account_id
      * @return array
+     * @throws \Kohana\KohanaException
      */
     public static function list_courses_dropdown($account_id) {
         $courses = self::list_courses($account_id);

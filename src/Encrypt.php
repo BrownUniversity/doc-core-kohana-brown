@@ -1,12 +1,16 @@
 <?php
 namespace BrownUniversity\DOC ;
+
+use Kohana\Encrypt as Kohana_Encrypt;
+
 /**
  * Extending Kohana_Encrypt to provide extra functionality for dealing with URLs.
  *
  * @author jorrill
  * @deprecated moving methods into Kohana proper
  */
-class Encrypt extends \Kohana_Encrypt {
+class Encrypt extends Kohana_Encrypt
+{
 	/**
 	 * Encodes and converts the result into something safe for including in URLs.
 	 * 

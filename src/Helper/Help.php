@@ -1,6 +1,7 @@
 <?php
 namespace BrownUniversity\DOC\Helper ;
 use BrownUniversity\DOC\View;
+use Kohana\Request;
 
 /**
  * Locates help content and outputs into a div with id="help". The help content
@@ -49,7 +50,7 @@ class Help {
 	 * available" if no file can be found.
 	 */
 	public static function help() {
-		$request = \Request::current() ;
+		$request = Request::current() ;
 		$help_content = "<em>No help available</em>" ;
 		
 		$help_file_root = 'help/' ;
@@ -86,17 +87,19 @@ class Help {
 		}
 	}
 
-	/**
-	 * Look for intro content and if it exists put into a div. Note that applications using this
-	 * should also track whether the user has opted to turn off the intro content. Child classes
-	 * will be responsible for that logic.
-	 *
-	 * @param string $app_id
-	 * @param null   $path_fragment
-	 */
+    /**
+     * Look for intro content and if it exists put into a div. Note that applications using this
+     * should also track whether the user has opted to turn off the intro content. Child classes
+     * will be responsible for that logic.
+     *
+     * @param string $app_id
+     * @param null   $path_fragment
+     * @throws \Exception
+     * @throws \Kohana\View\ViewException
+     */
 	public static function intro($app_id = '', $path_fragment = NULL) {
 		
-		$request = \Request::current() ;
+		$request = Request::current() ;
 		$intro_file_root = 'intro/' ;
 		
 		if( empty( $path_fragment )) {
@@ -111,7 +114,7 @@ class Help {
 		
 		$intro_file = $intro_file_root . $path_fragment ;
 		
-		if( \Kohana::find_file('views', $intro_file) ) {
+		if( Kohana::find_file('views', $intro_file) ) {
 			$intro_content = View::factory($intro_file)->render() ;
 			print('<div id="'.self::INTRO_ID.'" class="intro" data-appid="'.$app_id.'" data-path="'.$path_fragment.'">') ;
 			print($intro_content) ;

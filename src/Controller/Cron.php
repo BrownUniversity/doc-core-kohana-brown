@@ -1,6 +1,11 @@
 <?php
 namespace BrownUniversity\DOC\Controller ;
 
+use Kohana\Controller;
+use Kohana\Kohana;
+use Kohana\KohanaException;
+use Kohana\Log;
+
 /**
  * Generic parent controller for cron jobs. There are actions for time slices from
  * "minutely" to "monthly". Each application will override one or more of the methods
@@ -13,21 +18,21 @@ namespace BrownUniversity\DOC\Controller ;
  * @author jorrill
  * @deprecated Should be replaced by Minion tasks.
  */
-class Cron extends \Controller {
+class Cron extends Controller {
 	public function action_minutely() {
-		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing minutely cron script') ;
+		Kohana::$log->add(Log::INFO, 'Executing minutely cron script') ;
 	}
 	public function action_hourly() {
-		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing hourly cron script') ;
+		Kohana::$log->add(Log::INFO, 'Executing hourly cron script') ;
 	}
 	public function action_daily() {
-		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing daily cron script') ;
+		Kohana::$log->add(Log::INFO, 'Executing daily cron script') ;
 	}
 	public function action_weekly() {
-		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing weekly cron script') ;
+		Kohana::$log->add(Log::INFO, 'Executing weekly cron script') ;
 	}
 	public function action_monthly() {
-		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing monthly cron script') ;
+		Kohana::$log->add(Log::INFO, 'Executing monthly cron script') ;
 	}
     
 	/**
@@ -35,7 +40,7 @@ class Cron extends \Controller {
 	 * but in the evenings rather than the mornings.
 	 */
 	public function action_nightly() {
-		\Kohana::$log->add(\Kohana_Log::INFO, 'Executing nightly cron script');
+		Kohana::$log->add(Log::INFO, 'Executing nightly cron script');
 	}
     
 	public function action_index() {}
@@ -99,8 +104,8 @@ class Cron extends \Controller {
 		/**
 		 * Ensure the request is actually coming from the command line
 		 */
-		if ( ! \Kohana::$is_cli) {
-			throw new \Kohana_Exception('Attempting to execute CRON view a web-browser.');
+		if ( ! Kohana::$is_cli) {
+			throw new KohanaException('Attempting to execute CRON view a web-browser.');
 		}
 	}
 

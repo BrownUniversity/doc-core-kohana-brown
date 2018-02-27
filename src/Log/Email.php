@@ -4,6 +4,10 @@ namespace BrownUniversity\DOC\Log ;
  * @package DOC Core
  */
 use BrownUniversity\DOC\Util\Mail;
+use Kohana\Kohana;
+use Kohana\Log;
+use Kohana\Log\Writer;
+use Kohana\Request;
 
 defined('SYSPATH') or die('No direct script access.');
 
@@ -13,7 +17,7 @@ defined('SYSPATH') or die('No direct script access.');
  * 
  * @author Christopher Keith <Christopher_Keith@brown.edu>
  */
-class Email extends \Log_Writer {
+class Email extends Writer {
 
     /**
      * Array of email addresses keyed by log level constants defined in the
@@ -50,26 +54,28 @@ class Email extends \Log_Writer {
      * @var array
      */
     protected static $levels = array(
-        \Kohana_Log::EMERGENCY => 'EMERGENCY',
-        \Kohana_Log::ALERT     => 'ALERT',
-        \Kohana_Log::CRITICAL  => 'CRITICAL',
-        \Kohana_Log::ERROR     => 'ERROR',
-        \Kohana_Log::WARNING   => 'WARNING',
-        \Kohana_Log::NOTICE    => 'NOTICE',
-        \Kohana_Log::INFO      => 'INFO',
-        \Kohana_Log::DEBUG     => 'DEBUG',
-        \Kohana_Log::STRACE    => 'STRACE',
+        Log::EMERGENCY => 'EMERGENCY',
+        Log::ALERT     => 'ALERT',
+        Log::CRITICAL  => 'CRITICAL',
+        Log::ERROR     => 'ERROR',
+        Log::WARNING   => 'WARNING',
+        Log::NOTICE    => 'NOTICE',
+        Log::INFO      => 'INFO',
+        Log::DEBUG     => 'DEBUG',
+        Log::STRACE    => 'STRACE',
     );
-    
+
     /**
      * Class constructor override to facilitate configuration mapping
+     *
+     * @throws \Kohana\KohanaException
      */
     public function __construct($environment = NULL, $app = NULL) {
         
-        $this->addresses = \Kohana::$config->load('logemail.recipients');
+        $this->addresses = Kohana::$config->load('logemail.recipients');
         $this->application = $app;
         $this->environment = $environment;
-        $this->from = \Kohana::$config->load('logemail.from');
+        $this->from = Kohana::$config->load('logemail.from');
     }
     
     /**
@@ -82,16 +88,16 @@ class Email extends \Log_Writer {
     public function write(array $messages) {
         
         // Add supplemental information to the error text
-		$supp_info = \Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
+		$supp_info = Request::user_agent(array('browser', 'version', 'robot', 'mobile', 'platform'));
         
-        $request = \Request::current();
+        $request = Request::current();
         if ((is_a($request, 'Request'))) {
-            $error_prefix = "Route: " . \Request::current()->uri();
+            $error_prefix = "Route: " . Request::current()->uri();
         } else {
             $error_prefix = "Route: could not be determined.";
         }
         
-		$error_prefix .= "\nIP Address: " . \Request::$client_ip;
+		$error_prefix .= "\nIP Address: " . Request::$client_ip;
 		$error_prefix .= "\nBrowser: " . $supp_info['browser'];
 		$error_prefix .= "\nVersion: " . $supp_info['version'];
 		$error_prefix .= "\nPlatform: " . $supp_info['platform'];

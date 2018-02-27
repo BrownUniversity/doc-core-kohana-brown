@@ -1,10 +1,7 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
-use BrownUniversity\DOC\Encrypt ;
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
+use Kohana\Encrypt;
 
 /**
  * Class to create and parse tokens that can be used to identify resources available
@@ -13,13 +10,14 @@ use BrownUniversity\DOC\Encrypt ;
  * @author jorrill
  */
 class Token {
-	/**
-	 * 
-	 * @param mixed $object
-	 * @param array $properties
-	 * @param string $route_as
-	 * @return string
-	 */
+    /**
+     *
+     * @param mixed  $object
+     * @param array  $properties
+     * @param string $route_as
+     * @return string
+     * @throws \Kohana\KohanaException
+     */
 	public static function create( $object, $token, $properties, $route_as ) {
 		$data = array(
 			'token' => $token,
@@ -32,7 +30,13 @@ class Token {
 		
 		return Encrypt::instance()->encode_url_safe(json_encode($data)) ;
 	}
-	public static function parse( $token ) {
+
+    /**
+     * @param $token
+     * @return mixed
+     * @throws \Kohana\KohanaException
+     */
+    public static function parse( $token ) {
 		return json_decode(Encrypt::instance()->decode_url_safe($token)) ;
 	}
 }
