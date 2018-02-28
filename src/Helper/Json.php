@@ -16,7 +16,7 @@ class Json {
 	public static function get_json( $data ) {
 		// $as_json_supported = array('ORM', 'Database_Result') ;
 
-		if(is_object( $data ) && (in_array( 'ORM', class_parents( $data )) || in_array('Database_Result', class_parents( $data )))) {
+		if(is_object( $data ) && (in_array( 'ORM', class_parents( $data )) || in_array('Database\\Result', class_parents( $data )))) {
 			$_output = $data->as_json() ;
 		} elseif( is_array( $data )) {
 			foreach( $data as $key => $value ) {

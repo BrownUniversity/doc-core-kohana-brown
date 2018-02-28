@@ -4,6 +4,8 @@ use BrownUniversity\DOC\View ;
 use BrownUniversity\DOC\ORM ;
 use BrownUniversity\DOC\Encrypt ;
 use BrownUniversity\DOC\Util\Banner\Ords ;
+use Kohana\Controller\Template;
+
 /**
  * @package Kohana 3.x Modules
  * @author Sumner Warren <Sumner_Warren@brown.edu>
@@ -12,8 +14,9 @@ defined('SYSPATH') OR die('No direct access allowed.');
 
 /**
  * Controller for providing OAuth management
+ * @todo refactor as appropriate for use in a namespaced context, without hard-coded references to things like URLs.
  */
-class Oauth extends Controller_Base_Admin {
+class Oauth extends Template {
 
 	/**
 	 * Main template file

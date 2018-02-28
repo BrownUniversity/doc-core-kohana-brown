@@ -1,7 +1,7 @@
 <?php
 namespace BrownUniversity\DOC\Util ;
 
-use KohanaKohana_Debug as Kohana_Debug;
+use Kohana\Debug as Kohana_Debug;
 
 class Debug {
 	public static function dump( $var, $die = TRUE ) {

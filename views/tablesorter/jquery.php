@@ -1,5 +1,6 @@
 <?php
 	use BrownUniversity\DOC\Helper\Table ;
+use Kohana\Request;
 
 	if( !isset( $table_id )) {
 		$table_id = 'sortableTable' ;

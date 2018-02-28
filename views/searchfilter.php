@@ -52,7 +52,10 @@
 
 </style>
 <?php
-	use \BrownUniversity\DOC\Helper\Form ;
+	use BrownUniversity\DOC\Helper\Form ;
+	use BrownUniversity\DOC\Util\Filter;
+	use Kohana\Request;
+	use Kohana\Kohana;
 
 	if( !isset( $minute_increment )) {
 		$minute_increment = Form::MINUTE_INCREMENT ;
@@ -103,11 +106,11 @@
 	if( isset( $filter_fields ) && isset( $filter_model )) {
 		$table_columns = $filter_model->list_columns() ;
 		
-		$storage = Util_Filter::storage_instance() ;
-		$saved_filter_specs_arr = $storage->get( Util_Filter::get_filter_key( Util_Filter::KEY_FULL ) ) ;
+		$storage = Filter::storage_instance() ;
+		$saved_filter_specs_arr = $storage->get( Filter::get_filter_key( Filter::KEY_FULL ) ) ;
 
 		if( $saved_filter_specs_arr == NULL ) {
-			$saved_filter_specs_arr = Util_Filter::get_default_filter_specs() ;
+			$saved_filter_specs_arr = Filter::get_default_filter_specs() ;
 		}
 		$form_action = preg_replace('/\/+/', '/', Kohana::$base_url.Request::detect_uri()) ;
 //DOC_Util_Debug::dump( $saved_filter_specs_arr, FALSE ) ;
@@ -235,21 +238,21 @@
 			$date_default_1 = '' ;
 			$numeric_default = '' ;
 			if( isset( $saved_filter_specs[ 'filter_column' ])) {
-				$this_data_type = Util_Filter::get_data_type($filter_model, $saved_filter_specs[ 'filter_column' ]) ;
+				$this_data_type = Filter::get_data_type($filter_model, $saved_filter_specs[ 'filter_column' ]) ;
 				if( $this_data_type == 'unknown' ) {
 					if( isset( $filter_fields[ $saved_filter_specs[ 'filter_column' ]][ 'data_type' ] )) {
 						$this_data_type = $filter_fields[ $saved_filter_specs[ 'filter_column' ]][ 'data_type' ] ;
 					}
 				}
 //	DOC_Util_Debug::dump( $this_data_type, false ) ;
-				if( Util_Filter::data_type_is_text( $this_data_type )) {
+				if( Filter::data_type_is_text( $this_data_type )) {
 					$text_default = isset( $saved_filter_specs[ 'search_val_0' ]) ? $saved_filter_specs[ 'search_val_0' ] : '' ;
 				}
-				if( Util_Filter::data_type_is_date( $this_data_type )) {
+				if( Filter::data_type_is_date( $this_data_type )) {
 					$date_default_0 = isset( $saved_filter_specs[ 'search_val_0' ]) ? $saved_filter_specs[ 'search_val_0' ] : '' ;
 					$date_default_1 = isset( $saved_filter_specs[ 'search_val_1' ]) ? $saved_filter_specs[ 'search_val_1' ] : '' ;
 				}
-				if( Util_Filter::data_type_is_numeric( $this_data_type )) {
+				if( Filter::data_type_is_numeric( $this_data_type )) {
 					$numeric_default = isset( $saved_filter_specs[ 'search_val_0' ]) ? $saved_filter_specs[ 'search_val_0' ] : '' ;
 				}
 

@@ -3,7 +3,7 @@
 	<?php
 		$debug_array = array(
 			'Debug' => $debug,
-			'Kohana Request' => \Request::current(),
+			'Kohana Request' => \Kohana\Request::current(),
 			'GET' => $_GET,
 			'POST' => $_POST,
 			'COOKIE' => $_COOKIE,

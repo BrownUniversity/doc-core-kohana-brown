@@ -189,14 +189,15 @@ class ORM extends Kohana_ORM {
 	}
 
     /**
-     * Not sure what purpose this serves that the basic factory wouldn't give us.
-     * Should it be deprecated?
+     * Not sure what purpose this serves that the basic factory wouldn't give us, except for a NULL value where
+     * the record can't be found.
      *
      * @param string $obj_type
      * @param string $key_name
      * @param string $key_value
      * @return \Kohana\ORM\ORM|null
      * @throws \Kohana\KohanaException
+     * @deprecated
      */
 	static function obj_template($obj_type, $key_name, $key_value) {
 		$_output = ORM::factory($obj_type)

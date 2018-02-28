@@ -9,6 +9,7 @@ use BrownUniversity\DOC\Util\Slack as Util_Slack;
 use Kohana\Kohana;
 use Kohana\Log;
 use Kohana\Log\Writer;
+use Kohana\Minion\Minion\CLI;
 use Kohana\Request;
 
 /**
@@ -49,6 +50,9 @@ class Slack extends Writer {
 
     /**
      * Class constructor override to facilitate configuration mapping
+     *
+     * @param null $environment
+     * @param null $app
      */
     public function __construct($environment = NULL, $app = NULL) {
 
@@ -85,14 +89,7 @@ class Slack extends Writer {
                 $error_prefix .= "\nData: " . json_encode($options['data']);
             }
         } else {
-//             $user = Util_AuthUser::get_logged_in_user(Util_AuthUser::NO_LOGIN);
-//             if (is_a($user, 'Model_User') && $user->loaded()) {
-//                 $error_prefix .= "\nUser ID: " . $user->id;
-//             } else {
-//                 $error_prefix .= "\nUser ID: could not be determined.";
-//             }
-//            $error_prefix .= "\nSession ID: " . Session::instance()->id();
-            $error_prefix .= "\nIP Address: " . \Request::$client_ip;
+            $error_prefix .= "\nIP Address: " . Request::$client_ip;
             $error_prefix .= "\nBrowser: " . $supp_info['browser'];
             $error_prefix .= "\nVersion: " . $supp_info['version'];
             $error_prefix .= "\nPlatform: " . $supp_info['platform'];
@@ -105,7 +102,7 @@ class Slack extends Writer {
         foreach ($messages as $message) {
 
             // Skip 404 errors
-            if (strpos($message['body'], 'HTTP_Exception_404') !== FALSE) {
+            if (strpos($message['body'], 'Code_404') !== FALSE) {
                 continue;
             }
 

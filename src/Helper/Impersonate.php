@@ -9,6 +9,8 @@ namespace BrownUniversity\DOC\Helper;
 use Kohana\HTML;
 use Kohana\Kohana;
 use Kohana\Log;
+use Kohana\Session;
+use Kohana\URL;
 
 defined('SYSPATH') OR die('No direct access allowed.');
 
@@ -29,10 +31,10 @@ class Impersonate {
 
         if( $session->get( Kohana::$config->load('impersonate.session_original_user_id')) == NULL ) {
 			$method = Kohana::$config->load('impersonate.logged_in_method');
-			$model = Kohana::$config->load('impersonate.user_model');
+			$model = self::get_user_model_class();
 			$attribute = Kohana::$config->load('impersonate.permissions_property');
 			$values = Kohana::$config->load('impersonate.permissions_values');
-			$user = eval("return Model_{$model}::{$method}();");
+			$user = eval("return {$model}::{$method}();");
         	$session->set(Kohana::$config->load('impersonate.session_original_user_id'),$user->$attribute) ;
         }
 
@@ -95,10 +97,11 @@ class Impersonate {
 		}
 
 		$method = Kohana::$config->load('impersonate.logged_in_method');
-		$model = Kohana::$config->load('impersonate.user_model');
 		$attribute = Kohana::$config->load('impersonate.permissions_property');
 		$values = Kohana::$config->load('impersonate.permissions_values');
-		$user = eval("return Model_{$model}::{$method}();");
+        $model = self::get_user_model_class() ;
+
+		$user = eval("return {$model}::{$method}();");
 
 		if (array_search($user->$attribute, $values) !== FALSE) {
 			return TRUE;
@@ -199,10 +202,10 @@ class Impersonate {
         Kohana::$log->add(Log::INFO, 'Last Impersonated User: ' . $id);
         $logged_in_method = Kohana::$config->load('impersonate.logged_in_method');
         $alternate_method = Kohana::$config->load('impersonate.alternate_method');
-        $model = Kohana::$config->load('impersonate.user_model');
+        $model = self::get_user_model_class();
         $command = NULL;
         if ($id !== NULL) {
-            $command = "return Model_{$model}::{$alternate_method}('{$id}');";
+            $command = "return {$model}::{$alternate_method}('{$id}');";
         }
         return eval($command);
     }
@@ -219,12 +222,12 @@ class Impersonate {
 
         $logged_in_method = Kohana::$config->load('impersonate.logged_in_method');
         $alternate_method = Kohana::$config->load('impersonate.alternate_method');
-        $model = Kohana::$config->load('impersonate.user_model');
+        $model = self::get_user_model_class();
         $command = NULL;
         if ($id !== NULL) {
-            $command = "return Model_{$model}::{$alternate_method}('{$id}');";
+            $command = "return {$model}::{$alternate_method}('{$id}');";
         } else {
-        	$command = "return Model_{$model}::{$logged_in_method}();";
+        	$command = "return {$model}::{$logged_in_method}();";
         }
         return eval($command);
     }
@@ -240,12 +243,12 @@ class Impersonate {
 
         $logged_in_method = Kohana::$config->load('impersonate.logged_in_method');
         $alternate_method = Kohana::$config->load('impersonate.alternate_method');
-        $model = Kohana::$config->load('impersonate.user_model');
+        $model = self::get_user_model_class();
         $command = NULL;
         if ($id !== NULL) {
-            $command = "return Model_{$model}::{$alternate_method}('{$id}');";
+            $command = "return {$model}::{$alternate_method}('{$id}');";
         } else {
-        	$command = "return Model_{$model}::{$logged_in_method}();";
+        	$command = "return {$model}::{$logged_in_method}();";
         }
         return eval($command);
 
@@ -275,12 +278,12 @@ class Impersonate {
     /**
      * Return an instance of a Session
      *
-     * @return \Session Instance
+     * @return \Kohana\Session Instance
      * @throws \Kohana\KohanaException
      */
     public static function session()
     {
-        return \Session::instance(Kohana::$config->load('impersonate.session_type'));
+        return Session::instance(Kohana::$config->load('impersonate.session_type'));
     }
 
     /**
@@ -293,7 +296,7 @@ class Impersonate {
     {
         $session = self::session();
         if ($link === NULL) {
-            $link = \URL::base();
+            $link = URL::base();
 		}
         $already_set = $session->get(Kohana::$config->load('impersonate.return_link_key'), FALSE);
         if ( ! $already_set) {
@@ -312,6 +315,20 @@ class Impersonate {
         $session = self::session();
 
         $session->set(Kohana::$config->load('impersonate.results_key'), $results);
+    }
+
+    /**
+     * @return \Kohana\Kohana_Config_Group|string
+     * @throws \Kohana\KohanaException
+     */
+    private static function get_user_model_class() {
+        $model = Kohana::$config->load('impersonate.user_model');
+        $model = 'Model\\'.$model;
+        if( !class_exists($model)) {
+            $model = Kohana::$app_namespace.'\\'.$model;
+        }
+
+        return $model ;
     }
 
 } // End Impersonation Helper

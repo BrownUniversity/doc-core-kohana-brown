@@ -408,7 +408,7 @@ class Table {
 								}
 								$url_fragment = $this->parse_string($object, $action[ 'url_fragment' ]) ;
 
-								$base = \Kohana::$base_url ;
+								$base = Kohana::$base_url ;
 								if( isset( $action[ 'base' ]) && !empty( $action[ 'base' ])) {
 									$base = $action[ 'base' ] ;
 								}
@@ -631,7 +631,7 @@ class Table {
 	 * @return mixed
 	 */
 	protected function parse_string( $object, $parseable_string, $return_as_string = TRUE ) {
-		if( \Kohana::$profiling === TRUE ) {
+		if( Kohana::$profiling === TRUE ) {
 			$bm = \Profiler::start(__CLASS__,__METHOD__) ;
 		}
 		
