@@ -3,6 +3,9 @@ namespace BrownUniversity\DOC\Util ;
 
 use DOMDocument;
 use Kohana\Request;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 /**
  * A utility class to ease working with spreadsheets.
@@ -11,19 +14,21 @@ use Kohana\Request;
  */
 class Spreadsheet {
 
-	const FILETYPE_PDF = 'PDF' ;
-	const FILETYPE_EXCEL = 'Excel5' ;
-	const FILETYPE_EXCEL_2007 = 'Excel2007' ;
-	const FILETYPE_HTML = 'HTML' ;
+	const FILETYPE_PDF = 'Pdf' ;
+	const FILETYPE_EXCEL = 'Xls' ;
+	const FILETYPE_EXCEL_2007 = 'Xlsx' ;
+	const FILETYPE_HTML = 'Html' ;
 
     /**
      * Create a representation of an XLSX Cognos report
      *
-     * @param type $path location of file to ingest
+     * @param string $path location of file to ingest
      * @return array
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public static function read_cognos( $path ) {
-        $reader = new \PHPExcel_Reader_Excel2007();
+        $reader = IOFactory::createReader('Xlsx');
         $excel = $reader->load($path);
 
         $excel->setActiveSheetIndex(0);
@@ -51,9 +56,11 @@ class Spreadsheet {
      * @param int $ignore_rows
      * @param int $column_count
      * @return array
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public static function read_spreadsheet( $path, $ignore_rows = 0, $column_count = NULL ) {
-        $reader = new \PHPExcel_Reader_Excel2007();
+        $reader = IOFactory::createReader('Xlsx');
         $excel = $reader->load($path);
         
         $excel->setActiveSheetIndex(0);
@@ -89,39 +96,41 @@ class Spreadsheet {
     
     /**
      * Given a data array, returns a spreadsheet object. Prints header if one is provided.
+     *
      * @param array $data Array of associative array. Associate array contains the field and corresponding value.
      * @param array $header contains mapping between key of associative array and header value to be printed in file.
 	 * Later we can use this array to pass additional information
-     * @return PHPExcel
+     * @return \PhpOffice\PhpSpreadsheet\Spreadsheet
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
 	 */
 	public static function spreadsheet_via_array($data = array(), $header = array()){
-		$obj_phpexcel = new \PHPExcel() ;
-		$obj_phpexcel->setActiveSheetIndex(0) ;
-		$active_sheet = $obj_phpexcel->getActiveSheet() ;
+		$obj_spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$obj_spreadsheet->setActiveSheetIndex(0) ;
+		$active_sheet = $obj_spreadsheet->getActiveSheet() ;
 		
-		$row_index = 0 ;
+		$row_index = 0 ; // rows still zero based?
 		//create header if $header array is not null
 		if(count($header) > 0){
 			$row_index++ ;
-			$i=0;
+			$i=1; // columns are 1-based
 			foreach($header as  $head){
 				$active_sheet->getCellByColumnAndRow($i, $row_index)
-							 ->setValueExplicit($head, \PHPExcel_Cell_DataType::TYPE_STRING);
+							 ->setValueExplicit($head, DataType::TYPE_STRING);
 				$i++;
 			}
 		}	
 		if(count($data) > 0){	
 			foreach($data as $row){
-				$i=0;
+				$i=1;
 				$row_index++;
 				foreach($row as $key => $column){
 					$active_sheet->getCellByColumnAndRow($i, $row_index)
-                                 ->setValueExplicit($column, \PHPExcel_Cell_DataType::TYPE_STRING);
+                                 ->setValueExplicit($column, DataType::TYPE_STRING);
 					$i++;
 				}
 			}
 		}		
-		return $obj_phpexcel ;
+		return $obj_spreadsheet ;
 	}
     
 	/**
@@ -129,16 +138,16 @@ class Spreadsheet {
 	 * use of the Table class, and uses the same type of formatting data that we
 	 * would use when sending data to the browser.
 	 *
-	 * @param Database_Result $data
-	 * @param array $format
-	 * @return PHPExcel
+     * @param $table_html
+     * @return \PhpOffice\PhpSpreadsheet\Spreadsheet
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
 	 * @todo Move the Util_Table code elsewhere so that this takes just rendered HTML.
 	 */
 	public static function spreadsheet_via_table( $table_html ) {
 
-		$obj_phpexcel = new \PHPExcel() ;
-		$obj_phpexcel->setActiveSheetIndex(0) ;
-		$active_sheet = $obj_phpexcel->getActiveSheet() ;
+		$obj_spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$obj_spreadsheet->setActiveSheetIndex(0) ;
+		$active_sheet = $obj_spreadsheet->getActiveSheet() ;
 		$row_index = 1 ;
 
 		$dom = new DomDocument() ;
@@ -149,13 +158,13 @@ class Spreadsheet {
 			$ths = $thead->item(0)->getElementsByTagName('th') ;
 			if( $ths->length > 0 ) {
 				for( $i = 0; $i < $ths->length; $i++ ) {
-					$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $ths->item($i)->nodeValue ) ;
+					$active_sheet->setCellValueByColumnAndRow( $i+1, $row_index, $ths->item($i)->nodeValue ) ;
 				}
 			} else {
-				$active_sheet->setCellValueByColumnAndRow( 0, $row_index, 'No header columns' ) ;
+				$active_sheet->setCellValueByColumnAndRow( 1, $row_index, 'No header columns' ) ;
 			}
 		} else {
-			$active_sheet->setCellValueByColumnAndRow( 0, $row_index, 'No header row' ) ;
+			$active_sheet->setCellValueByColumnAndRow( 1, $row_index, 'No header row' ) ;
 		}
 
 		$tbody = $dom->getElementsByTagName('tbody') ;
@@ -173,7 +182,7 @@ class Spreadsheet {
 						$cell_value = preg_replace('/<\/?((p)|(br)|(div)).*?\/?>/',"\r", $cell_value ) ; 
 						$cell_value = WordHTML::clean($cell_value,'') ;
 
-  						$active_sheet->setCellValueByColumnAndRow( $i, $row_index, $cell_value ) ;
+  						$active_sheet->setCellValueByColumnAndRow( $i+1, $row_index, $cell_value ) ;
 
 						if( $tds->item($i)->hasAttribute( 'class' )) {
                             
@@ -183,26 +192,28 @@ class Spreadsheet {
                                 switch( $c ) {
                                     case 'datetime':
                                         $active_sheet
-                                                ->getStyleByColumnAndRow($i, $row_index)
+                                                ->getStyleByColumnAndRow($i+1, $row_index)
                                                 ->getNumberFormat()
-                                                ->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_DATE_XLSX22) ;
+                                                ->setFormatCode( NumberFormat::FORMAT_DATE_DATETIME);
                                         break ;
 
                                     case 'dollars':
                                         $active_sheet
-                                                ->getStyleByColumnAndRow($i, $row_index)
+                                                ->getStyleByColumnAndRow($i+1, $row_index)
                                                 ->getNumberFormat()
-                                                ->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD) ;
+                                                ->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD) ;
                                         break ;
 
                                     case 'xls-text':
                                         $active_sheet
-                                            ->getCellByColumnAndRow($i, $row_index)
-                                            ->setValueExplicit($cell_value, \PHPExcel_Cell_DataType::TYPE_STRING);
+                                            ->getCellByColumnAndRow($i+1, $row_index)
+                                            ->setValueExplicit($cell_value, DataType::TYPE_STRING);
                                         break ;
 
                                     case 'wrap':
-                                        $active_sheet->getStyleByColumnAndRow($i, $row_index)->getAlignment()->setWrapText(TRUE);
+                                        $active_sheet->getStyleByColumnAndRow($i+1, $row_index)
+                                                     ->getAlignment()
+                                                     ->setWrapText(TRUE);
                                         break ;
 
                                     default:
@@ -214,16 +225,16 @@ class Spreadsheet {
 				}
 			} else {
 				$row_index++ ;
-				$active_sheet->setCellValueByColumnAndRow( 0, $row_index, 'No data' ) ;
+				$active_sheet->setCellValueByColumnAndRow( 1, $row_index, 'No data' ) ;
 			}
 		} else {
 			$row_index++ ;
-			$active_sheet->setCellValueByColumnAndRow( 0, $row_index, 'No data') ;
+			$active_sheet->setCellValueByColumnAndRow( 1, $row_index, 'No data') ;
 		}
 
 
 
-		return $obj_phpexcel ;
+		return $obj_spreadsheet ;
 
 	}
 
@@ -232,10 +243,10 @@ class Spreadsheet {
      * one will be generated based on the current URI and datetime. Defaults to
      * Excel, but can optionally generate other formats (file types) as well.
      *
-     * @param PHPExcel $obj_phpexcel
+     * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $obj_phpexcel
      * @param string   $filename
      * @param string   $file_type Use one of the class constants.
-     * @throws \Kohana\KohanaException
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
 	public static function download( $obj_phpexcel, $filename = NULL, $file_type = self::FILETYPE_EXCEL ) {
 		if( empty( $filename )) {
@@ -275,9 +286,9 @@ class Spreadsheet {
 				die('unsupported file type') ;
 		}
 
-		$phpexcel_writer = \PHPExcel_IOFactory::createWriter($obj_phpexcel, $file_type) ;
-//		$phpexcel_writer->save('/www/vhosts/dev.college.brown.edu/phpexcel_out/'.$filename.'.xls');
-		$phpexcel_writer->save('php://output') ;
+		$spreadsheet_writer = IOFactory::createWriter($obj_phpexcel, $file_type) ;
+//		$spreadsheet_writer->save('/www/vhosts/dev.college.brown.edu/phpexcel_out/'.$filename.'.xls');
+		$spreadsheet_writer->save('php://output') ;
 		exit() ;
 	}
 }
