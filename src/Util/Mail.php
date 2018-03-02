@@ -31,13 +31,13 @@ class Mail {
 		$mail_config = Kohana::$config->load('mail') ;
 
 		if( $spool ) {
-			$spool = new Swift_FileSpool($mail_config['spool_location']) ;
-			$mailer = new Swift_Mailer( new Swift_SpoolTransport( $spool )) ;
+			$spool = new \Swift_FileSpool($mail_config['spool_location']) ;
+			$mailer = new \Swift_Mailer( new Swift_SpoolTransport( $spool )) ;
 		} else {
 // 			$transport = Swift_MailTransport::newInstance() ;
 // 			$transport = Swift_SmtpTransport::newInstance('localhost') ;
-			$transport = Swift_SendmailTransport::newInstance() ;
-			$mailer = Swift_Mailer::newInstance($transport) ;
+			$transport = \Swift_SendmailTransport::newInstance() ;
+			$mailer = \Swift_Mailer::newInstance($transport) ;
 		}
 
 		if( $mail_config[ 'test_mode' ] == TRUE ) {
@@ -73,11 +73,11 @@ class Mail {
 		if( count( $attachments ) > 0) {
 		    foreach($attachments as $attachment) {
 				if( is_array( $attachment )) {
-					\Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment['path']}, with new name {$attachment['new_name']}") ;
-					$message->attach(Swift_Attachment::fromPath($attachment['path'])->setFilename($attachment['new_name']));
+					Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment['path']}, with new name {$attachment['new_name']}") ;
+					$message->attach(\Swift_Attachment::fromPath($attachment['path'])->setFilename($attachment['new_name']));
 				} else {
-					\Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment}. ");
-					$message->attach(Swift_Attachment::fromPath($attachment));
+					Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment}. ");
+					$message->attach(\Swift_Attachment::fromPath($attachment));
 				}
 			}
 		} else {
@@ -103,7 +103,7 @@ class Mail {
      * @throws \Kohana\KohanaException
      */
 	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE, $attachments = array() ) {
-		$message = Swift_Message::newInstance($subject, $body) ;
+		$message = \Swift_Message::newInstance($subject, $body) ;
 		$message->setContentType('text/html') ;
 
 		return self::send_message($message, $recipients, $cc, $from, $reply_to, $spool, $attachments) ;
@@ -117,10 +117,10 @@ class Mail {
 	public static function flush_spool() {
 		$mail_config = Kohana::$config->load('mail') ;
 
-		$spool = new Swift_FileSpool($mail_config['spool_location']) ;
+		$spool = new \Swift_FileSpool($mail_config['spool_location']) ;
 // 		$transport = Swift_MailTransport::newInstance() ;
 // 		$transport = Swift_SmtpTransport::newInstance('localhost') ;
-		$transport = Swift_SendmailTransport::newInstance() ;
+		$transport = \Swift_SendmailTransport::newInstance() ;
 		$count = $spool->flushQueue($transport) ;
 		Kohana::$log->add(Log::INFO, "Flushed {$count} messages from the spool.") ;
 	}
