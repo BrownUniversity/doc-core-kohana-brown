@@ -128,7 +128,8 @@ class Impersonate extends Template {
             	}
             	$affiliation = $this->request->post('affiliation');
             	if ($affiliation == 'any') $affiliation = NULL;
-                $ldap = new Ldap();
+                $ldap = Ldap::instance();
+
                 $results = $ldap->search_people(
                 	$this->request->post('search_string'),
       				Kohana::$config->load('impersonate.search_limit'),
