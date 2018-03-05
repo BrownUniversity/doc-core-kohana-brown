@@ -134,7 +134,7 @@ class Valid extends Kohana_Valid
 	 * @return boolean
 	 */
 	public static function not_empty_html( $value ) {
-		if( \Valid::not_empty($value) ) {
+		if( Kohana_Valid::not_empty($value) ) {
 			$value = strip_tags( $value ) ;
 			$value = trim( str_replace('&nbsp;','',$value)) ;
 
