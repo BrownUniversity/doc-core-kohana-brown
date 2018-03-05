@@ -2,6 +2,7 @@
 namespace BrownUniversity\DOC\Util ;
 use BrownUniversity\DOC\ORM ;
 use Kohana\Cache\Cache;
+use Kohana\Cache\CacheException;
 use Kohana\Debug;
 use Kohana\Kohana;
 use Kohana\Log;
@@ -43,7 +44,7 @@ class Lookup {
      * @param boolean $refresh_cache should we force replace the cached values?
      * @return array
      * @throws \Kohana\KohanaException
-     * @throws \Kohana\Cache\Cache\CacheException
+     * @throws \Kohana\Cache\CacheException
      */
 	static function get_lut( $model, $key, $mode = self::BY_VAL, $order = NULL, $wheres = NULL, $refresh_cache = FALSE) {
 		$_output = array() ;

@@ -34,7 +34,7 @@ class Mail {
 			$spool = new \Swift_FileSpool($mail_config['spool_location']) ;
 			$mailer = new \Swift_Mailer( new Swift_SpoolTransport( $spool )) ;
 		} else {
-			$transport = self::getDeliveryTransport($mail_config);
+ 			$transport = self::getDeliveryTransport($mail_config) ;
 			$mailer = \Swift_Mailer::newInstance($transport) ;
 		}
 
