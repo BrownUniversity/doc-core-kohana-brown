@@ -34,22 +34,15 @@ class Mail {
 			$spool = new \Swift_FileSpool($mail_config['spool_location']) ;
 			$mailer = new \Swift_Mailer( new Swift_SpoolTransport( $spool )) ;
 		} else {
-// 			$transport = Swift_MailTransport::newInstance() ;
-// 			$transport = Swift_SmtpTransport::newInstance('localhost') ;
-			$transport = \Swift_SendmailTransport::newInstance() ;
+			$transport = self::getDeliveryTransport($mail_config);
 			$mailer = \Swift_Mailer::newInstance($transport) ;
 		}
 
 		if( $mail_config[ 'test_mode' ] == TRUE ) {
-			$message->setBody(
-				$message->getBody() .
-				"<p>TEST MODE: This message would normally have gone to: " . implode( ', ', $recipients ) . "</p>"
-			) ;
+			$message = self::append_content($message, "TEST MODE: This message would normally have gone to: " . implode( ', ', $recipients ) ) ;
+
 			if( !empty( $cc )) {
-				$message->setBody(
-					$message->getBody() .
-					"<p>CC recipients: " . implode( ', ', $cc ) . "</p>"
-				) ;
+				$message = self::append_content($message, "CC recipients: " . implode( ', ', $cc )) ;
 			}
 			$recipients = unserialize( $mail_config[ 'test_mode_recipients' ] ) ;
 		}
@@ -71,13 +64,14 @@ class Mail {
 		}
 
 		if( count( $attachments ) > 0) {
+			$file_util = new File\Local() ;
 		    foreach($attachments as $attachment) {
 				if( is_array( $attachment )) {
 					Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment['path']}, with new name {$attachment['new_name']}") ;
-					$message->attach(\Swift_Attachment::fromPath($attachment['path'])->setFilename($attachment['new_name']));
+					$message->attach(\Swift_Attachment::fromPath($attachment['path'], $file_util->get_mime_type($attachment['path']))->setFilename($attachment['new_name']));
 				} else {
 					Kohana::$log->add(Log::DEBUG, "Attaching file {$attachment}. ");
-					$message->attach(\Swift_Attachment::fromPath($attachment));
+					$message->attach(\Swift_Attachment::fromPath($attachment, $file_util->get_mime_type($attachment)));
 				}
 			}
 		} else {
@@ -91,6 +85,24 @@ class Mail {
 
 	}
 
+	/**
+	 * Append indicated content to the message, checking the content type to be sure we use HTML or plain text
+	 * formatting, as appropriate.
+	 *
+	 * @param \Swift_Message $message
+	 * @param string $content
+	 * @return \Swift_Message
+	 */
+	private static function append_content( $message, $content ) {
+		if( $message->getContentType() == 'text/html' ) {
+			$content = "<p>{$content}</p>" ;
+		} else {
+			$content = "\n\n{$content}" ;
+		}
+		$message->setBody( $message->getBody() . $content ) ;
+		return $message ;
+	}
+	
     /**
      * Convenience method to send a message without having to generate a Swift_Message
      * first. This just creates the Swift_Message and passes it along to DOC_Util_Mail::send_message().
@@ -104,7 +116,11 @@ class Mail {
      */
 	public static function send( $subject, $body, $recipients, $cc = NULL, $from = NULL, $reply_to = NULL, $spool = FALSE, $attachments = array() ) {
 		$message = \Swift_Message::newInstance($subject, $body) ;
-		$message->setContentType('text/html') ;
+		if( $body == strip_tags($body)) {
+			$message->setContentType('text/plain') ;
+		} else {
+			$message->setContentType('text/html') ;
+		}
 
 		return self::send_message($message, $recipients, $cc, $from, $reply_to, $spool, $attachments) ;
 	}
@@ -118,9 +134,7 @@ class Mail {
 		$mail_config = Kohana::$config->load('mail') ;
 
 		$spool = new \Swift_FileSpool($mail_config['spool_location']) ;
-// 		$transport = Swift_MailTransport::newInstance() ;
-// 		$transport = Swift_SmtpTransport::newInstance('localhost') ;
-		$transport = \Swift_SendmailTransport::newInstance() ;
+		$transport = self::getDeliveryTransport($mail_config);
 		$count = $spool->flushQueue($transport) ;
 		Kohana::$log->add(Log::INFO, "Flushed {$count} messages from the spool.") ;
 	}
@@ -162,6 +176,38 @@ class Mail {
 
 		return $_output ;
 	}
+
+	/**
+	 * Get the appropriate Swift Transport object based on configuration
+	 * @param array $config
+	 * @return Swift Transport Object
+	 */
+	private static function getDeliveryTransport($config)
+    {
+        if ( ! array_key_exists('transport', $config)) {
+            $config['transport'] = 'sendmail';
+        }
+
+        switch($config['transport']) {
+              case 'smtp' :
+                  $transport = \Swift_SmtpTransport::newInstance(
+                      isset($config['host']) ? $config['host'] : '',
+                      isset($config['port']) ? $config['port'] : 25,
+                      isset($config['security']) ? $config['security'] : null
+                  );
+                  if (isset($config['username'])) {
+                      $transport->setUsername($config['username']);
+                  }
+                  if (isset($config['password'])) {
+                      $transport->setPassword($config['password']);
+                  }
+                  break;
+              default :
+                  $transport = \Swift_SendmailTransport::newInstance();
+        }
+
+        return $transport;
+    }
 
 	/**
 	 * Mail merge-- this is highly dependent the individual app's data structure,
