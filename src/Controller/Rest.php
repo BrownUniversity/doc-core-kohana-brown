@@ -10,6 +10,7 @@ use Kohana\Inflector;
 use Kohana\Kohana;
 use Kohana\ORM\ORM;
 use Kohana\Request;
+use Kohana\KohanaException;
 
 defined('SYSPATH') OR die('No direct access allowed.');
 
@@ -256,7 +257,8 @@ class Rest extends Controller {
 		$_output = FALSE;
 		$key = NULL;
 		$signature = NULL;
-		$script_url = substr($_SERVER['SCRIPT_URL'], 1, strlen($_SERVER['SCRIPT_URL']) - 1);
+		$script_url = $this->get_script_url();
+		$script_url = substr($script_url, 1, strlen($script_url) - 1);
 		$url = explode('/', $script_url);
 		$uri = $_SERVER['SCRIPT_URI'];
 		$resource = $url[1];
@@ -512,4 +514,33 @@ class Rest extends Controller {
 			}
 		}
 	}
+
+	/**
+	 * Determine script URL, based on the first appropriate $_SERVER variable
+	 * we can find.
+	 * @return string
+	 * @throws \Kohana\KohanaException
+	 */
+    protected function get_script_url()
+    {
+        $script_url = NULL;
+
+        if (!empty($_SERVER['SCRIPT_URL']))
+            $script_url = $_SERVER['SCRIPT_URL'];
+
+        elseif (!empty($_SERVER['REDIRECT_URL']))
+            $script_url = $_SERVER['REDIRECT_URL'];
+
+        elseif (!empty($_SERVER['REQUEST_URI'])) {
+            $p = parse_url($_SERVER['REQUEST_URI']);
+            $script_url = $p['path'];
+        } else {
+            throw new KohanaException('Could not determine script URL.') ;
+        }
+
+        Kohana::$log->add(Log::DEBUG, "SCRIPT_URL = {$script_url}") ;
+
+        return $script_url;
+
+    }
 } // End Rest Controller
