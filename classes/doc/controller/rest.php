@@ -245,7 +245,8 @@ class DOC_Controller_REST extends Controller {
 		$_output = FALSE;
 		$key = NULL;
 		$signature = NULL;
-		$script_url = substr($_SERVER['SCRIPT_URL'], 1, strlen($_SERVER['SCRIPT_URL']) - 1);
+		$script_url = $this->get_script_url();
+		$script_url = substr($script_url, 1, strlen($script_url) - 1);
 		$url = explode('/', $script_url);
 		$uri = $_SERVER['SCRIPT_URI'];
 		$resource = $url[1];
@@ -497,4 +498,27 @@ class DOC_Controller_REST extends Controller {
 			}
 		}
 	}
+
+    protected function get_script_url()
+    {
+        $script_url = NULL;
+
+        if (!empty($_SERVER['SCRIPT_URL']))
+            $script_url = $_SERVER['SCRIPT_URL'];
+
+        elseif (!empty($_SERVER['REDIRECT_URL']))
+            $script_url = $_SERVER['REDIRECT_URL'];
+
+        elseif (!empty($_SERVER['REQUEST_URI'])) {
+            $p = parse_url($_SERVER['REQUEST_URI']);
+            $script_url = $p['path'];
+        } else {
+            throw new Kohana_Exception('Could not determine script URL.') ;
+        }
+
+        Kohana::$log->add(Log::DEBUG, "SCRIPT_URL = {$script_url}") ;
+
+        return $script_url;
+
+    } // get_script_url()
 } // End Rest Controller
