@@ -40,34 +40,24 @@ class DOC_Controller_CLI extends Controller {
 
 		$cli_config = Kohana::$config->load('cli') ;
 		if( $cli_config[ 'cli_enabled' ] === TRUE ) {
-			$auth = CLI::options('username', 'password') ;
 			$task_args = CLI::options('task','data') ;
 
-			if( isset( $auth[ 'username' ] ) && isset( $auth[ 'password' ] ) && isset( $cli_config[ 'cli_users'][ $auth[ 'username' ]])) {
+            if( isset( $task_args[ 'task' ] ) && !empty( $task_args[ 'task' ] )) {
+                $this->task_name = $task_args[ 'task' ] ;
+                if( $this->task_name == self::HELP ) {
+                    $this->show_help() ;
+                } elseif( $this->task_name == self::TASK_LIST_JSON ) {
+                    $this->list_tasks('json') ;
+                }
+                if( isset( $task_args[ 'data' ] ) && !empty( $task_args[ 'data' ] )) {
+                    $this->task_data = json_decode( $task_args[ 'data' ]) ;
+                }
 
-				if( $cli_config[ 'cli_users' ][ $auth[ 'username' ]] == crypt( $auth[ 'password' ], $cli_config['cli_salt'] )) {
+            } else {
+                print("\nERROR: No task specified.\n") ;
+                $this->show_help() ;
+            }
 
-					if( isset( $task_args[ 'task' ] ) && !empty( $task_args[ 'task' ] )) {
-						$this->task_name = $task_args[ 'task' ] ;
-						if( $this->task_name == self::HELP ) {
-							$this->show_help() ;
-						} elseif( $this->task_name == self::TASK_LIST_JSON ) {
-							$this->list_tasks('json') ;
-						}
-						if( isset( $task_args[ 'data' ] ) && !empty( $task_args[ 'data' ] )) {
-							$this->task_data = json_decode( $task_args[ 'data' ]) ;
-						}
-
-					} else {
-						print("\nERROR: No task specified.\n") ;
-						$this->show_help() ;
-					}
-				} else {
-					die("\nERROR: Invalid username/password.\n") ;
-				}
-			} else {
-				die("\nERROR: Invalid username/password.\n") ;
-			}
 		} else {
 			die("\nERROR: CLI is not enabled for this application\n") ;
 		}
