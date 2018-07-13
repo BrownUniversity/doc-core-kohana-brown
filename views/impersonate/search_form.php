@@ -1,4 +1,6 @@
 <?php
+use Kohana\Form;
+
 	$affils = array(
 		'any'       => 'any',
 		'faculty'   => 'faculty',
@@ -7,23 +9,23 @@
 		'applicant' => 'applicant',
 	);
 ?>
-<?php echo form::open('impersonate') ?>
+<?php echo Form::open('impersonate') ?>
 <h1>User Impersonation Search</h1>
 <p>
     <b>Search String:</b><br />
-    <?php echo form::input('search_string',NULL,array('autocorrect' => 'off', 'autocomplete' => 'off')) ?>
+    <?php echo Form::input('search_string',NULL,array('autocorrect' => 'off', 'autocomplete' => 'off')) ?>
 </p>
 
 <p>
 	<b>Primary Affiliation:</b><br />
-	<?php echo form::select('affiliation', $affils) ?>
+	<?php echo Form::select('affiliation', $affils) ?>
 </p>
 
 <p>
-    <?php echo form::submit('btn_submit', 'Search') ?>
-    <?php echo form::submit('btn_submit', 'Cancel') ?>
+    <?php echo Form::submit('btn_submit', 'Search') ?>
+    <?php echo Form::submit('btn_submit', 'Cancel') ?>
 </p>
-<?php echo form::close() ?>
+<?php echo Form::close() ?>
 <div id="alert">
 	<div>
 		This will attempt to take you back to the page you were on before

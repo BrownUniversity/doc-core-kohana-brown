@@ -1,21 +1,23 @@
 <?php
+use BrownUniversity\DOC\Helper\Table ;
+use BrownUniversity\DOC\View ;
 
 $columns = array(
 	array(
-		'type' => DOC_Helper_Table::TYPE_DATA,
+		'type' => Table::TYPE_DATA,
 		'property' => 'auth_code',
 		'heading' => 'Auth Code',
 		'format' => array(
-			'type' => DOC_Helper_Table::FORMAT_CALLBACK,
+			'type' => Table::FORMAT_CALLBACK,
 			'method' => 'auth_code',
 		)
 	),
 	array(
-		'type' => DOC_Helper_Table::TYPE_DATA,
+		'type' => Table::TYPE_DATA,
 		'property' => 'token_expires',
 		'heading' => 'Token Expiry',
 		'format' => array(
-			'type' => DOC_Helper_Table::FORMAT_CALLBACK,
+			'type' => Table::FORMAT_CALLBACK,
 			'method' => 'expiry',
 		),
 	),

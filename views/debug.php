@@ -1,8 +1,9 @@
+<!-- I don't think we're using this anywhere. Deprecate? -->
 <div id="debug">
 	<?php
 		$debug_array = array(
 			'Debug' => $debug,
-			'Kohana Request' => Request::current(),
+			'Kohana Request' => \Kohana\Request::current(),
 			'GET' => $_GET,
 			'POST' => $_POST,
 			'COOKIE' => $_COOKIE,
@@ -13,7 +14,7 @@
 			print('<div class="debug-section">') ;
 			print("<div class='debug-section-head'>{$key}</div>") ;
 			print("<div class='debug-section-data'>") ;
-			DOC_Util_Debug::dump( $val, FALSE ) ;
+			\BrownUniversity\DOC\Util\Debug::dump( $val, FALSE ) ;
 			print("</div>") ;
 			print("</div>") ;
 		}

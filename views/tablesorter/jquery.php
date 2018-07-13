@@ -1,4 +1,7 @@
 <?php
+	use BrownUniversity\DOC\Helper\Table ;
+use Kohana\Request;
+
 	if( !isset( $table_id )) {
 		$table_id = 'sortableTable' ;
 	}
@@ -9,7 +12,7 @@
 		$no_pager = FALSE ;
 	}
 	if( !isset( $render_as )) {
-		$render_as = DOC_Helper_Table::RENDER_AS_TABLE ;
+		$render_as = Table::RENDER_AS_TABLE ;
 	}
 	if( !isset( $default_sort )) {
 		$default_sort = '[[0,0]]' ;
@@ -40,7 +43,7 @@
 
 	$(document).ready( function() {
 		$('#<?php print( $table_id ) ; ?>')
-		<?php if( $render_as == DOC_Helper_Table::RENDER_AS_TABLE ) { ?>
+		<?php if( $render_as == Table::RENDER_AS_TABLE ) { ?>
 					.tablesorter({
 						sortList: <?php print( $default_sort ) ; ?>,
 						widgets: [<?php print( $widgets_list ) ; ?>],
@@ -101,9 +104,9 @@
 		 	var data = {} ;
 		 	data.uri = '<?php print(Request::detect_uri()); ?>' ;
 		 	if( $(this).hasClass('render-table')) {
-		 		data.render_as = '<?php print( DOC_Helper_Table::RENDER_AS_TABLE ) ; ?>' ;
+		 		data.render_as = '<?php print( Table::RENDER_AS_TABLE ) ; ?>' ;
 		 	} else {
-		 		data.render_as = '<?php print( DOC_Helper_Table::RENDER_AS_GRID ) ; ?>' ;
+		 		data.render_as = '<?php print( Table::RENDER_AS_GRID ) ; ?>' ;
 		 	}
 		 	$.ajax({
 				type: 'POST',
