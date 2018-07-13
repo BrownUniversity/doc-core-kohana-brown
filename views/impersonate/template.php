@@ -17,7 +17,6 @@ body {
 
 a {
 	color : #7CFC00;
-	text-decoration : italic;
 }
 
 #content {
