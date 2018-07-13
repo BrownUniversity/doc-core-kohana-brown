@@ -104,6 +104,24 @@ class Mail {
 	}
 	
     /**
+	 * Append indicated content to the message, checking the content type to be sure we use HTML or plain text
+	 * formatting, as appropriate.
+	 *
+	 * @param \Swift_Message $message
+	 * @param string $content
+	 * @return \Swift_Message
+	 */
+	private static function append_content( $message, $content ) {
+		if( $message->getContentType() == 'text/html' ) {
+			$content = "<p>{$content}</p>" ;
+		} else {
+			$content = "\n\n{$content}" ;
+		}
+		$message->setBody( $message->getBody() . $content ) ;
+		return $message ;
+	}
+
+	/**
      * Convenience method to send a message without having to generate a Swift_Message
      * first. This just creates the Swift_Message and passes it along to DOC_Util_Mail::send_message().
      *
