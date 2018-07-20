@@ -82,7 +82,19 @@ return array(
                 'filename' => 'ask_ug_grad.dat',
                 'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
         ),
-		'institutions' => array(
+        'graduate_active' => array(
+                'filename' => 'ask_gr_active.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
+        ),
+        'graduate_inactive' => array(
+                'filename' => 'ask_gr_inactive.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
+        ),
+        'graduate_graduated' => array(
+                'filename' => 'ask_gr_grad.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
+        ),
+        'institutions' => array(
 			'filename' => 'ask_institutions.dat',
 			'regex' => '#\{\s*"inst_code"\s*:\s*"[^"]*"\s*,\s*"inst_description"\s*:\s*"[^"]*"\s*,\s*"inst_city"\s*:\s*"[^"]*"\s*,\s*"inst_state"\s*:\s*"[^"]*"\s*\}#',
 		),
