@@ -70,6 +70,18 @@ return array(
                 'filename' => 'ask_test_scores.dat',
                 'regex' => '#\{\s*"Brown_ID".*?"Test_Date"\s*:\s*"[^"]*"\s*\}#',
         ),
+        'graduate_active' => array(
+                'filename' => 'ask_gr_active.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
+        ),
+        'graduate_inactive' => array(
+                'filename' => 'ask_gr_inactive.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
+        ),
+        'graduate_graduated' => array(
+                'filename' => 'ask_gr_grad.dat',
+                'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s',
+        ),
         'undergraduate_active' => array(
                 'filename' => 'ask_ug_active.dat',
                 'regex' => '#\{\s*"Brown_ID".*?"Courses"\s*:\s*\[.*?\]\s*\}#s', 
