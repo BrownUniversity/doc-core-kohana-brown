@@ -102,24 +102,6 @@ class Mail {
 		$message->setBody( $message->getBody() . $content ) ;
 		return $message ;
 	}
-	
-    /**
-	 * Append indicated content to the message, checking the content type to be sure we use HTML or plain text
-	 * formatting, as appropriate.
-	 *
-	 * @param \Swift_Message $message
-	 * @param string $content
-	 * @return \Swift_Message
-	 */
-	private static function append_content( $message, $content ) {
-		if( $message->getContentType() == 'text/html' ) {
-			$content = "<p>{$content}</p>" ;
-		} else {
-			$content = "\n\n{$content}" ;
-		}
-		$message->setBody( $message->getBody() . $content ) ;
-		return $message ;
-	}
 
 	/**
      * Convenience method to send a message without having to generate a Swift_Message
@@ -193,39 +175,7 @@ class Mail {
 
 		return $_output ;
 	}
-
-    /**
-	 * Get the appropriate Swift Transport object based on configuration
-	 * @param array $config
-	 * @return Swift Transport Object
-	 */
-	private static function getDeliveryTransport($config)
-    {
-        if ( ! array_key_exists('transport', $config)) {
-            $config['transport'] = 'sendmail';
-        }
-
-        switch($config['transport']) {
-              case 'smtp' :
-                  $transport = Swift_SmtpTransport::newInstance(
-                      isset($config['host']) ? $config['host'] : '',
-                      isset($config['port']) ? $config['port'] : 25,
-                      isset($config['security']) ? $config['security'] : null
-                  );
-                  if (isset($config['username'])) {
-                      $transport->setUsername($config['username']);
-                  }
-                  if (isset($config['password'])) {
-                      $transport->setPassword($config['password']);
-                  }
-                  break;
-              default :
-                  $transport = Swift_SendmailTransport::newInstance();
-        }
-
-        return $transport;
-    }
-
+	
 	/**
 	 * Get the appropriate Swift Transport object based on configuration
 	 * @param array $config
