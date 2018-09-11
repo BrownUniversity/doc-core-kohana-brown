@@ -540,7 +540,7 @@ class Filter {
 
 
 		if( $add_wildcards == self::WILDCARDS_ON ) {
-			array_walk( $terms, "Util_Filter::add_sql_wildcards" ) ;
+			array_walk( $terms, "self::add_sql_wildcards" ) ;
 		}
 
 		return $terms ;
