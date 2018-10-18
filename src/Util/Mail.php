@@ -4,6 +4,7 @@ namespace BrownUniversity\DOC\Util ;
 use Kohana\Kohana;
 use Kohana\KohanaException;
 use Kohana\Log;
+use Kohana\Valid;
 
 /**
  * Methods for sending emails via Swift_Mailer.
