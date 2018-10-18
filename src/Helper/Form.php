@@ -83,7 +83,7 @@ class Form {
 		if( $include_labels ) {
 			$_output .= 'Date ' ;
 		}
-		$_output .= '<input type="text" name="'.$name_prefix.self::SUFFIX_DATE.'" value="'. Date::formatted_time( $datetime, self::DATE_FORMAT ).'" class="'.$date_class.'" size="12" maxlength="12" /> ' ;
+		$_output .= '<input type="text" name="'.$name_prefix.self::SUFFIX_DATE.'" value="'. Date::formatted_time( $datetime, self::DATE_FORMAT ).'" class="'.$date_class.'" size="12" maxlength="12" autocomplete="off" /> ' ;
 		if( $include_labels ) {
 			$_output .= 'Time ' ;
 		}
