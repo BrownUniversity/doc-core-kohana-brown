@@ -140,6 +140,8 @@ class Rest extends Controller {
 	 */
 	protected $view_folder = NULL;
 
+	protected $view_root = 'rest/' ;
+
 	/**
 	 * This was originally the constructor-- Kohana 3 requires a before() call instead.
 	 */
@@ -153,7 +155,7 @@ class Rest extends Controller {
 		// time, though exceptions would be handled by child classes.
 
 		if ($this->view_folder === NULL) {
-			$this->view_folder = strtolower(substr(get_class($this), 16));
+			$this->set_view_folder();
 		}
 
 		if ($this->model === NULL) {
@@ -190,6 +192,10 @@ class Rest extends Controller {
 
 
 	}
+
+	protected function set_view_folder() {
+        $this->view_folder = strtolower(substr(get_class($this), 16));
+    }
 
 	/**
 	 * Method for authenticating a request. This calls the method defined in the
@@ -427,15 +433,14 @@ class Rest extends Controller {
      * @throws \Kohana\View\ViewException
      */
 	protected function get_payload( $data, $options = array() ) {
-		$view_root = 'rest/' ;
 		$mime_path = $this->definitions[ $this->accept_type ] ;
 
 		// there may be a more clever way to do this...
-		$view_file = $view_root . $mime_path . '/' . $this->request->controller().'/'.$this->request->action() . '/output' ;
+		$view_file = $this->view_root . $mime_path . '/' . $this->request->controller().'/'.$this->request->action() . '/output' ;
 		if( !Kohana::find_file('views', $view_file)) {
-			$view_file = $view_root . $mime_path . '/' . $this->request->controller(). '/output' ;
+			$view_file = $this->view_root . $mime_path . '/' . $this->request->controller(). '/output' ;
 			if( !Kohana::find_file( 'views', $view_file )) {
-				$view_file = $view_root . $mime_path . '/output' ;
+				$view_file = $this->view_root . $mime_path . '/output' ;
 				if( !Kohana::find_file( 'views', $view_file )) {
 					die('unable to locate view file') ;
 				}
@@ -486,7 +491,7 @@ class Rest extends Controller {
 				$output_type = 'html';
 			}
 
-			$view = View::factory( 'rest/error' ) ;
+			$view = View::factory( $this->view_root . 'error' ) ;
 
 			$view->code = $status;
 			$view->message = $payload;//$this->status_codes[$status];
