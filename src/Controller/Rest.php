@@ -8,6 +8,7 @@ use BrownUniversity\DOC\View;
 use Kohana\Controller;
 use Kohana\Inflector;
 use Kohana\Kohana;
+use Kohana\Log;
 use Kohana\ORM\ORM;
 use Kohana\Request;
 use Kohana\KohanaException;
@@ -55,7 +56,7 @@ class Rest extends Controller {
 	 * List of HTTP Status Codes
 	 * @todo Replace this with functionality in DOC_Util_HTTP
 	 */
-	private $status_codes = array(
+	protected $status_codes = array(
 		100 => 'Continue',
 		101 => 'Switching Protocols',
 		200 => 'OK',
@@ -463,7 +464,7 @@ class Rest extends Controller {
      * @throws \Exception
      * @throws \Kohana\View\ViewException
      */
-	final protected function send_response($status, $headers = NULL, $payload = NULL)
+	protected function send_response($status, $headers = NULL, $payload = NULL)
 	{
 		header('HTTP/1.1 ' . $status . ' ' . $this->status_codes[$status]);
 		header('Cache-Control: no-cache, must-revalidate') ;
@@ -510,7 +511,7 @@ class Rest extends Controller {
 	 * Validate the source IP address of the request with the list of IPs
 	 * allowed to access this instance.
 	 */
-	final private function validate_ip()
+	private function validate_ip()
 	{
 		if( count( $this->valid_ips ) > 0 ) {
 			$source_ip = $_SERVER['REMOTE_ADDR'];
