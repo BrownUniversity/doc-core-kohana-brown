@@ -45,7 +45,6 @@ class Slack extends Writer {
         Log::NOTICE    => 'NOTICE',
         Log::INFO      => 'INFO',
         Log::DEBUG     => 'DEBUG',
-        Log::STRACE    => 'STRACE',
     );
 
     /**
