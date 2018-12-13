@@ -180,7 +180,7 @@ class Spreadsheet {
 						$cell_value = $dom->saveXML($cell_node) ;
 						$cell_value = html_entity_decode($cell_value) ;
 						$cell_value = preg_replace('/<\/?((p)|(br)|(div)).*?\/?>/',"\r", $cell_value ) ; 
-						$cell_value = WordHTML::clean($cell_value,'') ;
+						$cell_value = WordHtml::clean($cell_value,'') ;
 
   						$active_sheet->setCellValueByColumnAndRow( $i+1, $row_index, $cell_value ) ;
 
