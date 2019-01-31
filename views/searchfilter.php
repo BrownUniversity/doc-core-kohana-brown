@@ -115,7 +115,7 @@
 		$form_action = preg_replace('/\/+/', '/', Kohana::$base_url.Request::detect_uri()) ;
 //DOC_Util_Debug::dump( $saved_filter_specs_arr, FALSE ) ;
 // DOC_Util_Debug::dump( $filter_fields ) ;
-		print("<form id='filter' method='POST' action='{$form_action}'>") ;
+		print("<form id='filter' method='POST' action='{$form_action}' autocomplete='off'>") ;
 
 		if( isset( $filter_extras )) {
 			if( !is_array( $filter_extras )) {
