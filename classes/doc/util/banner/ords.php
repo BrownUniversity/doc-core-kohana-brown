@@ -168,7 +168,8 @@ class DOC_Util_Banner_ORDS {
 		$response = curl_exec( $curl_handle ) ;
 		
 		if( curl_getinfo( $curl_handle, CURLINFO_HTTP_CODE ) != 200 ) {
-			Kohana::$log->add(Log::ERROR, "Error accessing REST endpoint {$this->base_url}{$endpoint}, data={$data}, HTTP code=".curl_getinfo( $curl_handle, CURLINFO_HTTP_CODE )) ; 
+			Kohana::$log->add(Log::ERROR, "Error accessing REST endpoint {$this->base_url}{$endpoint}, data={$data}, HTTP code=".curl_getinfo( $curl_handle, CURLINFO_HTTP_CODE )) ;
+			Kohana::$log->add(Log::ERROR, print_r( $response, true));
 			throw new ErrorException('There was a problem executing the specified REST request.' ) ;
 		}
 

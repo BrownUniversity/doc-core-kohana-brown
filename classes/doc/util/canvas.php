@@ -759,11 +759,10 @@ class DOC_Util_Canvas {
 
     	self::reset_curl($options, false) ;
 
-    	$response = curl_exec(self::$ch) ;
     	$path = tempnam(sys_get_temp_dir(),'canvas') ;
     	Kohana::$log->add(Log::INFO, "File downloaded to " . $path) ;
     	$fp = fopen($path,'w') ;
-    	fwrite($fp,$response);
+    	fwrite($fp,curl_exec(self::$ch));
     	fclose($fp) ;
 
     	return $path ;

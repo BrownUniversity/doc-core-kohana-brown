@@ -319,16 +319,16 @@ abstract class DOC_Util_File {
 		$friendly_mime_types = array(
 			'application/pdf',
 			'application/x-shockwave-flash',
-			'audio/mpeg',
-			'audio/mp4',
+//			'audio/mpeg',
+//			'audio/mp4',
 			'image/gif',
 			'image/jpeg',
 			'image/png',
 			'image/tiff',
-			'video/jpeg',
-			'video/mpeg',
-			'video/mp4',
-			'video/quicktime'
+//			'video/jpeg',
+//			'video/mpeg',
+//			'video/mp4',
+//			'video/quicktime'
 		) ;
 
 		foreach( $friendly_mime_types as $friendly_type ) {
