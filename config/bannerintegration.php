@@ -161,7 +161,9 @@ return array(
 			'T00003',
 			'T00004',
 			'T00005',
-			'T00006'
+			'T00006',
+            'T00007',
+            'T00008'
     	),
     	// Length of time into a student's first term a non-privileged user should
     	// have access to BDMS files. Store as a DateInterval compatible string.
