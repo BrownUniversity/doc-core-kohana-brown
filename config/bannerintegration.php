@@ -102,6 +102,10 @@ return array(
             'filename' => 'ask_prev_inst.dat',
             'regex' => '#\{\s*"Brown_ID".*?\}#',
         ),
+		'course_meeting_schedules' => array(
+		        'filename' => 'ask_meet_info.dat',
+                'regex' => '#\{\s*"term":.*?"crn".*?\s*\}#'
+        ),
 		'buildings' => array(
 			'filename' => 'facilities/FM_BUILDING.txt',
 			'regex' => '#\{\s*"SITE"\s*:.*?\}#',
