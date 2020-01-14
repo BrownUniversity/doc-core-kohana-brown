@@ -7,14 +7,12 @@
 defined('SYSPATH') or die('No direct script access.');
 
 return array(
-    'from' => 'email@example.edu',
+    'from' => 'app-account@example.edu',
     'recipients' => array(
         'EMERGENCY' => array(),
         'ALERT' => array(),
         'CRITICAL' => array(),
-        'ERROR' => array(
-        	'Christopher_Keith@brown.edu',
-        ),
+        'ERROR' => array(),
         'WARNING' => array(),
         'NOTICE' => array(),
         'INFO' => array(),

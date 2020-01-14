@@ -7,48 +7,11 @@
  */
 defined('SYSPATH') or die('No direct access allowed.');
 
-if( file_exists( APPPATH . 'config/myConfig.php' )) include_once( APPPATH . 'config/myConfig.php' ) ;
-if( file_exists( dirname( __FILE__ ) . '/myConfig.php' )) include_once( dirname( __FILE__ ) . '/myConfig.php') ;
-
-defined('FTPS_SERVER') or define('FTPS_SERVER', 'ftps.example.edu');
-defined('FTPS_PATH') or define('FTPS_PATH', '/path/to/files/');
-
-defined('BANNERINTEGRATION_APIS_CONTACT') or define('BANNERINTEGRATION_APIS_CONTACT', 'Christopher_Keith@brown.edu') ;
-
-defined('BANNERINTEGRATION_APIS_IAR_SECRET') or define('BANNERINTEGRATION_APIS_IAR_SECRET', '***REMOVED***');
-defined('BANNERINTEGRATION_APIS_IAR_URL') or define('BANNERINTEGRATION_APIS_IAR_URL', '***REMOVED***');
-//defined('BANNERINTEGRATION_APIS_IAR_URL') or define('BANNERINTEGRATION_APIS_IAR_URL', '***REMOVED***');
-
-defined('BANNERINTEGRATION_APIS_PHOTO_SECRET') or define('BANNERINTEGRATION_APIS_PHOTO_SECRET', '***REMOVED***');
-defined('BANNERINTEGRATION_APIS_PHOTO_URL') or define('BANNERINTEGRATION_APIS_PHOTO_URL', '***REMOVED***');
-//defined('BANNERINTEGRATION_APIS_PHOTO_URL') or define('BANNERINTEGRATION_APIS_PHOTO_URL', '***REMOVED***');
-
-defined('BANNERINTEGRATION_APIS_CART_SECRET') or define('BANNERINTEGRATION_APIS_CART_SECRET', '***REMOVED***') ;
-defined('BANNERINTEGRATION_APIS_CART_URL') or define('BANNERINTEGRATION_APIS_CART_URL', '***REMOVED***');
-//defined('BANNERINTEGRATION_APIS_CART_URL') or define('BANNERINTEGRATION_APIS_CART_URL', '***REMOVED***');
-
-defined('BANNERINTEGRATION_APIS_BDMS_SECRET') or define('BANNERINTEGRATION_APIS_BDMS_SECRET','***REMOVED***') ;
-defined('BANNERINTEGRATION_APIS_BDMS_URL') or define('BANNERINTEGRATION_APIS_BDMS_URL','***REMOVED***') ;
-
-defined('BANNERINTEGRATION_APIS_GREENSHEETS_PERMISSIONS_SECRET') or define('BANNERINTEGRATION_APIS_GREENSHEETS_PERMISSIONS_SECRET','***REMOVED***') ;
-defined('BANNERINTEGRATION_APIS_GREENSHEETS_PERMISSIONS_URL') or define('BANNERINTEGRATION_APIS_GREENSHEETS_PERMISSIONS_URL','***REMOVED***') ;
-
-defined('BANNERINTEGRATION_APIS_GREENSHEETS_READ_SECRET') or define('BANNERINTEGRATION_APIS_GREENSHEETS_READ_SECRET','***REMOVED***') ;
-defined('BANNERINTEGRATION_APIS_GREENSHEETS_READ_URL') or define('BANNERINTEGRATION_APIS_GREENSHEETS_READ_URL','***REMOVED***') ;
-
-defined('BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_SECRET') or define('BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_SECRET','***REMOVED***') ;
-defined('BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_URL') or define('BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_URL','***REMOVED***') ;
-
-defined('BANNERINTEGRATION_ORDS_BASE_URL') or define('BANNERINTEGRATION_ORDS_BASE_URL','') ;
-defined('BANNERINTEGRATION_ORDS_CLIENT_ID') or define('BANNERINTEGRATION_ORDS_CLIENT_ID','') ;
-defined('BANNERINTEGRATION_ORDS_CLIENT_SECRET') or define('BANNERINTEGRATION_ORDS_CLIENT_SECRET','') ;
-defined('BANNERINTEGRATION_ORDS_MODEL') or define('BANNERINTEGRATION_ORDS_MODEL','') ;
-
 return array(
-    'server'   => FTPS_SERVER,
-    'path'     => FTPS_PATH,
-    'username' => '***REMOVED***',
-    'password' => '***REMOVED***',
+    'server'   => 'ftps.example.edu',
+    'path'     => '/directory/to/files/',
+    'username' => 'ftp_user',
+    'password' => 'password',
     'imports'  => array(
         'cohorts'		=> array(
                 'filename' => 'ask_cohort.dat',
@@ -119,39 +82,39 @@ return array(
     ),
     'apis' => array(
     	'iar' => array(
-    		'secret' => BANNERINTEGRATION_APIS_IAR_SECRET,
-    		'url' => BANNERINTEGRATION_APIS_IAR_URL,
-    		'contact' => BANNERINTEGRATION_APIS_CONTACT
+    		'secret' => 'secret-string',
+    		'url' => 'https://banner.example.edu/path/to/service',
+    		'contact' => 'contact@example.edu'
     	),
     	'photo' => array(
-    		'secret' => BANNERINTEGRATION_APIS_PHOTO_SECRET,
-    		'url' => BANNERINTEGRATION_APIS_PHOTO_URL,
-    		'contact' => BANNERINTEGRATION_APIS_CONTACT
+    		'secret' => 'secret-string',
+    		'url' => 'https://banner.example.edu/path/to/service',
+    		'contact' => 'contact@example.edu'
     	),
 		'cart' => array(
-			'secret' => BANNERINTEGRATION_APIS_CART_SECRET,
-			'url' => BANNERINTEGRATION_APIS_CART_URL,
-			'contact' => BANNERINTEGRATION_APIS_CONTACT
+			'secret' => 'secret-string',
+			'url' => 'https://banner.example.edu/path/to/service',
+			'contact' => 'contact@example.edu'
 		),
 		'bdms' => array(
-			'secret' => BANNERINTEGRATION_APIS_BDMS_SECRET,
-			'url' => BANNERINTEGRATION_APIS_BDMS_URL,
-			'contact' => BANNERINTEGRATION_APIS_CONTACT
+			'secret' => 'secret-string',
+			'url' => 'https://banner.example.edu/path/to/service',
+			'contact' => 'contact@example.edu'
 		),
 		'greensheets-read' => array(
-			'secret' => BANNERINTEGRATION_APIS_GREENSHEETS_READ_SECRET,
-			'url' => BANNERINTEGRATION_APIS_GREENSHEETS_READ_URL,
-			'contact' => BANNERINTEGRATION_APIS_CONTACT
+			'secret' => 'secret-string',
+			'url' => 'https://banner.example.edu/path/to/service',
+			'contact' => 'contact@example.edu'
 		),
 		'greensheets-write' => array(
-			'secret' => BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_SECRET,
-			'url' => BANNERINTEGRATION_APIS_GREENSHEETS_WRITE_URL,
-			'contact' => BANNERINTEGRATION_APIS_CONTACT
+			'secret' => 'secret-string',
+			'url' => 'https://banner.example.edu/path/to/service',
+			'contact' => 'contact@example.edu'
 		),
 		'greensheets-permissions' => array(
-			'secret' => BANNERINTEGRATION_APIS_GREENSHEETS_PERMISSIONS_SECRET,
-			'url' => BANNERINTEGRATION_APIS_GREENSHEETS_PERMISSIONS_URL,
-			'contact' => BANNERINTEGRATION_APIS_CONTACT
+			'secret' => 'secret-string',
+			'url' => 'https://banner.example.edu/path/to/service',
+			'contact' => 'contact@example.edu'
 		)
     ),
     'meta' => array(
@@ -168,10 +131,10 @@ return array(
     	'bdms_cutoff' => 'P1M' // one month
     ),
 	'ords' => array(
-		'base-url' => BANNERINTEGRATION_ORDS_BASE_URL,
-		'client-id' => BANNERINTEGRATION_ORDS_CLIENT_ID,
-		'client-secret' => BANNERINTEGRATION_ORDS_CLIENT_SECRET,
-		'model' => BANNERINTEGRATION_ORDS_MODEL
+		'base-url' => 'https://ords.example.edu/',
+		'client-id' => 'client-id',
+		'client-secret' => 'secret-string',
+		'model' => 'model-name'
 	)
 );
 

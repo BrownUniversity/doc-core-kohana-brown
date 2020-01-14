@@ -10,7 +10,7 @@
 defined( 'SYSPATH' ) or die( 'No direct script access');
 
 return array(
-    'api_token' => '***REMOVED***',//'***REMOVED***',
+    'api_token' => 'canvas-token-string',
     'host_url'  => 'https://canvas.example.edu',
 );
 

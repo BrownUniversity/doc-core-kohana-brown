@@ -116,23 +116,8 @@ class Rest extends Controller {
 	/**
 	 *
 	 * @var array List of IP addresses allowed to access this service
-	 * @todo Comment these out and have them implemented only in the application's base class that extends this.
 	 */
-	protected $valid_ips = array(
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-		// ***REMOVED***
-	);
+	protected $valid_ips = array();
 
 	protected $authentication_method = self::AUTH_NONE ;
 
