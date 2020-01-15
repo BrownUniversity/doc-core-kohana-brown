@@ -101,10 +101,7 @@ $config['permissions_property'] = 'brown_uuid';
  *
  * @var array
  */
-$config['permissions_values'] = array(
-//	***REMOVED***
-//	***REMOVED***
-);
+$config['permissions_values'] = array();
 
 /**
  * Maximum number of search results to return
