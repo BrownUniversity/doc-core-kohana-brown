@@ -13,26 +13,3 @@ return array(
     'query_bind_rdn' => 'cn=app_query,ou=users,dc=example,dc=edu',
     'query_bind_password' => 'set in app',
 ) ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
