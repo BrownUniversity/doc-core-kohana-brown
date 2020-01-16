@@ -20,13 +20,6 @@ class Ldap
     private $ldap_query_bind_rdn = null;
     private $ldap_query_bind_password = null;
 
-    /**
-     * OLD CREDENTIALS
-     *
-     * username: ***REMOVED***
-     * password: ***REMOVED***
-     */
-
      private $cn;
 
      private $last_result_rc ;

@@ -18,8 +18,8 @@
 //	),
 //	'test_mode' => MAIL_TEST_MODE,
 //	'test_mode_recipients' => MAIL_TEST_MODE_RECIPIENTS,
-//	'from' => 'email@example.edu',
-//	'reply-to' => 'email@example.edu'
+//	'from' => 'doc_outreach@brown.edu',
+//	'reply-to' => 'doc_outreach@brown.edu'
 //) ;
 
 return array() ;
