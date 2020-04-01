@@ -10,7 +10,6 @@
 class DOC_Util_Ldap
 {
     private $ldap_host_url = null;
-//  	private $ldap_host_url = "localhost:5327" ;
     private $ldap_query_bind_rdn = null;
     private $ldap_query_bind_password = null;
 
@@ -130,7 +129,12 @@ class DOC_Util_Ldap
 	 * @deprecated use get_instance() instead
      */
     public function __construct($config = array()) {
-        
+        $default_config = Kohana::$config->load('ldap') ;
+
+        $this->ldap_host_url = $default_config->host_url;
+        $this->ldap_query_bind_rdn = $default_config->query_bind_rdn;
+        $this->ldap_query_bind_password = $default_config->query_bind_password;
+
         if (isset($config['host'])) {
             $this->ldap_host_url = $config['host'];
         }
