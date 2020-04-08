@@ -307,6 +307,87 @@ class Ldap
         }
     }
 
+    public function search_service_accounts($search, $limit, $attribute = 'displayname') {
+        $result = array();
+        $search_trim = trim($search);
+
+        // search the people objects
+        $base = "ou=Bifs,dc=brown,dc=edu";
+        $split_search = explode(' ', $search_trim);
+
+        /**
+         * Attempt a exact match to start of string comparison
+         */
+        $filters = array();
+        $filters[] = "({$attribute}=" . implode('*', $split_search) . "*)";
+        $filters = implode($filters);
+        $filter = "(&{$filters})";
+
+        try {
+            $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $limit);
+        } catch (Exception $e) {
+            $result['status']['ok'] = false;
+            $result['status']['message'] = $e->getMessage();
+            return $result;
+        }
+
+        $result['count'] = array_shift($search_result);
+
+        // get the results
+        $results = array();
+        foreach ( $search_result as $sr )
+        {
+            $id = $sr['brownshortid'][0];
+            $results[$id] = $this->parse_person_array($sr);
+        }
+
+        $result['results'] = $results;
+        $result['status']['ok'] = true;
+
+        if ($result['count'] == $limit) {
+            return $result;
+        } else {
+
+            /**
+             * Run more general search
+             */
+            $new_limit = $limit - $result['count'];
+            $new_result = array();
+
+            $filters = array();
+            foreach ($split_search as $s)
+            {
+                $filters[] = "(|(displayname=*$s*)(brownsisid=$s*)(brownshortid=$s*)(brownnetid=$s*))";
+            }
+            $filters = implode($filters);
+            $filter = "(&$filters)";
+
+            try {
+                $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $new_limit);
+            }
+            catch (Exception $e)
+            {
+                return $result;
+            }
+
+            $new_result['count'] = array_shift($search_result);
+
+            // get the results
+            $new_results = array();
+            foreach ( $search_result as $sr )
+            {
+                $id = $sr['brownshortid'][0];
+                $new_results[$id] = $this->parse_person_array($sr);
+            }
+
+            $result['count'] += $new_result['count'];
+            $result['results'] = array_merge($result['results'], $new_results);
+            //$result['status']['ok'] = true;
+
+            return $result;
+        }
+    }
+
     /**
      * Search LDAP for people by name.
      *
