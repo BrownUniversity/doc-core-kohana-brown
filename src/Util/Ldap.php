@@ -175,9 +175,6 @@ class Ldap
      */
     public function __destruct()
     {
-//         if ($this->last_result_rc) {
-//         	ldap_free_result($this->last_result_rc);
-//         }
         ldap_unbind($this->cn);
     }
 
@@ -225,7 +222,7 @@ class Ldap
         }
         
         if ( ! $people_only) {
-        	$base = "dc=brown,dc=edu";
+            $base = array($base, "ou=Bifs,dc=brown,dc=edu");
         }
 
 		Kohana::$log->add( Log::DEBUG, "LDAP Search: base={$base}, filter={$filter}") ;
@@ -1143,19 +1140,44 @@ class Ldap
      */
     private function run_search($base, $filter, $atts = null, $limit = null)
     {
-        $search_ref = @ldap_search($this->cn, $base, $filter,
-                                  $atts, 0, $limit);
+        $conn = is_array($base) ? array_fill(0, count($base), $this->cn) : $this->cn;
 
-        $this->last_result_rc = $search_ref;
+        $search_ref = @ldap_search($conn, $base, $filter, $atts, 0, $limit);
 
         if (!$search_ref)
             { throw new Exception("LDAP error looking up info for $filter in $base"); }
 
-        $search_result = ldap_get_entries($this->cn, $search_ref);
-        if (!$search_result)
-            { throw new Exception("LDAP error retrieving info for $filter in $base"); }
+        if (is_array($search_ref)) {
+            $success = false;
+            // does this call for recursion? my first crack at this looks...dumb
+            $sub_results = array();
+            foreach( $search_ref as $s_ref ) {
+                $this->last_result_rc = $_ref;
+                $search_result = ldap_get_entries($this->cn, $s_ref);
+                if( is_array( $search_result )) {
+                    $sub_results[] = $search_result ;
+                }
+            }
+            if (count($sub_results) == 0) {
+                throw new Exception("LDAP error retrieving info for $filter in ".print_r($base, true));
+            }
+            foreach( $sub_results as $index => $result ) {
+                if ($index == 0) {
+                    $all_results = $result;
+                    continue;
+                }
+                $all_results = self::merge_results($all_results, $result);
+            }
+            return $all_results;
 
-        ldap_free_result($search_ref);
+        } else {
+            $this->last_result_rc = $search_ref;
+            $search_result = ldap_get_entries($this->cn, $search_ref);
+            if (!$search_result)
+            { throw new Exception("LDAP error retrieving info for $filter in $base"); }
+            ldap_free_result($search_ref);
+        }
+
         return $search_result;
     }
 
@@ -1295,4 +1317,29 @@ class Ldap
 
     	return $search_result[0][$attribute][0];
     }
+
+    /**
+     * @param $results_1
+     * @param $results_2
+     * @todo generalize this for any number of ldap results
+     */
+    public static function merge_results($results_1, $results_2) {
+        if ($results_1['status']['ok'] || $results_2['status']['ok']) {
+            if (!$results_1['status']['ok']) {
+                return $results_2;
+            } elseif (!$results_2['status']['ok']) {
+                return $results_1;
+            }
+
+            return array(
+                    'count' => $results_1['count'] + $results_2['count'],
+                    'results' => array_merge($results_1['results'], $results_2['results']),
+                    'status' => $results_1['status']
+            );
+
+        } else {
+            return $results_1;
+        }
+    }
+
 }
