@@ -175,9 +175,6 @@ class Ldap
      */
     public function __destruct()
     {
-//         if ($this->last_result_rc) {
-//         	ldap_free_result($this->last_result_rc);
-//         }
         ldap_unbind($this->cn);
     }
 
@@ -225,10 +222,13 @@ class Ldap
         }
         
         if ( ! $people_only) {
-        	$base = "dc=brown,dc=edu";
+            $base = array($base, "ou=Bifs,dc=brown,dc=edu");
         }
 
-		Kohana::$log->add( Log::DEBUG, "LDAP Search: base={$base}, filter={$filter}") ;
+		Kohana::$log->add(
+		        Log::DEBUG,
+                "LDAP Search: base=".print_r($base, true).", filter={$filter}"
+        ) ;
 		
 		Profiler::stop($bm2);
         try {
@@ -304,6 +304,87 @@ class Ldap
             return $output;
         } else {
             return array();
+        }
+    }
+
+    public function search_service_accounts($search, $limit, $attribute = 'displayname') {
+        $result = array();
+        $search_trim = trim($search);
+
+        // search the people objects
+        $base = "ou=Bifs,dc=brown,dc=edu";
+        $split_search = explode(' ', $search_trim);
+
+        /**
+         * Attempt a exact match to start of string comparison
+         */
+        $filters = array();
+        $filters[] = "({$attribute}=" . implode('*', $split_search) . "*)";
+        $filters = implode($filters);
+        $filter = "(&{$filters})";
+
+        try {
+            $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $limit);
+        } catch (Exception $e) {
+            $result['status']['ok'] = false;
+            $result['status']['message'] = $e->getMessage();
+            return $result;
+        }
+
+        $result['count'] = array_shift($search_result);
+
+        // get the results
+        $results = array();
+        foreach ( $search_result as $sr )
+        {
+            $id = $sr['brownshortid'][0];
+            $results[$id] = $this->parse_person_array($sr);
+        }
+
+        $result['results'] = $results;
+        $result['status']['ok'] = true;
+
+        if ($result['count'] == $limit) {
+            return $result;
+        } else {
+
+            /**
+             * Run more general search
+             */
+            $new_limit = $limit - $result['count'];
+            $new_result = array();
+
+            $filters = array();
+            foreach ($split_search as $s)
+            {
+                $filters[] = "(|(displayname=*$s*)(brownsisid=$s*)(brownshortid=$s*)(brownnetid=$s*))";
+            }
+            $filters = implode($filters);
+            $filter = "(&$filters)";
+
+            try {
+                $search_result = $this->run_search($base, $filter, array_values($this->person_attributes), $new_limit);
+            }
+            catch (Exception $e)
+            {
+                return $result;
+            }
+
+            $new_result['count'] = array_shift($search_result);
+
+            // get the results
+            $new_results = array();
+            foreach ( $search_result as $sr )
+            {
+                $id = $sr['brownshortid'][0];
+                $new_results[$id] = $this->parse_person_array($sr);
+            }
+
+            $result['count'] += $new_result['count'];
+            $result['results'] = array_merge($result['results'], $new_results);
+            //$result['status']['ok'] = true;
+
+            return $result;
         }
     }
 
@@ -1062,20 +1143,52 @@ class Ldap
      */
     private function run_search($base, $filter, $atts = null, $limit = null)
     {
-        $search_ref = @ldap_search($this->cn, $base, $filter,
-                                  $atts, 0, $limit);
+        $conn = is_array($base)
+                ? array_fill(0, count($base), $this->cn)
+                : $this->cn;
 
-        $this->last_result_rc = $search_ref;
+        $search_ref = @ldap_search($conn, $base, $filter, $atts, 0, $limit);
 
         if (!$search_ref)
             { throw new Exception("LDAP error looking up info for $filter in $base"); }
 
-        $search_result = ldap_get_entries($this->cn, $search_ref);
-        if (!$search_result)
+        if (is_array($search_ref)) {
+            $search_result = $this->parse_multiple_results($search_ref);
+        } else {
+            $this->last_result_rc = $search_ref;
+            $search_result = ldap_get_entries($this->cn, $search_ref);
+            if (!$search_result)
             { throw new Exception("LDAP error retrieving info for $filter in $base"); }
+            ldap_free_result($search_ref);
+        }
 
-        ldap_free_result($search_ref);
         return $search_result;
+    }
+
+    private function parse_multiple_results($search_ref) {
+        $success = false;
+        $sub_results = array();
+        foreach( $search_ref as $s_ref ) {
+            $this->last_result_rc = $s_ref;
+
+            $search_result = ldap_get_entries($this->cn, $s_ref);
+
+            if( $search_result['count']) {
+                $sub_results[] = $search_result ;
+            }
+        }
+        if (count($sub_results) == 0) {
+            throw new Exception("LDAP error retrieving info for $filter in ".print_r($base, true));
+        }
+        foreach( $sub_results as $index => $result ) {
+            if ($index == 0) {
+                $all_results = $result;
+                continue;
+            }
+            $all_results = self::merge_results($all_results, $result);
+        }
+
+        return $all_results;
     }
 
     /**
@@ -1214,4 +1327,29 @@ class Ldap
 
     	return $search_result[0][$attribute][0];
     }
+
+    /**
+     * @param $results_1
+     * @param $results_2
+     * @todo generalize this for any number of ldap results
+     */
+    public static function merge_results($results_1, $results_2) {
+        if ($results_1['status']['ok'] || $results_2['status']['ok']) {
+            if (!$results_1['status']['ok']) {
+                return $results_2;
+            } elseif (!$results_2['status']['ok']) {
+                return $results_1;
+            }
+
+            return array(
+                    'count' => $results_1['count'] + $results_2['count'],
+                    'results' => array_merge($results_1['results'], $results_2['results']),
+                    'status' => $results_1['status']
+            );
+
+        } else {
+            return $results_1;
+        }
+    }
+
 }
