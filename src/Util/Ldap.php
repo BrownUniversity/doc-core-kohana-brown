@@ -1153,31 +1153,7 @@ class Ldap
             { throw new Exception("LDAP error looking up info for $filter in $base"); }
 
         if (is_array($search_ref)) {
-            $success = false;
-            // does this call for recursion? my first crack at this looks...dumb
-            $sub_results = array();
-            foreach( $search_ref as $s_ref ) {
-                $this->last_result_rc = $s_ref;
-
-                $search_result = ldap_get_entries($this->cn, $s_ref);
-
-                if( $search_result['count']) {
-                    $sub_results[] = $search_result ;
-                }
-            }
-            if (count($sub_results) == 0) {
-                throw new Exception("LDAP error retrieving info for $filter in ".print_r($base, true));
-            }
-            foreach( $sub_results as $index => $result ) {
-                if ($index == 0) {
-                    $all_results = $result;
-                    continue;
-                }
-                $all_results = self::merge_results($all_results, $result);
-            }
-
-            return $all_results;
-
+            $search_result = $this->parse_multiple_results($search_ref);
         } else {
             $this->last_result_rc = $search_ref;
             $search_result = ldap_get_entries($this->cn, $search_ref);
@@ -1187,6 +1163,32 @@ class Ldap
         }
 
         return $search_result;
+    }
+
+    private function parse_multiple_results($search_ref) {
+        $success = false;
+        $sub_results = array();
+        foreach( $search_ref as $s_ref ) {
+            $this->last_result_rc = $s_ref;
+
+            $search_result = ldap_get_entries($this->cn, $s_ref);
+
+            if( $search_result['count']) {
+                $sub_results[] = $search_result ;
+            }
+        }
+        if (count($sub_results) == 0) {
+            throw new Exception("LDAP error retrieving info for $filter in ".print_r($base, true));
+        }
+        foreach( $sub_results as $index => $result ) {
+            if ($index == 0) {
+                $all_results = $result;
+                continue;
+            }
+            $all_results = self::merge_results($all_results, $result);
+        }
+
+        return $all_results;
     }
 
     /**
