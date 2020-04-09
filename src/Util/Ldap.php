@@ -225,7 +225,10 @@ class Ldap
             $base = array($base, "ou=Bifs,dc=brown,dc=edu");
         }
 
-		Kohana::$log->add( Log::DEBUG, "LDAP Search: base={$base}, filter={$filter}") ;
+		Kohana::$log->add(
+		        Log::DEBUG,
+                "LDAP Search: base=".print_r($base, true).", filter={$filter}"
+        ) ;
 		
 		Profiler::stop($bm2);
         try {
@@ -1140,7 +1143,9 @@ class Ldap
      */
     private function run_search($base, $filter, $atts = null, $limit = null)
     {
-        $conn = is_array($base) ? array_fill(0, count($base), $this->cn) : $this->cn;
+        $conn = is_array($base)
+                ? array_fill(0, count($base), $this->cn)
+                : $this->cn;
 
         $search_ref = @ldap_search($conn, $base, $filter, $atts, 0, $limit);
 
@@ -1152,9 +1157,11 @@ class Ldap
             // does this call for recursion? my first crack at this looks...dumb
             $sub_results = array();
             foreach( $search_ref as $s_ref ) {
-                $this->last_result_rc = $_ref;
+                $this->last_result_rc = $s_ref;
+
                 $search_result = ldap_get_entries($this->cn, $s_ref);
-                if( is_array( $search_result )) {
+
+                if( $search_result['count']) {
                     $sub_results[] = $search_result ;
                 }
             }
@@ -1168,6 +1175,7 @@ class Ldap
                 }
                 $all_results = self::merge_results($all_results, $result);
             }
+
             return $all_results;
 
         } else {
