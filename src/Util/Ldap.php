@@ -240,6 +240,7 @@ class Ldap
         {
             $result['status']['ok'] = false;
             $result['status']['message'] = $e->getMessage();
+            return $result;
         }
 
         // check exactly one match
