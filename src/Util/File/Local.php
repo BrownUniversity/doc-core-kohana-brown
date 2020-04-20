@@ -1,6 +1,7 @@
 <?php
 namespace BrownUniversity\DOC\Util\File ;
 use BrownUniversity\DOC\Util\File ;
+use Kohana\HTTP\Exception\Code_404;
 use Kohana\Kohana;
 use Kohana\Log;
 
@@ -54,10 +55,9 @@ class Local extends File {
 			} else {
 				$this->download( $root_dir, $filename, $new_filename ) ;
 			}
-
 		} else {
-			header( $_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', TRUE, 404 ) ;
-			die( "Unable to find file." ) ;
+		    Kohana::$log->add(Log::DEBUG, "File not found: {$file_path}");
+			throw new Code_404('File not found');
 		}
 	}
 
@@ -84,8 +84,8 @@ class Local extends File {
 			set_time_limit(0) ;
 			@readfile( $file_path ) or die( "file not found" ) ;
 		} else {
-			header( $_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', TRUE, 404 ) ;
-
+            Kohana::$log->add(Log::DEBUG, "File not found: {$file_path}");
+            throw new Code_404('File not found');
 		}
 
 	}
