@@ -488,7 +488,10 @@ class Table {
 
 				if( count( $supplemental_data ) > 0 ) {
 					if( !in_array($this->context, array( self::CONTEXT_PDF, self::CONTEXT_SPREADSHEET )) ) {
-						$supplemental_data_json = json_encode( $supplemental_data, JSON_HEX_QUOT | JSON_HEX_APOS ) ;
+						$supplemental_data_json = json_encode(
+						        $supplemental_data,
+                                JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG
+                        ) ;
 						$row_cells .= "<{$this->render_tags[$render_as]['cell']} class='supplement-column' data-supplement='{$supplemental_data_json}'><span class='supplement-view ui-icon ui-icon-search ui-icon-right ui-icon-clickable'></span></{$this->render_tags[$render_as]['cell']}>" ;
 
 					} else {
