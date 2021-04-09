@@ -151,7 +151,7 @@ class Spreadsheet {
 		$row_index = 1 ;
 
 		$dom = new DomDocument() ;
-		@$dom->loadHTML($table_html) ;
+		@$dom->loadHTML('<?xml encoding="UTF-8">'.$table_html) ;
 
 		$thead = $dom->getElementsByTagName('thead') ;
 		if( $thead->length > 0 ) {
