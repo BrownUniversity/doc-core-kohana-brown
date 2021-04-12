@@ -137,14 +137,29 @@ class Ldap
 
         if (isset($config['host'])) {
             $this->ldap_host_url = $config['host'];
+            Kohana::$log->add(Log::WARNING, 'LDAP config "host" is deprecated. Use "host_url" instead.');
+        }
+
+        if (isset($config['host_url'])) {
+            $this->ldap_host_url = $config['host_url'];
         }
         
         if (isset($config['dn'])) {
             $this->ldap_query_bind_rdn = $config['dn'];
+            Kohana::$log->add(Log::WARNING, 'LDAP config "dn" is deprecated. Use "query_bind_rdn" instead.');
+        }
+
+        if (isset($config['query_bind_rdn'])) {
+            $this->ldap_query_bind_rdn = $config['query_bind_rdn'];
         }
         
         if (isset($config['password'])) {
             $this->ldap_query_bind_password = $config['password'];
+            Kohana::$log->add(Log::WARNING, 'LDAP config "password" is deprecated. Use "query_bind_password" instead.');
+        }
+
+        if (isset($config['query_bind_password'])) {
+            $this->ldap_query_bind_password = $config['query_bind_password'];
         }
         
         $bm = Profiler::start('LDAP', 'Constructor - connect');
